@@ -1,0 +1,4760 @@
+[
+  {
+    "id": "341",
+    "name": "Capybara",
+    "card_type": "ANIMAL",
+    "base_cost": 7,
+    "min_enclosure_size": 1,
+    "tags": [
+      "PET"
+    ],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain {Appeal-3} for each Petting Zoo Animal icon in your zoo. / Gain {Appeal-2} if the petting zoo is adjacent to a water space.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "PROMO",
+    "card_number": "341"
+  },
+  {
+    "id": "401",
+    "name": "Cheetah",
+    "card_type": "ANIMAL",
+    "base_cost": 17,
+    "min_enclosure_size": 5,
+    "tags": [
+      "PREDATOR",
+      "PREDATOR",
+      "AFRICA"
+    ],
+    "requirements": [],
+    "appeal_value": 6,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Draw 3 card(s) from the deck.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "401"
+  },
+  {
+    "id": "402",
+    "name": "Lion",
+    "card_type": "ANIMAL",
+    "base_cost": 16,
+    "min_enclosure_size": 4,
+    "tags": [
+      "PREDATOR",
+      "AFRICA"
+    ],
+    "requirements": [
+      "PREDATOR",
+      "PREDATOR",
+      "PREDATOR"
+    ],
+    "appeal_value": 9,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain {Appeal-1} for each predator icon in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "402"
+  },
+  {
+    "id": "403",
+    "name": "Leopard",
+    "card_type": "ANIMAL",
+    "base_cost": 20,
+    "min_enclosure_size": 3,
+    "tags": [
+      "PREDATOR",
+      "AFRICA"
+    ],
+    "requirements": [
+      "PARTNER_ZOO"
+    ],
+    "appeal_value": 7,
+    "conservation_value": 1,
+    "reputation_value": 0,
+    "ability_text": "Reveal the 4 topmost card(s) of the deck. Choose 1 Animal card and add it to your hand. Discard the other cards.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "403"
+  },
+  {
+    "id": "404",
+    "name": "Caracal",
+    "card_type": "ANIMAL",
+    "base_cost": 9,
+    "min_enclosure_size": 2,
+    "tags": [
+      "PREDATOR",
+      "AFRICA"
+    ],
+    "requirements": [],
+    "appeal_value": 4,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Reveal the 2 topmost card(s) of the deck. Choose 1 Animal card and add it to your hand. Discard the other cards.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "404"
+  },
+  {
+    "id": "405",
+    "name": "Fennec Fox",
+    "card_type": "ANIMAL",
+    "base_cost": 8,
+    "min_enclosure_size": 1,
+    "tags": [
+      "PREDATOR",
+      "AFRICA"
+    ],
+    "requirements": [],
+    "appeal_value": 3,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "After finishing you may place any Action card on {Slot-1} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "405"
+  },
+  {
+    "id": "406",
+    "name": "Siberian Tiger",
+    "card_type": "ANIMAL",
+    "base_cost": 30,
+    "min_enclosure_size": 5,
+    "tags": [
+      "PREDATOR",
+      "ASIA"
+    ],
+    "requirements": [
+      "ASIA",
+      "ASIA",
+      "ASIA"
+    ],
+    "appeal_value": 10,
+    "conservation_value": 2,
+    "reputation_value": 1,
+    "ability_text": null,
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "406"
+  },
+  {
+    "id": "407",
+    "name": "Sumatran Tiger",
+    "card_type": "ANIMAL",
+    "base_cost": 26,
+    "min_enclosure_size": 4,
+    "tags": [
+      "PREDATOR",
+      "ASIA"
+    ],
+    "requirements": [
+      "SCIENCE",
+      "SCIENCE"
+    ],
+    "appeal_value": 8,
+    "conservation_value": 2,
+    "reputation_value": 1,
+    "ability_text": null,
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "407"
+  },
+  {
+    "id": "408",
+    "name": "Sloth Bear",
+    "card_type": "ANIMAL",
+    "base_cost": 14,
+    "min_enclosure_size": 3,
+    "tags": [
+      "PREDATOR",
+      "BEAR",
+      "ASIA"
+    ],
+    "requirements": [],
+    "appeal_value": 6,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "After finishing this action, you may place your Association Action card {AssociationActionCard} on {Slot-1} or {Slot-5} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "408"
+  },
+  {
+    "id": "409",
+    "name": "Sun Bear",
+    "card_type": "ANIMAL",
+    "base_cost": 16,
+    "min_enclosure_size": 2,
+    "tags": [
+      "PREDATOR",
+      "BEAR",
+      "ASIA"
+    ],
+    "requirements": [
+      "PARTNER_ZOO"
+    ],
+    "appeal_value": 5,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "After finishing this action, you may take the Association action {AssociationActionCard} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "409"
+  },
+  {
+    "id": "410",
+    "name": "Yellow-Throated Marten",
+    "card_type": "ANIMAL",
+    "base_cost": 7,
+    "min_enclosure_size": 1,
+    "tags": [
+      "PREDATOR",
+      "ASIA"
+    ],
+    "requirements": [],
+    "appeal_value": 3,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Reveal the 1 topmost card(s) of the deck. Choose 1 Animal card and add it to your hand. Discard the other cards.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "410"
+  },
+  {
+    "id": "411",
+    "name": "Grizzly Bear",
+    "card_type": "ANIMAL",
+    "base_cost": 22,
+    "min_enclosure_size": 5,
+    "tags": [
+      "PREDATOR",
+      "BEAR",
+      "AMERICAS"
+    ],
+    "requirements": [
+      "PREDATOR",
+      "PREDATOR",
+      "ANIMALS_II"
+    ],
+    "appeal_value": 9,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain {} {XToken} -token for each bear icon in all zoos (max.3). / Hire an association worker.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "411"
+  },
+  {
+    "id": "412",
+    "name": "Jaguar",
+    "card_type": "ANIMAL",
+    "base_cost": 16,
+    "min_enclosure_size": 4,
+    "tags": [
+      "PREDATOR",
+      "AMERICAS"
+    ],
+    "requirements": [
+      "AMERICAS"
+    ],
+    "appeal_value": 8,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Reveal the 4 topmost card(s) of the deck. Choose 1 Animal card and add it to your hand. Discard the other cards.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "412"
+  },
+  {
+    "id": "413",
+    "name": "Cougar",
+    "card_type": "ANIMAL",
+    "base_cost": 10,
+    "min_enclosure_size": 3,
+    "tags": [
+      "PREDATOR",
+      "AMERICAS"
+    ],
+    "requirements": [],
+    "appeal_value": 5,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Advance the break token 3 spaces. Gain {Money-3}.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "413"
+  },
+  {
+    "id": "414",
+    "name": "South American Coati",
+    "card_type": "ANIMAL",
+    "base_cost": 11,
+    "min_enclosure_size": 2,
+    "tags": [
+      "PREDATOR",
+      "BEAR",
+      "AMERICAS"
+    ],
+    "requirements": [],
+    "appeal_value": 4,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain {} {XToken} -token.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "414"
+  },
+  {
+    "id": "415",
+    "name": "Raccoon",
+    "card_type": "ANIMAL",
+    "base_cost": 11,
+    "min_enclosure_size": 1,
+    "tags": [
+      "PREDATOR",
+      "BEAR",
+      "AMERICAS"
+    ],
+    "requirements": [],
+    "appeal_value": 4,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "After finishing this action, you may place your Association Action card {AssociationActionCard} on {Slot-1} or {Slot-5} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "415"
+  },
+  {
+    "id": "416",
+    "name": "Eurasian Brown Bear",
+    "card_type": "ANIMAL",
+    "base_cost": 20,
+    "min_enclosure_size": 5,
+    "tags": [
+      "PREDATOR",
+      "BEAR",
+      "EUROPE"
+    ],
+    "requirements": [
+      "BEAR",
+      "ANIMALS_II"
+    ],
+    "appeal_value": 8,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Place 1 {MultiplierToken} on your Association Action card {AssociationActionCard} . / Hire an association worker.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "416"
+  },
+  {
+    "id": "417",
+    "name": "Wolf",
+    "card_type": "ANIMAL",
+    "base_cost": 12,
+    "min_enclosure_size": 4,
+    "tags": [
+      "PREDATOR",
+      "EUROPE"
+    ],
+    "requirements": [],
+    "appeal_value": 4,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain {Appeal-1} for each predator icon in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "417"
+  },
+  {
+    "id": "418",
+    "name": "Eurasian Lynx",
+    "card_type": "ANIMAL",
+    "base_cost": 11,
+    "min_enclosure_size": 3,
+    "tags": [
+      "PREDATOR",
+      "EUROPE"
+    ],
+    "requirements": [
+      "EUROPE",
+      "EUROPE"
+    ],
+    "appeal_value": 2,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain {Appeal-1} for each Europe icon in all zoos (max. 8).",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "418"
+  },
+  {
+    "id": "419",
+    "name": "European Badger",
+    "card_type": "ANIMAL",
+    "base_cost": 5,
+    "min_enclosure_size": 2,
+    "tags": [
+      "PREDATOR",
+      "EUROPE"
+    ],
+    "requirements": [],
+    "appeal_value": 3,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "After finishing this action, you may place your Animal Action card {AnimalActionCard} on {Slot-1} or {Slot-5} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "419"
+  },
+  {
+    "id": "420",
+    "name": "Stoat",
+    "card_type": "ANIMAL",
+    "base_cost": 4,
+    "min_enclosure_size": 1,
+    "tags": [
+      "PREDATOR",
+      "EUROPE"
+    ],
+    "requirements": [
+      "EUROPE"
+    ],
+    "appeal_value": 3,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Reveal the 1 topmost card(s) of the deck. Choose 1 Animal card and add it to your hand. Discard the other cards.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "420"
+  },
+  {
+    "id": "421",
+    "name": "New Zealand Fur Seal",
+    "card_type": "ANIMAL",
+    "base_cost": 17,
+    "min_enclosure_size": 5,
+    "tags": [
+      "PREDATOR",
+      "AUSTRALIA"
+    ],
+    "requirements": [
+      "ANIMALS_II"
+    ],
+    "appeal_value": 8,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Hire an association worker.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "421"
+  },
+  {
+    "id": "422",
+    "name": "Australian Sea Lion",
+    "card_type": "ANIMAL",
+    "base_cost": 18,
+    "min_enclosure_size": 4,
+    "tags": [
+      "PREDATOR",
+      "AUSTRALIA"
+    ],
+    "requirements": [
+      "PARTNER_ZOO"
+    ],
+    "appeal_value": 7,
+    "conservation_value": 1,
+    "reputation_value": 0,
+    "ability_text": "You may sell up to 3 card(s) from your hand for {Money-4} each.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "422"
+  },
+  {
+    "id": "423",
+    "name": "New Zealand Sea Lion",
+    "card_type": "ANIMAL",
+    "base_cost": 17,
+    "min_enclosure_size": 3,
+    "tags": [
+      "PREDATOR",
+      "AUSTRALIA"
+    ],
+    "requirements": [],
+    "appeal_value": 6,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain {Appeal-1} for each predator icon in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "423"
+  },
+  {
+    "id": "424",
+    "name": "Australian Dingo",
+    "card_type": "ANIMAL",
+    "base_cost": 13,
+    "min_enclosure_size": 2,
+    "tags": [
+      "PREDATOR",
+      "AUSTRALIA"
+    ],
+    "requirements": [],
+    "appeal_value": 3,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain {Appeal-1} for each predator icon in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "424"
+  },
+  {
+    "id": "425",
+    "name": "Tasmanian Devil",
+    "card_type": "ANIMAL",
+    "base_cost": 11,
+    "min_enclosure_size": 1,
+    "tags": [
+      "PREDATOR",
+      "AUSTRALIA"
+    ],
+    "requirements": [
+      "SCIENCE"
+    ],
+    "appeal_value": 4,
+    "conservation_value": 0,
+    "reputation_value": 1,
+    "ability_text": "You may place 1 card(s) from your hand under this card to gain {Appeal-2} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "425"
+  },
+  {
+    "id": "426",
+    "name": "African Bush Elephant",
+    "card_type": "ANIMAL",
+    "base_cost": 36,
+    "min_enclosure_size": 5,
+    "tags": [
+      "HERBIVORE",
+      "AFRICA",
+      "AFRICA"
+    ],
+    "requirements": [
+      "ANIMALS_II"
+    ],
+    "appeal_value": 10,
+    "conservation_value": 0,
+    "reputation_value": 1,
+    "ability_text": "Draw 2 Final Scoring cards. Keep 1 and discard the other.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "426"
+  },
+  {
+    "id": "427",
+    "name": "White Rhinoceros",
+    "card_type": "ANIMAL",
+    "base_cost": 24,
+    "min_enclosure_size": 4,
+    "tags": [
+      "HERBIVORE",
+      "AFRICA"
+    ],
+    "requirements": [
+      "SCIENCE"
+    ],
+    "appeal_value": 9,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "You may add any 1 of the unused base conservation projects to your hand.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "427"
+  },
+  {
+    "id": "428",
+    "name": "Giraffe",
+    "card_type": "ANIMAL",
+    "base_cost": 16,
+    "min_enclosure_size": 3,
+    "tags": [
+      "HERBIVORE",
+      "AFRICA"
+    ],
+    "requirements": [],
+    "appeal_value": 7,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "After finishing this action, you may place your Sponsors Action card {SponsorsActionCard} on {Slot-1} or {Slot-5} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "428"
+  },
+  {
+    "id": "429",
+    "name": "Grevy",
+    "card_type": "ANIMAL",
+    "base_cost": 12,
+    "min_enclosure_size": 2,
+    "tags": [
+      "HERBIVORE",
+      "AFRICA"
+    ],
+    "requirements": [
+      "AFRICA",
+      "AFRICA",
+      "AFRICA"
+    ],
+    "appeal_value": 6,
+    "conservation_value": 0,
+    "reputation_value": 1,
+    "ability_text": "After finishing this action, you may place your Sponsors Action card {SponsorsActionCard} on {Slot-1} or {Slot-5} . / May share the existing enclosure of a {HerbivoreTag} with {Size-X+}.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "429"
+  },
+  {
+    "id": "430",
+    "name": "Pygmy Hippopotamus",
+    "card_type": "ANIMAL",
+    "base_cost": 15,
+    "min_enclosure_size": 2,
+    "tags": [
+      "HERBIVORE",
+      "AFRICA"
+    ],
+    "requirements": [
+      "PARTNER_ZOO"
+    ],
+    "appeal_value": 6,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "After finishing this action, you may take the Sponsors Action {SponsorsActionCard} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "430"
+  },
+  {
+    "id": "431",
+    "name": "Asian Elephant",
+    "card_type": "ANIMAL",
+    "base_cost": 33,
+    "min_enclosure_size": 5,
+    "tags": [
+      "HERBIVORE",
+      "ASIA",
+      "ASIA"
+    ],
+    "requirements": [
+      "ANIMALS_II"
+    ],
+    "appeal_value": 8,
+    "conservation_value": 1,
+    "reputation_value": 0,
+    "ability_text": "Draw 2 Final Scoring cards. Keep 1 and discard the other.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "431"
+  },
+  {
+    "id": "432",
+    "name": "Indian Rhinoceros",
+    "card_type": "ANIMAL",
+    "base_cost": 25,
+    "min_enclosure_size": 4,
+    "tags": [
+      "HERBIVORE",
+      "ASIA"
+    ],
+    "requirements": [
+      "ANIMALS_II"
+    ],
+    "appeal_value": 9,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "You may add any 1 of the unused base conservation projects to your hand.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "432"
+  },
+  {
+    "id": "433",
+    "name": "Giant Panda",
+    "card_type": "ANIMAL",
+    "base_cost": 27,
+    "min_enclosure_size": 3,
+    "tags": [
+      "HERBIVORE",
+      "BEAR",
+      "ASIA"
+    ],
+    "requirements": [
+      "HERBIVORE",
+      "BEAR",
+      "PARTNER_ZOO"
+    ],
+    "appeal_value": 10,
+    "conservation_value": 2,
+    "reputation_value": 1,
+    "ability_text": null,
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "433"
+  },
+  {
+    "id": "434",
+    "name": "Red Panda",
+    "card_type": "ANIMAL",
+    "base_cost": 16,
+    "min_enclosure_size": 2,
+    "tags": [
+      "HERBIVORE",
+      "BEAR",
+      "ASIA"
+    ],
+    "requirements": [
+      "SCIENCE",
+      "SCIENCE"
+    ],
+    "appeal_value": 6,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Place 1 {MultiplierToken} on your Sponsors Action card {SponsorsActionCard} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "434"
+  },
+  {
+    "id": "435",
+    "name": "Malayan Tapir",
+    "card_type": "ANIMAL",
+    "base_cost": 17,
+    "min_enclosure_size": 2,
+    "tags": [
+      "HERBIVORE",
+      "ASIA"
+    ],
+    "requirements": [],
+    "appeal_value": 5,
+    "conservation_value": 0,
+    "reputation_value": 1,
+    "ability_text": "Choose up to 3x: Discard 1 card from the display and replenish OR discard 1 card from your hand and draw 1 other from the deck.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "435"
+  },
+  {
+    "id": "436",
+    "name": "American Bison",
+    "card_type": "ANIMAL",
+    "base_cost": 18,
+    "min_enclosure_size": 5,
+    "tags": [
+      "HERBIVORE",
+      "AMERICAS",
+      "AMERICAS"
+    ],
+    "requirements": [
+      "AMERICAS",
+      "AMERICAS",
+      "AMERICAS"
+    ],
+    "appeal_value": 4,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain {Appeal-1} for each Americas icon in all zoos (max. 8).",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "436"
+  },
+  {
+    "id": "437",
+    "name": "Muskox",
+    "card_type": "ANIMAL",
+    "base_cost": 13,
+    "min_enclosure_size": 4,
+    "tags": [
+      "HERBIVORE",
+      "AMERICAS"
+    ],
+    "requirements": [
+      "AMERICAS"
+    ],
+    "appeal_value": 5,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Add all sponsors cards from the display to your hand.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "437"
+  },
+  {
+    "id": "438",
+    "name": "Reindeer",
+    "card_type": "ANIMAL",
+    "base_cost": 12,
+    "min_enclosure_size": 3,
+    "tags": [
+      "HERBIVORE",
+      "AMERICAS"
+    ],
+    "requirements": [],
+    "appeal_value": 5,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "May share the existing enclosure of a {HerbivoreTag} with {Size-X+}.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "438"
+  },
+  {
+    "id": "439",
+    "name": "Lama",
+    "card_type": "ANIMAL",
+    "base_cost": 10,
+    "min_enclosure_size": 2,
+    "tags": [
+      "HERBIVORE",
+      "AMERICAS"
+    ],
+    "requirements": [],
+    "appeal_value": 4,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "May share the existing enclosure of a {HerbivoreTag} with {Size-X+}.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "439"
+  },
+  {
+    "id": "440",
+    "name": "Mountain Tapir",
+    "card_type": "ANIMAL",
+    "base_cost": 15,
+    "min_enclosure_size": 2,
+    "tags": [
+      "HERBIVORE",
+      "AMERICAS"
+    ],
+    "requirements": [],
+    "appeal_value": 4,
+    "conservation_value": 1,
+    "reputation_value": 0,
+    "ability_text": "Choose up to 2x: Discard 1 card from the display and replenish OR discard 1 card from your hand and draw 1 other from the deck.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "440"
+  },
+  {
+    "id": "441",
+    "name": "European Bison",
+    "card_type": "ANIMAL",
+    "base_cost": 19,
+    "min_enclosure_size": 5,
+    "tags": [
+      "HERBIVORE",
+      "EUROPE",
+      "EUROPE"
+    ],
+    "requirements": [
+      "PARTNER_ZOO"
+    ],
+    "appeal_value": 6,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Add all sponsors cards from the display to your hand.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "441"
+  },
+  {
+    "id": "442",
+    "name": "Moose",
+    "card_type": "ANIMAL",
+    "base_cost": 19,
+    "min_enclosure_size": 4,
+    "tags": [
+      "HERBIVORE",
+      "EUROPE"
+    ],
+    "requirements": [
+      "HERBIVORE",
+      "HERBIVORE"
+    ],
+    "appeal_value": 7,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Place 1 {MultiplierToken} on your Sponsors Action card {SponsorsActionCard} . / May share the existing enclosure of a {HerbivoreTag} with {Size-X+}.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "442"
+  },
+  {
+    "id": "443",
+    "name": "Red Deer",
+    "card_type": "ANIMAL",
+    "base_cost": 12,
+    "min_enclosure_size": 3,
+    "tags": [
+      "HERBIVORE",
+      "EUROPE"
+    ],
+    "requirements": [],
+    "appeal_value": 5,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "May share the existing enclosure of a {HerbivoreTag} with {Size-X+}.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "443"
+  },
+  {
+    "id": "444",
+    "name": "Alpine Ibex",
+    "card_type": "ANIMAL",
+    "base_cost": 10,
+    "min_enclosure_size": 2,
+    "tags": [
+      "HERBIVORE",
+      "EUROPE"
+    ],
+    "requirements": [],
+    "appeal_value": 5,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Advance the break token 2 spaces. Gain {Money-2}.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "444"
+  },
+  {
+    "id": "445",
+    "name": "Crested Porcupine",
+    "card_type": "ANIMAL",
+    "base_cost": 8,
+    "min_enclosure_size": 1,
+    "tags": [
+      "HERBIVORE",
+      "EUROPE"
+    ],
+    "requirements": [],
+    "appeal_value": 3,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Choose up to 2x: Discard 1 card from the display and replenish OR discard 1 card from your hand and draw 1 other from the deck.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "445"
+  },
+  {
+    "id": "446",
+    "name": "Dugong",
+    "card_type": "ANIMAL",
+    "base_cost": 25,
+    "min_enclosure_size": 5,
+    "tags": [
+      "HERBIVORE",
+      "AUSTRALIA",
+      "AUSTRALIA"
+    ],
+    "requirements": [
+      "ANIMALS_II"
+    ],
+    "appeal_value": 9,
+    "conservation_value": 1,
+    "reputation_value": 0,
+    "ability_text": "Choose up to 4x: Discard 1 card from the display and replenish OR discard 1 card from your hand and draw 1 other from the deck.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "446"
+  },
+  {
+    "id": "447",
+    "name": "Red Kangaroo",
+    "card_type": "ANIMAL",
+    "base_cost": 23,
+    "min_enclosure_size": 4,
+    "tags": [
+      "HERBIVORE",
+      "AUSTRALIA"
+    ],
+    "requirements": [],
+    "appeal_value": 7,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "You may place 2 card(s) from your hand under this card to gain {Appeal-2} . / May share the existing enclosure of a {HerbivoreTag} with {Size-X+}.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "447"
+  },
+  {
+    "id": "448",
+    "name": "Koala",
+    "card_type": "ANIMAL",
+    "base_cost": 21,
+    "min_enclosure_size": 3,
+    "tags": [
+      "HERBIVORE",
+      "BEAR",
+      "AUSTRALIA"
+    ],
+    "requirements": [
+      "AUSTRALIA"
+    ],
+    "appeal_value": 8,
+    "conservation_value": 0,
+    "reputation_value": 1,
+    "ability_text": "You may place 2 card(s) from your hand under this card to gain {Appeal-2} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "448"
+  },
+  {
+    "id": "449",
+    "name": "Platypus",
+    "card_type": "ANIMAL",
+    "base_cost": 10,
+    "min_enclosure_size": 2,
+    "tags": [
+      "HERBIVORE",
+      "AUSTRALIA"
+    ],
+    "requirements": [],
+    "appeal_value": 4,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Each player ahead of you on the Appeal track gains 1 Venom token(s).",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "449"
+  },
+  {
+    "id": "450",
+    "name": "Common Wombat",
+    "card_type": "ANIMAL",
+    "base_cost": 9,
+    "min_enclosure_size": 2,
+    "tags": [
+      "HERBIVORE",
+      "AUSTRALIA"
+    ],
+    "requirements": [],
+    "appeal_value": 4,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "You may place 1 card(s) from your hand under this card to gain {Appeal-2} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "450"
+  },
+  {
+    "id": "451",
+    "name": "Proboscis Monkey",
+    "card_type": "ANIMAL",
+    "base_cost": 32,
+    "min_enclosure_size": 5,
+    "tags": [
+      "PRIMATE",
+      "ASIA"
+    ],
+    "requirements": [
+      "PRIMATE",
+      "PRIMATE",
+      "ANIMALS_II"
+    ],
+    "appeal_value": 10,
+    "conservation_value": 2,
+    "reputation_value": 0,
+    "ability_text": "You may add the base conservation project Primates to your hand if it is not already in the game.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "451"
+  },
+  {
+    "id": "452",
+    "name": "Senegal Bushbaby",
+    "card_type": "ANIMAL",
+    "base_cost": 10,
+    "min_enclosure_size": 1,
+    "tags": [
+      "PRIMATE",
+      "AFRICA"
+    ],
+    "requirements": [
+      "AFRICA",
+      "AFRICA"
+    ],
+    "appeal_value": 1,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain {Appeal-1} for each ContinentTag.Africa icon in all zoos (max. 8).",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "452"
+  },
+  {
+    "id": "453",
+    "name": "Collared Mangabey",
+    "card_type": "ANIMAL",
+    "base_cost": 20,
+    "min_enclosure_size": 4,
+    "tags": [
+      "PRIMATE",
+      "AFRICA"
+    ],
+    "requirements": [
+      "AFRICA"
+    ],
+    "appeal_value": 8,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "After finishing this action, you may take the Card action {CardsActionCard} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "453"
+  },
+  {
+    "id": "454",
+    "name": "Ring-Tailed Lemur",
+    "card_type": "ANIMAL",
+    "base_cost": 12,
+    "min_enclosure_size": 3,
+    "tags": [
+      "PRIMATE",
+      "AFRICA"
+    ],
+    "requirements": [],
+    "appeal_value": 6,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "You may sell up to 3 card(s) from your hand for {Money-4} each.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "454"
+  },
+  {
+    "id": "455",
+    "name": "Mantled Guereza",
+    "card_type": "ANIMAL",
+    "base_cost": 13,
+    "min_enclosure_size": 3,
+    "tags": [
+      "PRIMATE",
+      "AFRICA"
+    ],
+    "requirements": [],
+    "appeal_value": 6,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "After finishing you may place any Action card on {Slot-1} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "455"
+  },
+  {
+    "id": "456",
+    "name": "Barbary Macaque",
+    "card_type": "ANIMAL",
+    "base_cost": 13,
+    "min_enclosure_size": 2,
+    "tags": [
+      "PRIMATE",
+      "AFRICA"
+    ],
+    "requirements": [
+      "PARTNER_ZOO"
+    ],
+    "appeal_value": 6,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Draw 1 card from the hand of or take {Money-5} from the player with the most {Appeal}. They decide.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "456"
+  },
+  {
+    "id": "457",
+    "name": "Mandrill",
+    "card_type": "ANIMAL",
+    "base_cost": 28,
+    "min_enclosure_size": 5,
+    "tags": [
+      "PRIMATE",
+      "PRIMATE",
+      "AFRICA"
+    ],
+    "requirements": [
+      "PRIMATE",
+      "PRIMATE",
+      "PRIMATE"
+    ],
+    "appeal_value": 9,
+    "conservation_value": 2,
+    "reputation_value": 0,
+    "ability_text": "Place 1 {MultiplierToken} on your Card Action card {CardsActionCard} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "457"
+  },
+  {
+    "id": "458",
+    "name": "Japanese Macaque",
+    "card_type": "ANIMAL",
+    "base_cost": 18,
+    "min_enclosure_size": 3,
+    "tags": [
+      "PRIMATE",
+      "ASIA"
+    ],
+    "requirements": [
+      "ASIA"
+    ],
+    "appeal_value": 7,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "From both the player with the highest {Appeal} and the player with the most {ConservationPoint}, Draw 1 card from the hand of or take {Money-5} from that player. They decide.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "458"
+  },
+  {
+    "id": "459",
+    "name": "Red-Shanked Douc",
+    "card_type": "ANIMAL",
+    "base_cost": 17,
+    "min_enclosure_size": 4,
+    "tags": [
+      "PRIMATE",
+      "ASIA"
+    ],
+    "requirements": [
+      "SCIENCE"
+    ],
+    "appeal_value": 7,
+    "conservation_value": 0,
+    "reputation_value": 1,
+    "ability_text": "Gain 1/2/3 {XToken} -tokens for 1/3/5 primate icons in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "459"
+  },
+  {
+    "id": "460",
+    "name": "Dusky-Leaf Monkey",
+    "card_type": "ANIMAL",
+    "base_cost": 12,
+    "min_enclosure_size": 2,
+    "tags": [
+      "PRIMATE",
+      "ASIA"
+    ],
+    "requirements": [],
+    "appeal_value": 5,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "After finishing you may place any Action card on {Slot-1} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "460"
+  },
+  {
+    "id": "461",
+    "name": "Horsfield",
+    "card_type": "ANIMAL",
+    "base_cost": 14,
+    "min_enclosure_size": 1,
+    "tags": [
+      "PRIMATE",
+      "ASIA"
+    ],
+    "requirements": [
+      "PARTNER_ZOO"
+    ],
+    "appeal_value": 3,
+    "conservation_value": 0,
+    "reputation_value": 2,
+    "ability_text": "Advance the break token 4 spaces. Gain {Money-4}.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "461"
+  },
+  {
+    "id": "462",
+    "name": "Northern Plains Gray Langur",
+    "card_type": "ANIMAL",
+    "base_cost": 13,
+    "min_enclosure_size": 3,
+    "tags": [
+      "PRIMATE",
+      "ASIA"
+    ],
+    "requirements": [],
+    "appeal_value": 6,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Advance the break token 3 spaces. Gain {Money-3}.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "462"
+  },
+  {
+    "id": "463",
+    "name": "Panamanian White-Faced Capuchin",
+    "card_type": "ANIMAL",
+    "base_cost": 11,
+    "min_enclosure_size": 2,
+    "tags": [
+      "PRIMATE",
+      "AMERICAS"
+    ],
+    "requirements": [
+      "PARTNER_ZOO"
+    ],
+    "appeal_value": 5,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Draw 1 card from the hand of or take {Money-5} from the player with the most {Appeal}. They decide.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "463"
+  },
+  {
+    "id": "464",
+    "name": "Brown Spider Monkey",
+    "card_type": "ANIMAL",
+    "base_cost": 17,
+    "min_enclosure_size": 4,
+    "tags": [
+      "PRIMATE",
+      "AMERICAS"
+    ],
+    "requirements": [
+      "PRIMATE"
+    ],
+    "appeal_value": 6,
+    "conservation_value": 1,
+    "reputation_value": 0,
+    "ability_text": "Gain 1/2/3 {XToken} -tokens for 1/3/5 primate icons in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "464"
+  },
+  {
+    "id": "465",
+    "name": "Golden Lion Tamarin",
+    "card_type": "ANIMAL",
+    "base_cost": 10,
+    "min_enclosure_size": 1,
+    "tags": [
+      "PRIMATE",
+      "AMERICAS"
+    ],
+    "requirements": [],
+    "appeal_value": 4,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "After finishing you may place any Action card on {Slot-1} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "465"
+  },
+  {
+    "id": "466",
+    "name": "Bolivian Red Howler",
+    "card_type": "ANIMAL",
+    "base_cost": 12,
+    "min_enclosure_size": 3,
+    "tags": [
+      "PRIMATE",
+      "AMERICAS"
+    ],
+    "requirements": [],
+    "appeal_value": 6,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "After finishing this action, you may place your Card Action card {CardsActionCard} on {Slot-1} or {Slot-5} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "466"
+  },
+  {
+    "id": "467",
+    "name": "Ecuadorian Squirell Monkey",
+    "card_type": "ANIMAL",
+    "base_cost": 12,
+    "min_enclosure_size": 2,
+    "tags": [
+      "PRIMATE",
+      "AMERICAS"
+    ],
+    "requirements": [],
+    "appeal_value": 5,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "After finishing you may place any Action card on {Slot-1} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "467"
+  },
+  {
+    "id": "468",
+    "name": "Cotton-Top Tamarin",
+    "card_type": "ANIMAL",
+    "base_cost": 15,
+    "min_enclosure_size": 1,
+    "tags": [
+      "PRIMATE",
+      "AMERICAS"
+    ],
+    "requirements": [
+      "SCIENCE",
+      "SCIENCE"
+    ],
+    "appeal_value": 4,
+    "conservation_value": 1,
+    "reputation_value": 1,
+    "ability_text": null,
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "468"
+  },
+  {
+    "id": "469",
+    "name": "Nile Crocodile",
+    "card_type": "ANIMAL",
+    "base_cost": 13,
+    "min_enclosure_size": 5,
+    "tags": [
+      "REPTILE",
+      "AFRICA"
+    ],
+    "requirements": [
+      "REPTILE",
+      "REPTILE",
+      "REPTILE"
+    ],
+    "appeal_value": 9,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "2x: Gain any 1 card from the display. You may replenish in between.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "469"
+  },
+  {
+    "id": "470",
+    "name": "Western Green Mamba",
+    "card_type": "ANIMAL",
+    "base_cost": 13,
+    "min_enclosure_size": 2,
+    "tags": [
+      "REPTILE",
+      "AFRICA"
+    ],
+    "requirements": [
+      "AFRICA",
+      "REPTILE"
+    ],
+    "appeal_value": 6,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Each player ahead of you on the Appeal track gains 2 Venom token(s).",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "470"
+  },
+  {
+    "id": "471",
+    "name": "African Spurred Tortoise",
+    "card_type": "ANIMAL",
+    "base_cost": 22,
+    "min_enclosure_size": 3,
+    "tags": [
+      "REPTILE",
+      "AFRICA"
+    ],
+    "requirements": [],
+    "appeal_value": 6,
+    "conservation_value": 1,
+    "reputation_value": 0,
+    "ability_text": "You may sell up to 3 card(s) from your hand for {Money-4} each.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "471"
+  },
+  {
+    "id": "472",
+    "name": "Rock Monitor",
+    "card_type": "ANIMAL",
+    "base_cost": 12,
+    "min_enclosure_size": 2,
+    "tags": [
+      "REPTILE",
+      "AFRICA"
+    ],
+    "requirements": [],
+    "appeal_value": 5,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "You may sell up to 3 card(s) from your hand for {Money-4} each.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "472"
+  },
+  {
+    "id": "473",
+    "name": "Common Agama",
+    "card_type": "ANIMAL",
+    "base_cost": 9,
+    "min_enclosure_size": 1,
+    "tags": [
+      "REPTILE",
+      "AFRICA"
+    ],
+    "requirements": [],
+    "appeal_value": 3,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "You may sell up to 2 card(s) from your hand for {Money-4} each.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "473"
+  },
+  {
+    "id": "474",
+    "name": "Indian Rock Python",
+    "card_type": "ANIMAL",
+    "base_cost": 14,
+    "min_enclosure_size": 2,
+    "tags": [
+      "REPTILE",
+      "ASIA"
+    ],
+    "requirements": [
+      "REPTILE",
+      "REPTILE"
+    ],
+    "appeal_value": 7,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Each player ahead of you on a track gains 1 Constriction token for each of those tracks ( {Appeal} and {ConservationPoint} ).",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "474"
+  },
+  {
+    "id": "475",
+    "name": "King Cobra",
+    "card_type": "ANIMAL",
+    "base_cost": 13,
+    "min_enclosure_size": 2,
+    "tags": [
+      "REPTILE",
+      "ASIA"
+    ],
+    "requirements": [
+      "SCIENCE",
+      "SCIENCE",
+      "ANIMALS_II"
+    ],
+    "appeal_value": 6,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "After finishing this action, you may take 1 action {ActionCard} from an Action card in slot {Slot-1} , {Slot-2} or {Slot-3} of the player with the most {Appeal}.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "475"
+  },
+  {
+    "id": "476",
+    "name": "Komodo Dragon",
+    "card_type": "ANIMAL",
+    "base_cost": 14,
+    "min_enclosure_size": 3,
+    "tags": [
+      "REPTILE",
+      "ASIA"
+    ],
+    "requirements": [
+      "ASIA",
+      "ASIA"
+    ],
+    "appeal_value": 2,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain {Appeal-1} for each ContinentTag.Asia icon in all zoos (max. 8).",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "476"
+  },
+  {
+    "id": "477",
+    "name": "Veiled Chameleon",
+    "card_type": "ANIMAL",
+    "base_cost": 14,
+    "min_enclosure_size": 1,
+    "tags": [
+      "REPTILE",
+      "ASIA"
+    ],
+    "requirements": [],
+    "appeal_value": 4,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain any 1 card from the display.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "477"
+  },
+  {
+    "id": "478",
+    "name": "Chinese Water Dragon",
+    "card_type": "ANIMAL",
+    "base_cost": 8,
+    "min_enclosure_size": 1,
+    "tags": [
+      "REPTILE",
+      "ASIA"
+    ],
+    "requirements": [],
+    "appeal_value": 3,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "You may sell up to 2 card(s) from your hand for {Money-4} each.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "478"
+  },
+  {
+    "id": "479",
+    "name": "American Alligator",
+    "card_type": "ANIMAL",
+    "base_cost": 18,
+    "min_enclosure_size": 4,
+    "tags": [
+      "REPTILE",
+      "AMERICAS"
+    ],
+    "requirements": [],
+    "appeal_value": 7,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain any 1 card from the display.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "479"
+  },
+  {
+    "id": "480",
+    "name": "Broad-Snouted Caiman",
+    "card_type": "ANIMAL",
+    "base_cost": 16,
+    "min_enclosure_size": 4,
+    "tags": [
+      "REPTILE",
+      "AMERICAS"
+    ],
+    "requirements": [],
+    "appeal_value": 6,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain any 1 card from the display.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "480"
+  },
+  {
+    "id": "481",
+    "name": "Galapagos Giant Tortoise",
+    "card_type": "ANIMAL",
+    "base_cost": 30,
+    "min_enclosure_size": 3,
+    "tags": [
+      "REPTILE",
+      "AMERICAS"
+    ],
+    "requirements": [
+      "AMERICAS",
+      "AMERICAS",
+      "ANIMALS_II"
+    ],
+    "appeal_value": 8,
+    "conservation_value": 2,
+    "reputation_value": 1,
+    "ability_text": "You may sell up to 4 card(s) from your hand for {Money-4} each.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "481"
+  },
+  {
+    "id": "482",
+    "name": "Anaconda",
+    "card_type": "ANIMAL",
+    "base_cost": 13,
+    "min_enclosure_size": 2,
+    "tags": [
+      "REPTILE",
+      "AMERICAS"
+    ],
+    "requirements": [
+      "PARTNER_ZOO"
+    ],
+    "appeal_value": 6,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Each player ahead of you on a track gains 1 Constriction token for each of those tracks ( {Appeal} and {ConservationPoint} ).",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "482"
+  },
+  {
+    "id": "483",
+    "name": "Boa Constrictor",
+    "card_type": "ANIMAL",
+    "base_cost": 16,
+    "min_enclosure_size": 2,
+    "tags": [
+      "REPTILE",
+      "AMERICAS"
+    ],
+    "requirements": [
+      "SCIENCE",
+      "SCIENCE"
+    ],
+    "appeal_value": 7,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Each player ahead of you on a track gains 1 Constriction token for each of those tracks ( {Appeal} and {ConservationPoint} ).",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "483"
+  },
+  {
+    "id": "484",
+    "name": "European Pond Turtle",
+    "card_type": "ANIMAL",
+    "base_cost": 9,
+    "min_enclosure_size": 1,
+    "tags": [
+      "REPTILE",
+      "EUROPE"
+    ],
+    "requirements": [],
+    "appeal_value": 4,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": null,
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "484"
+  },
+  {
+    "id": "485",
+    "name": "Common European Adder",
+    "card_type": "ANIMAL",
+    "base_cost": 10,
+    "min_enclosure_size": 1,
+    "tags": [
+      "REPTILE",
+      "EUROPE"
+    ],
+    "requirements": [
+      "PARTNER_ZOO"
+    ],
+    "appeal_value": 2,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "After finishing this action, you may take 1 action {ActionCard} from an Action card in slot {Slot-1} , {Slot-2} or {Slot-3} of the player with the most {Appeal}.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "485"
+  },
+  {
+    "id": "486",
+    "name": "Common Wall Lizard",
+    "card_type": "ANIMAL",
+    "base_cost": 4,
+    "min_enclosure_size": 1,
+    "tags": [
+      "REPTILE",
+      "EUROPE"
+    ],
+    "requirements": [],
+    "appeal_value": 2,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": null,
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "486"
+  },
+  {
+    "id": "487",
+    "name": "European Grass Snake",
+    "card_type": "ANIMAL",
+    "base_cost": 8,
+    "min_enclosure_size": 1,
+    "tags": [
+      "REPTILE",
+      "EUROPE"
+    ],
+    "requirements": [],
+    "appeal_value": 3,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "After finishing you may place any Action card on {Slot-1} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "487"
+  },
+  {
+    "id": "488",
+    "name": "Slow Worm",
+    "card_type": "ANIMAL",
+    "base_cost": 4,
+    "min_enclosure_size": 1,
+    "tags": [
+      "REPTILE",
+      "EUROPE"
+    ],
+    "requirements": [],
+    "appeal_value": 2,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": null,
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "488"
+  },
+  {
+    "id": "489",
+    "name": "Saltwater Crocodile",
+    "card_type": "ANIMAL",
+    "base_cost": 23,
+    "min_enclosure_size": 5,
+    "tags": [
+      "REPTILE",
+      "REPTILE",
+      "AUSTRALIA"
+    ],
+    "requirements": [
+      "PARTNER_ZOO"
+    ],
+    "appeal_value": 9,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "2x: Gain any 1 card from the display. You may replenish in between.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "489"
+  },
+  {
+    "id": "490",
+    "name": "Gould",
+    "card_type": "ANIMAL",
+    "base_cost": 15,
+    "min_enclosure_size": 3,
+    "tags": [
+      "REPTILE",
+      "AUSTRALIA"
+    ],
+    "requirements": [],
+    "appeal_value": 6,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Shuffle the discard pile and draw 2 cards. Add 1 to your hand and discard the other.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "490"
+  },
+  {
+    "id": "491",
+    "name": "Frilled Lizard",
+    "card_type": "ANIMAL",
+    "base_cost": 12,
+    "min_enclosure_size": 2,
+    "tags": [
+      "REPTILE",
+      "AUSTRALIA"
+    ],
+    "requirements": [],
+    "appeal_value": 5,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Draw 1 card(s) from the deck.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "491"
+  },
+  {
+    "id": "492",
+    "name": "Inland Taipan",
+    "card_type": "ANIMAL",
+    "base_cost": 10,
+    "min_enclosure_size": 2,
+    "tags": [
+      "REPTILE",
+      "AUSTRALIA"
+    ],
+    "requirements": [
+      "AUSTRALIA",
+      "SCIENCE"
+    ],
+    "appeal_value": 5,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Each player ahead of you on the Appeal track gains 2 Venom token(s).",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "492"
+  },
+  {
+    "id": "493",
+    "name": "Thorny Devil",
+    "card_type": "ANIMAL",
+    "base_cost": 6,
+    "min_enclosure_size": 1,
+    "tags": [
+      "REPTILE",
+      "AUSTRALIA"
+    ],
+    "requirements": [],
+    "appeal_value": 3,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": null,
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "493"
+  },
+  {
+    "id": "494",
+    "name": "African Ostrich",
+    "card_type": "ANIMAL",
+    "base_cost": 20,
+    "min_enclosure_size": 5,
+    "tags": [
+      "BIRD",
+      "AFRICA"
+    ],
+    "requirements": [],
+    "appeal_value": 8,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Draw 2 card(s) from the deck.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "494"
+  },
+  {
+    "id": "495",
+    "name": "Secretary Bird",
+    "card_type": "ANIMAL",
+    "base_cost": 14,
+    "min_enclosure_size": 4,
+    "tags": [
+      "BIRD",
+      "AFRICA"
+    ],
+    "requirements": [],
+    "appeal_value": 4,
+    "conservation_value": 1,
+    "reputation_value": 0,
+    "ability_text": null,
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "495"
+  },
+  {
+    "id": "496",
+    "name": "Marabou",
+    "card_type": "ANIMAL",
+    "base_cost": 10,
+    "min_enclosure_size": 3,
+    "tags": [
+      "BIRD",
+      "AFRICA"
+    ],
+    "requirements": [],
+    "appeal_value": 4,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Shuffle the discard pile and draw 2 cards. Add 1 to your hand and discard the other.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "496"
+  },
+  {
+    "id": "497",
+    "name": "Lesser Flamingo",
+    "card_type": "ANIMAL",
+    "base_cost": 15,
+    "min_enclosure_size": 2,
+    "tags": [
+      "BIRD",
+      "AFRICA"
+    ],
+    "requirements": [],
+    "appeal_value": 6,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Up to 1x: You may place 1 free kiosk or pavilion.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "497"
+  },
+  {
+    "id": "498",
+    "name": "Shoebill",
+    "card_type": "ANIMAL",
+    "base_cost": 9,
+    "min_enclosure_size": 1,
+    "tags": [
+      "BIRD",
+      "AFRICA"
+    ],
+    "requirements": [
+      "SCIENCE",
+      "SCIENCE"
+    ],
+    "appeal_value": 3,
+    "conservation_value": 1,
+    "reputation_value": 0,
+    "ability_text": null,
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "498"
+  },
+  {
+    "id": "499",
+    "name": "Cinereous Vulture",
+    "card_type": "ANIMAL",
+    "base_cost": 16,
+    "min_enclosure_size": 5,
+    "tags": [
+      "BIRD",
+      "ASIA"
+    ],
+    "requirements": [],
+    "appeal_value": 6,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Shuffle the discard pile and draw 3 cards. Add 1 to your hand and discard the other.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "499"
+  },
+  {
+    "id": "500",
+    "name": "Long-Billed Vulture",
+    "card_type": "ANIMAL",
+    "base_cost": 20,
+    "min_enclosure_size": 4,
+    "tags": [
+      "BIRD",
+      "ASIA"
+    ],
+    "requirements": [
+      "SCIENCE"
+    ],
+    "appeal_value": 5,
+    "conservation_value": 1,
+    "reputation_value": 1,
+    "ability_text": "Shuffle the discard pile and draw 3 cards. Add 1 to your hand and discard the other.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "500"
+  },
+  {
+    "id": "501",
+    "name": "Indian Peafowl",
+    "card_type": "ANIMAL",
+    "base_cost": 18,
+    "min_enclosure_size": 3,
+    "tags": [
+      "BIRD",
+      "ASIA"
+    ],
+    "requirements": [
+      "ASIA"
+    ],
+    "appeal_value": 7,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Up to 2x: You may place 1 free kiosk or pavilion.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "501"
+  },
+  {
+    "id": "502",
+    "name": "Great Hornbill",
+    "card_type": "ANIMAL",
+    "base_cost": 13,
+    "min_enclosure_size": 2,
+    "tags": [
+      "BIRD",
+      "ASIA"
+    ],
+    "requirements": [],
+    "appeal_value": 6,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "After finishing this action, you may place your Building Action card {BuildActionCard} on {Slot-1} or {Slot-5} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "502"
+  },
+  {
+    "id": "503",
+    "name": "Snowy Owl",
+    "card_type": "ANIMAL",
+    "base_cost": 11,
+    "min_enclosure_size": 1,
+    "tags": [
+      "BIRD",
+      "ASIA"
+    ],
+    "requirements": [
+      "BIRD",
+      "BIRD"
+    ],
+    "appeal_value": 4,
+    "conservation_value": 0,
+    "reputation_value": 1,
+    "ability_text": "Draw 4 cards from the deck. Add 2 to your hand and discard the rest.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "503"
+  },
+  {
+    "id": "504",
+    "name": "Andean Condor",
+    "card_type": "ANIMAL",
+    "base_cost": 17,
+    "min_enclosure_size": 5,
+    "tags": [
+      "BIRD",
+      "AMERICAS"
+    ],
+    "requirements": [
+      "BIRD"
+    ],
+    "appeal_value": 7,
+    "conservation_value": 0,
+    "reputation_value": 1,
+    "ability_text": "Shuffle the discard pile and draw 4 cards. Add 1 to your hand and discard the other.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "504"
+  },
+  {
+    "id": "505",
+    "name": "Bald Eagle",
+    "card_type": "ANIMAL",
+    "base_cost": 23,
+    "min_enclosure_size": 4,
+    "tags": [
+      "BIRD",
+      "AMERICAS"
+    ],
+    "requirements": [
+      "ANIMALS_II"
+    ],
+    "appeal_value": 8,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "After finishing this action, you take 1 other action {ActionCard} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "505"
+  },
+  {
+    "id": "506",
+    "name": "King Vulture",
+    "card_type": "ANIMAL",
+    "base_cost": 12,
+    "min_enclosure_size": 3,
+    "tags": [
+      "BIRD",
+      "AMERICAS"
+    ],
+    "requirements": [
+      "BIRD",
+      "BIRD",
+      "BIRD"
+    ],
+    "appeal_value": 9,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Shuffle the discard pile and draw 5 cards. Add 1 to your hand and discard the other.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "506"
+  },
+  {
+    "id": "507",
+    "name": "Greater Rhea",
+    "card_type": "ANIMAL",
+    "base_cost": 12,
+    "min_enclosure_size": 2,
+    "tags": [
+      "BIRD",
+      "AMERICAS"
+    ],
+    "requirements": [],
+    "appeal_value": 5,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Draw 1 card(s) from the deck.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "507"
+  },
+  {
+    "id": "508",
+    "name": "Scarlet Macaw",
+    "card_type": "ANIMAL",
+    "base_cost": 16,
+    "min_enclosure_size": 1,
+    "tags": [
+      "BIRD",
+      "AMERICAS"
+    ],
+    "requirements": [
+      "PARTNER_ZOO"
+    ],
+    "appeal_value": 4,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Up to 3x: You may place 1 free kiosk or pavilion.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "508"
+  },
+  {
+    "id": "509",
+    "name": "Golden Eagle",
+    "card_type": "ANIMAL",
+    "base_cost": 20,
+    "min_enclosure_size": 5,
+    "tags": [
+      "BIRD",
+      "EUROPE"
+    ],
+    "requirements": [
+      "ANIMALS_II"
+    ],
+    "appeal_value": 7,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "After finishing this action, you take 1 other action {ActionCard} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "509"
+  },
+  {
+    "id": "510",
+    "name": "White Stork",
+    "card_type": "ANIMAL",
+    "base_cost": 9,
+    "min_enclosure_size": 4,
+    "tags": [
+      "BIRD",
+      "EUROPE"
+    ],
+    "requirements": [
+      "EUROPE"
+    ],
+    "appeal_value": 4,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Place 1 {MultiplierToken} on your Building Action card {BuildActionCard} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "510"
+  },
+  {
+    "id": "511",
+    "name": "Greater Flamingo",
+    "card_type": "ANIMAL",
+    "base_cost": 16,
+    "min_enclosure_size": 3,
+    "tags": [
+      "BIRD",
+      "EUROPE"
+    ],
+    "requirements": [],
+    "appeal_value": 7,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Up to 1x: You may place 1 free kiosk or pavilion.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "511"
+  },
+  {
+    "id": "512",
+    "name": "Eurasian Eagle-Owl",
+    "card_type": "ANIMAL",
+    "base_cost": 10,
+    "min_enclosure_size": 2,
+    "tags": [
+      "BIRD",
+      "EUROPE"
+    ],
+    "requirements": [
+      "PARTNER_ZOO"
+    ],
+    "appeal_value": 4,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Draw 4 cards from the deck. Add 2 to your hand and discard the rest.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "512"
+  },
+  {
+    "id": "513",
+    "name": "Barn Owl",
+    "card_type": "ANIMAL",
+    "base_cost": 12,
+    "min_enclosure_size": 1,
+    "tags": [
+      "BIRD",
+      "EUROPE"
+    ],
+    "requirements": [],
+    "appeal_value": 3,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Draw 4 cards from the deck. Add 2 to your hand and discard the rest.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "513"
+  },
+  {
+    "id": "514",
+    "name": "Emu",
+    "card_type": "ANIMAL",
+    "base_cost": 22,
+    "min_enclosure_size": 5,
+    "tags": [
+      "BIRD",
+      "AUSTRALIA"
+    ],
+    "requirements": [
+      "AUSTRALIA",
+      "AUSTRALIA"
+    ],
+    "appeal_value": 7,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "You may place a Large Bird Aviary {LargeBirdAviary} for free, if possible.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "514"
+  },
+  {
+    "id": "515",
+    "name": "Australian Pelican",
+    "card_type": "ANIMAL",
+    "base_cost": 13,
+    "min_enclosure_size": 4,
+    "tags": [
+      "BIRD",
+      "AUSTRALIA"
+    ],
+    "requirements": [],
+    "appeal_value": 5,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "After finishing this action, you may take the Building action {BuildActionCard} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "515"
+  },
+  {
+    "id": "516",
+    "name": "Northern Cassowary",
+    "card_type": "ANIMAL",
+    "base_cost": 12,
+    "min_enclosure_size": 3,
+    "tags": [
+      "BIRD",
+      "AUSTRALIA"
+    ],
+    "requirements": [
+      "PARTNER_ZOO"
+    ],
+    "appeal_value": 6,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Place 1 {MultiplierToken} on your Building Action card {BuildActionCard} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "516"
+  },
+  {
+    "id": "517",
+    "name": "Laughing Kookaburra",
+    "card_type": "ANIMAL",
+    "base_cost": 9,
+    "min_enclosure_size": 2,
+    "tags": [
+      "BIRD",
+      "AUSTRALIA"
+    ],
+    "requirements": [
+      "AUSTRALIA"
+    ],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain {Appeal-1} for each ContinentTag.Australia icon in all zoos (max. 8).",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "517"
+  },
+  {
+    "id": "518",
+    "name": "Lesser Bird-Of-Paradise",
+    "card_type": "ANIMAL",
+    "base_cost": 15,
+    "min_enclosure_size": 1,
+    "tags": [
+      "BIRD",
+      "AUSTRALIA"
+    ],
+    "requirements": [],
+    "appeal_value": 5,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Up to 1x: You may place 1 free kiosk or pavilion.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "518"
+  },
+  {
+    "id": "519",
+    "name": "(Domestic) Goat",
+    "card_type": "ANIMAL",
+    "base_cost": 7,
+    "min_enclosure_size": 1,
+    "tags": [
+      "PET"
+    ],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain {Appeal-3} for each Petting Zoo Animal icon in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "519"
+  },
+  {
+    "id": "520",
+    "name": "Sheep",
+    "card_type": "ANIMAL",
+    "base_cost": 7,
+    "min_enclosure_size": 1,
+    "tags": [
+      "PET"
+    ],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain {Appeal-3} for each Petting Zoo Animal icon in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "520"
+  },
+  {
+    "id": "521",
+    "name": "Horse",
+    "card_type": "ANIMAL",
+    "base_cost": 7,
+    "min_enclosure_size": 1,
+    "tags": [
+      "PET"
+    ],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 1,
+    "ability_text": "Gain {Appeal-3} for each Petting Zoo Animal icon in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "521"
+  },
+  {
+    "id": "522",
+    "name": "Donkey",
+    "card_type": "ANIMAL",
+    "base_cost": 7,
+    "min_enclosure_size": 1,
+    "tags": [
+      "PET"
+    ],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain {} {XToken} -token. / Gain {Appeal-3} for each Petting Zoo Animal icon in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "522"
+  },
+  {
+    "id": "523",
+    "name": "Domestic Rabbit",
+    "card_type": "ANIMAL",
+    "base_cost": 7,
+    "min_enclosure_size": 1,
+    "tags": [
+      "PET"
+    ],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain {Appeal-3} for each Petting Zoo Animal icon in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "523"
+  },
+  {
+    "id": "524",
+    "name": "Mangalica",
+    "card_type": "ANIMAL",
+    "base_cost": 7,
+    "min_enclosure_size": 1,
+    "tags": [
+      "PET"
+    ],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Choose up to 1x: Discard 1 card from the display and replenish OR discard 1 card from your hand and draw 1 other from the deck. / Gain {Appeal-3} for each Petting Zoo Animal icon in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "524"
+  },
+  {
+    "id": "525",
+    "name": "Guinea Pig",
+    "card_type": "ANIMAL",
+    "base_cost": 7,
+    "min_enclosure_size": 1,
+    "tags": [
+      "PET"
+    ],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain {Appeal-3} for each Petting Zoo Animal icon in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "525"
+  },
+  {
+    "id": "526",
+    "name": "Alpaca",
+    "card_type": "ANIMAL",
+    "base_cost": 7,
+    "min_enclosure_size": 1,
+    "tags": [
+      "PET"
+    ],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain {Appeal-3} for each Petting Zoo Animal icon in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "526"
+  },
+  {
+    "id": "527",
+    "name": "Coconut Lorikeet",
+    "card_type": "ANIMAL",
+    "base_cost": 7,
+    "min_enclosure_size": 1,
+    "tags": [
+      "PET"
+    ],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain {Appeal-3} for each Petting Zoo Animal icon in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "527"
+  },
+  {
+    "id": "528",
+    "name": "Bennett",
+    "card_type": "ANIMAL",
+    "base_cost": 7,
+    "min_enclosure_size": 1,
+    "tags": [
+      "PET"
+    ],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "You may place 1 card(s) from your hand under this card to gain {Appeal-2} . / Gain {Appeal-3} for each Petting Zoo Animal icon in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "528"
+  },
+  {
+    "id": "201",
+    "name": "Science Lab",
+    "card_type": "SPONSOR",
+    "base_cost": 5,
+    "min_enclosure_size": null,
+    "tags": [
+      "SCIENCE"
+    ],
+    "requirements": [
+      "SPONSORS_II"
+    ],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Take 1 card from the deck or in reputation range. / Gain {ConservationPoint-1} / {ConservationPoint-2} for 3 / 6 research icons.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "201"
+  },
+  {
+    "id": "202",
+    "name": "Spokesperson",
+    "card_type": "SPONSOR",
+    "base_cost": 5,
+    "min_enclosure_size": null,
+    "tags": [
+      "SCIENCE"
+    ],
+    "requirements": [
+      "SCIENCE"
+    ],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Each time you play a research icon into your zoo, gain {Reputation-1} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "202"
+  },
+  {
+    "id": "203",
+    "name": "Veterinarian",
+    "card_type": "SPONSOR",
+    "base_cost": 4,
+    "min_enclosure_size": null,
+    "tags": [
+      "SCIENCE"
+    ],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Supporting a conservation project requires only {Slot-4} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "203"
+  },
+  {
+    "id": "204",
+    "name": "Science Museum",
+    "card_type": "SPONSOR",
+    "base_cost": 4,
+    "min_enclosure_size": null,
+    "tags": [
+      "SCIENCE"
+    ],
+    "requirements": [
+      "SCIENCE",
+      "SCIENCE",
+      "SCIENCE",
+      "SCIENCE"
+    ],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Each time you play a research icon into your zoo, gain {ConservationPoint-1} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "204"
+  },
+  {
+    "id": "205",
+    "name": "Gorilla Field Research",
+    "card_type": "SPONSOR",
+    "base_cost": 3,
+    "min_enclosure_size": null,
+    "tags": [
+      "SCIENCE"
+    ],
+    "requirements": [
+      "SCIENCE",
+      "SCIENCE",
+      "SCIENCE"
+    ],
+    "appeal_value": 0,
+    "conservation_value": 1,
+    "reputation_value": 2,
+    "ability_text": null,
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "205"
+  },
+  {
+    "id": "206",
+    "name": "Medical Breakthrough",
+    "card_type": "SPONSOR",
+    "base_cost": 5,
+    "min_enclosure_size": null,
+    "tags": [
+      "SCIENCE"
+    ],
+    "requirements": [
+      "SCIENCE",
+      "SCIENCE",
+      "SCIENCE",
+      "SCIENCE"
+    ],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Income: Gain {ConservationPoint-1} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "206"
+  },
+  {
+    "id": "207",
+    "name": "Basic Research",
+    "card_type": "SPONSOR",
+    "base_cost": 4,
+    "min_enclosure_size": null,
+    "tags": [
+      "SCIENCE"
+    ],
+    "requirements": [
+      "SPONSORS_II",
+      "APPEAL"
+    ],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain {ConservationPoint-1} each for 2 different continent and/or animal category icons. For each {ConservationPoint-1} that you gain this way, all other players gain {Money-2} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "207"
+  },
+  {
+    "id": "208",
+    "name": "Science Library",
+    "card_type": "SPONSOR",
+    "base_cost": 4,
+    "min_enclosure_size": null,
+    "tags": [
+      "SCIENCE"
+    ],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Each time a research icon is played into any zoo, gain {Money-2} . / Gain {ConservationPoint-1} for 5 different animal category icons.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "208"
+  },
+  {
+    "id": "209",
+    "name": "Technology Institute",
+    "card_type": "SPONSOR",
+    "base_cost": 5,
+    "min_enclosure_size": null,
+    "tags": [
+      "SCIENCE"
+    ],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Income: Gain 1 {XToken} -token.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "209"
+  },
+  {
+    "id": "210",
+    "name": "Expert On The Americas",
+    "card_type": "SPONSOR",
+    "base_cost": 4,
+    "min_enclosure_size": null,
+    "tags": [
+      "AMERICAS"
+    ],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Each time you play an Americas icon into your zoo, you may build 1 kiosk for free.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "210"
+  },
+  {
+    "id": "211",
+    "name": "Expert On Europe",
+    "card_type": "SPONSOR",
+    "base_cost": 5,
+    "min_enclosure_size": null,
+    "tags": [
+      "EUROPE"
+    ],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Each time you play a Europe icon into your zoo, you may build a 1-space enclosure for free.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "211"
+  },
+  {
+    "id": "212",
+    "name": "Expert On Australia",
+    "card_type": "SPONSOR",
+    "base_cost": 5,
+    "min_enclosure_size": null,
+    "tags": [
+      "AUSTRALIA"
+    ],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Each time you play an Australia icon into your zoo, you may place 1 card from your hand under this card to gain {Appeal-2} (pouch 1).",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "212"
+  },
+  {
+    "id": "213",
+    "name": "Expert On Asia",
+    "card_type": "SPONSOR",
+    "base_cost": 5,
+    "min_enclosure_size": null,
+    "tags": [
+      "ASIA"
+    ],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Each time you play an Asia icon into your zoo, you may build 1 pavilion for free.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "213"
+  },
+  {
+    "id": "214",
+    "name": "Expert On Africa",
+    "card_type": "SPONSOR",
+    "base_cost": 4,
+    "min_enclosure_size": null,
+    "tags": [
+      "AFRICA"
+    ],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Each time you play an Africa icon into your zoo, you may place any action card on {Slot-1} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "214"
+  },
+  {
+    "id": "215",
+    "name": "Breeding Cooperation",
+    "card_type": "SPONSOR",
+    "base_cost": 4,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [
+      "PARTNER_ZOO",
+      "PARTNER_ZOO"
+    ],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "When playing this card, place 2 player tokens on it. When supporting a **base** conservation project, you may discard exactly 1 token as any icon. / Gain {ConservationPoint-1} for 5 <br> supports of <br> conservation projects.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "215"
+  },
+  {
+    "id": "216",
+    "name": "Talented Communicator",
+    "card_type": "SPONSOR",
+    "base_cost": 5,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [
+      "SPONSORS_II"
+    ],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Hire 1 association worker. <br> (Full-throated).",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "216"
+  },
+  {
+    "id": "217",
+    "name": "Engineer",
+    "card_type": "SPONSOR",
+    "base_cost": 4,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Each time you build at least 1 building with a Build action {BuildActionCard} . you may build exactly 1 more of the same kind (except for special enclosures) <br> at the normal cost.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "217"
+  },
+  {
+    "id": "218",
+    "name": "Breeding Program",
+    "card_type": "SPONSOR",
+    "base_cost": 4,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [
+      "SCIENCE",
+      "SCIENCE"
+    ],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "When playing this card, place 2 player tokens on it. When supporting a **base** conservation project, you may discard exactly 1 token as any icon. / Gain {ConservationPoint-1} for 5 <br> supports of <br> conservation projects.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "218"
+  },
+  {
+    "id": "219",
+    "name": "Diversity Researcher",
+    "card_type": "SPONSOR",
+    "base_cost": 5,
+    "min_enclosure_size": null,
+    "tags": [
+      "SCIENCE"
+    ],
+    "requirements": [
+      "SPONSORS_II"
+    ],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "You may build over water and rock spaces. Ignore all requirements for water and rock spaces. / Gain {Money-2} for each water and rock requirement.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "219"
+  },
+  {
+    "id": "220",
+    "name": "Federal Grants",
+    "card_type": "SPONSOR",
+    "base_cost": 4,
+    "min_enclosure_size": null,
+    "tags": [
+      "SCIENCE"
+    ],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "**Income:** Gain {Money-3} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "220"
+  },
+  {
+    "id": "221",
+    "name": "Archeologist",
+    "card_type": "SPONSOR",
+    "base_cost": 4,
+    "min_enclosure_size": null,
+    "tags": [
+      "SCIENCE"
+    ],
+    "requirements": [
+      "SCIENCE"
+    ],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Each time you gain the placement bonus of a border space in your zoo, you additionally gain another free placement bonus.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "221"
+  },
+  {
+    "id": "222",
+    "name": "Release Of Patents",
+    "card_type": "SPONSOR",
+    "base_cost": 5,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [
+      "APPEAL"
+    ],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain {ConservationPoint-1} each for each research icon. For each {ConservationPoint-1} that you gain this way, all other players gain {Money-2} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "222"
+  },
+  {
+    "id": "223",
+    "name": "Science Institute",
+    "card_type": "SPONSOR",
+    "base_cost": 3,
+    "min_enclosure_size": null,
+    "tags": [
+      "SCIENCE",
+      "SCIENCE"
+    ],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": null,
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "223"
+  },
+  {
+    "id": "224",
+    "name": "Migration Recording",
+    "card_type": "SPONSOR",
+    "base_cost": 4,
+    "min_enclosure_size": null,
+    "tags": [
+      "SCIENCE"
+    ],
+    "requirements": [
+      "SCIENCE"
+    ],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Each time you support a Release into the Wild conservation project, additionally gain {ConservationPoint-1} . You may support every Release into the Wild conservation project more than once.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "224"
+  },
+  {
+    "id": "225",
+    "name": "Quarantine Lab",
+    "card_type": "SPONSOR",
+    "base_cost": 3,
+    "min_enclosure_size": null,
+    "tags": [
+      "SCIENCE"
+    ],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "The effects of Venom, Constriction, Hypnosis, and Pilfering do not affect you. / Gain {ConservationPoint-1} for 5 different continent icons.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "225"
+  },
+  {
+    "id": "226",
+    "name": "Foreign Institute",
+    "card_type": "SPONSOR",
+    "base_cost": 6,
+    "min_enclosure_size": null,
+    "tags": [
+      "SCIENCE"
+    ],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 2,
+    "ability_text": "Gain {ConservationPoint-1} for 5 different continent icons.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "226"
+  },
+  {
+    "id": "227",
+    "name": "Waza Special Assignment",
+    "card_type": "SPONSOR",
+    "base_cost": 6,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [
+      "REPUTATION"
+    ],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Choose and mark on this card. Successively reveal cards from the deck and take the first card of the chosen kind. / You must not play the other kind any more. Each time you play a small or large animal, you gain {Appeal-2} or {Appeal-4} respectively.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "227"
+  },
+  {
+    "id": "228",
+    "name": "Waza Small Animal Program",
+    "card_type": "SPONSOR",
+    "base_cost": 5,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [
+      "REPUTATION"
+    ],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Each time you play only small animals in the Animals action {AnimalActionCard} , you may play 1 further small animal at the normal cost. After that, take 1 small animal from the <br> display (if available).",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "228"
+  },
+  {
+    "id": "229",
+    "name": "Expert In Small Animals",
+    "card_type": "SPONSOR",
+    "base_cost": 5,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Your cost to play a small animal is reduced by {Money-3} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "229"
+  },
+  {
+    "id": "230",
+    "name": "Expert In Large Animals",
+    "card_type": "SPONSOR",
+    "base_cost": 4,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Your cost to play a large animal is reduced by {Money-4} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "230"
+  },
+  {
+    "id": "231",
+    "name": "Sponsorship: Primates",
+    "card_type": "SPONSOR",
+    "base_cost": 3,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [
+      "PRIMATE"
+    ],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "**Income:** <br> Gain {Money-3} / {Money-6} / {Money-9} for 1/3/5 primate icons in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "231"
+  },
+  {
+    "id": "232",
+    "name": "Sponsorship: Reptiles",
+    "card_type": "SPONSOR",
+    "base_cost": 3,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [
+      "REPTILE"
+    ],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "**Income:** <br> Gain {Money-3} / {Money-6} / {Money-9} for 1/3/5 reptile icons in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "232"
+  },
+  {
+    "id": "233",
+    "name": "Sponsorship: Vultures",
+    "card_type": "SPONSOR",
+    "base_cost": 3,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [
+      "BIRD"
+    ],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "**Income:** <br> Gain {Money-3} / {Money-6} / {Money-9} for 1/3/5 bird icons in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "233"
+  },
+  {
+    "id": "234",
+    "name": "Sponsorship: Lions",
+    "card_type": "SPONSOR",
+    "base_cost": 3,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [
+      "PREDATOR"
+    ],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "**Income:** <br> Gain {Money-3} / {Money-6} / {Money-9} for 1/3/5 predator icons in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "234"
+  },
+  {
+    "id": "235",
+    "name": "Sponsorship: Elephants",
+    "card_type": "SPONSOR",
+    "base_cost": 3,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [
+      "HERBIVORE"
+    ],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "**Income:** <br> Gain {Money-3} / {Money-6} / {Money-9} for 1/3/5 herbivore icons in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "235"
+  },
+  {
+    "id": "236",
+    "name": "Primatologist",
+    "card_type": "SPONSOR",
+    "base_cost": 4,
+    "min_enclosure_size": null,
+    "tags": [
+      "PRIMATE"
+    ],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Each time a primate icon is played into **any** zoo, gain {Money-3} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "236"
+  },
+  {
+    "id": "237",
+    "name": "Herpetologist",
+    "card_type": "SPONSOR",
+    "base_cost": 4,
+    "min_enclosure_size": null,
+    "tags": [
+      "REPTILE"
+    ],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Each time a reptile icon is played into **any** zoo, gain {Money-3} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "237"
+  },
+  {
+    "id": "238",
+    "name": "Ornithologist",
+    "card_type": "SPONSOR",
+    "base_cost": 4,
+    "min_enclosure_size": null,
+    "tags": [
+      "BIRD"
+    ],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Each time a bird icon is played into **any** zoo, gain {Money-3} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "238"
+  },
+  {
+    "id": "239",
+    "name": "Expert In Predators",
+    "card_type": "SPONSOR",
+    "base_cost": 4,
+    "min_enclosure_size": null,
+    "tags": [
+      "PREDATOR"
+    ],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Each time a predator icon is played into **any** zoo, gain {Money-3} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "239"
+  },
+  {
+    "id": "240",
+    "name": "Expert In Herbivores",
+    "card_type": "SPONSOR",
+    "base_cost": 4,
+    "min_enclosure_size": null,
+    "tags": [
+      "HERBIVORE"
+    ],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Each time a herbivore icon is played into **any** zoo, gain {Money-3} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "240"
+  },
+  {
+    "id": "241",
+    "name": "Hydrologist",
+    "card_type": "SPONSOR",
+    "base_cost": 5,
+    "min_enclosure_size": null,
+    "tags": [
+      "WATER"
+    ],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "For each space you cover that is next to a water space, gain {Money-1} . / Gain {ConservationPoint-1} , if all water spaces are connected.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "241"
+  },
+  {
+    "id": "242",
+    "name": "Geologist",
+    "card_type": "SPONSOR",
+    "base_cost": 5,
+    "min_enclosure_size": null,
+    "tags": [
+      "ROCK"
+    ],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "For each space you cover that is next to a rock space, gain {Money-1} . / Gain {ConservationPoint-1} , if all rock spaces are connected.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "242"
+  },
+  {
+    "id": "243",
+    "name": "Meerkat Den",
+    "card_type": "SPONSOR",
+    "base_cost": 5,
+    "min_enclosure_size": null,
+    "tags": [
+      "HERBIVORE"
+    ],
+    "requirements": [
+      "REPUTATION"
+    ],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Each time you play a herbivore icon into your zoo, gain {Appeal-2} . / Place next to at least 1 rock space.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "243"
+  },
+  {
+    "id": "244",
+    "name": "Penguin Pool",
+    "card_type": "SPONSOR",
+    "base_cost": 5,
+    "min_enclosure_size": null,
+    "tags": [
+      "BIRD"
+    ],
+    "requirements": [
+      "REPUTATION"
+    ],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Each time you play a bird icon into your zoo, gain {Appeal-2} . / Place next to at least 1 water space.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "244"
+  },
+  {
+    "id": "245",
+    "name": "Aquarium",
+    "card_type": "SPONSOR",
+    "base_cost": 5,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [
+      "REPUTATION"
+    ],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Each time you play a water icon into your zoo, gain {Appeal-2} . / Place next to at least 2 water spaces.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "245"
+  },
+  {
+    "id": "246",
+    "name": "Cable Car",
+    "card_type": "SPONSOR",
+    "base_cost": 6,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Each time you play a rock icon into your zoo, gain {Appeal-2} . / Place next to at least 2 rock spaces.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "246"
+  },
+  {
+    "id": "247",
+    "name": "Baboon Rock",
+    "card_type": "SPONSOR",
+    "base_cost": 6,
+    "min_enclosure_size": null,
+    "tags": [
+      "PRIMATE"
+    ],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Each time you play a primate icon into your zoo, gain {Appeal-2} . / Place next to at least 1 rock space.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "247"
+  },
+  {
+    "id": "248",
+    "name": "Rhesus Monkey Park",
+    "card_type": "SPONSOR",
+    "base_cost": 5,
+    "min_enclosure_size": null,
+    "tags": [
+      "PRIMATE"
+    ],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Each time you play a primate icon into your zoo, gain 1 {XToken} -token.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "248"
+  },
+  {
+    "id": "249",
+    "name": "Barred Owl Hut",
+    "card_type": "SPONSOR",
+    "base_cost": 6,
+    "min_enclosure_size": null,
+    "tags": [
+      "BIRD"
+    ],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Each time you play a bird icon into your zoo, draw 2 cards from the deck. Keep 1 and discard the other (Perception 2).",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "249"
+  },
+  {
+    "id": "250",
+    "name": "Sea Turtle Tank",
+    "card_type": "SPONSOR",
+    "base_cost": 5,
+    "min_enclosure_size": null,
+    "tags": [
+      "REPTILE"
+    ],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Each time you play a reptile icon into your zoo, you may sell up to 2 cards from your hand for each (Sunbathing 2).",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "250"
+  },
+  {
+    "id": "251",
+    "name": "Polar Bear Exhibit",
+    "card_type": "SPONSOR",
+    "base_cost": 5,
+    "min_enclosure_size": null,
+    "tags": [
+      "BEAR",
+      "PREDATOR"
+    ],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Each time a bear icon is played into any zoo, gain {Appeal-2} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "251"
+  },
+  {
+    "id": "252",
+    "name": "Spotted Hyena Compound",
+    "card_type": "SPONSOR",
+    "base_cost": 5,
+    "min_enclosure_size": null,
+    "tags": [
+      "PREDATOR"
+    ],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Each time you play a predator icon into your zoo, reveal the topmost X cards of the deck. Add 1 animal card to your hand. Discard the other cards. (X = number of your predator icons) .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "252"
+  },
+  {
+    "id": "253",
+    "name": "Okapi Stable",
+    "card_type": "SPONSOR",
+    "base_cost": 6,
+    "min_enclosure_size": null,
+    "tags": [
+      "HERBIVORE"
+    ],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Place 3 player tokens on this card. Each time you play a Herbivore icon into your zoo, you may remove 1 token and play a sponsors card for {Money-X} ( {Money-X} = {Slot-X} ).",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "253"
+  },
+  {
+    "id": "254",
+    "name": "Zoo School",
+    "card_type": "SPONSOR",
+    "base_cost": 5,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 1,
+    "reputation_value": 1,
+    "ability_text": "Place on at least 2 border spaces. Take 1 card from the deck or in reputation range.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "254"
+  },
+  {
+    "id": "255",
+    "name": "Adventure Playground",
+    "card_type": "SPONSOR",
+    "base_cost": 3,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 4,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Place next to at least 1 rock space.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "255"
+  },
+  {
+    "id": "256",
+    "name": "Water Playground",
+    "card_type": "SPONSOR",
+    "base_cost": 3,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Place next to at least 1 water space.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "256"
+  },
+  {
+    "id": "257",
+    "name": "Side Entrance",
+    "card_type": "SPONSOR",
+    "base_cost": 3,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Place on 2 border spaces. Need not be adjacent to other buildings. / **Income:** Gain {Money-2} for each building, except empty standard enclosures, next to the side entrance. / Gain {Appeal-5} if zoo is completely covered.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "257"
+  },
+  {
+    "id": "258",
+    "name": "Native Seabirds",
+    "card_type": "SPONSOR",
+    "base_cost": 5,
+    "min_enclosure_size": null,
+    "tags": [
+      "BIRD"
+    ],
+    "requirements": [
+      "APPEAL"
+    ],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain {Appeal-1} for each connected water space. / Gain {ConservationPoint-1} for each 2 unconnected water spaces.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "258"
+  },
+  {
+    "id": "259",
+    "name": "Native Lizards",
+    "card_type": "SPONSOR",
+    "base_cost": 5,
+    "min_enclosure_size": null,
+    "tags": [
+      "REPTILE"
+    ],
+    "requirements": [
+      "APPEAL"
+    ],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain {Appeal-1} for each connected rock space. / Gain {ConservationPoint-1} for each 2 unconnected rock spaces.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "259"
+  },
+  {
+    "id": "260",
+    "name": "Native Farm Animals",
+    "card_type": "SPONSOR",
+    "base_cost": 5,
+    "min_enclosure_size": null,
+    "tags": [
+      "HERBIVORE"
+    ],
+    "requirements": [
+      "APPEAL"
+    ],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain {Appeal-1} for each connected border space without buildings. / Gain {ConservationPoint-1} for each group of 6 spaces without buildings.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "260"
+  },
+  {
+    "id": "261",
+    "name": "Guided School Tours",
+    "card_type": "SPONSOR",
+    "base_cost": 3,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain {ConservationPoint-1} for 5 different animal category icons.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "261"
+  },
+  {
+    "id": "262",
+    "name": "Explorer",
+    "card_type": "SPONSOR",
+    "base_cost": 5,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [
+      "SPONSORS_II"
+    ],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Each time you gain a continent or animal category icon that is not yet in your zoo, gain {Appeal-1} and {Money-2} . / {Money-2} for each different continent or animal category icon in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "262"
+  },
+  {
+    "id": "263",
+    "name": "Waza Large Animal Program",
+    "card_type": "SPONSOR",
+    "base_cost": 5,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [
+      "SPONSORS_II",
+      "REPUTATION"
+    ],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "If you play a large animal, you may ignore 1 condition of your choice. / You may place 1 5-space enclosure for free.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "263"
+  },
+  {
+    "id": "264",
+    "name": "Free-Range New World Monkeys",
+    "card_type": "SPONSOR",
+    "base_cost": 5,
+    "min_enclosure_size": null,
+    "tags": [
+      "PRIMATE"
+    ],
+    "requirements": [
+      "APPEAL"
+    ],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain {Appeal-1} for each connected space with a placement bonus. / Gain {ConservationPoint-1} for each 2 unconnected spaces with a placement bonus.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "264"
+  },
+  {
+    "id": "281",
+    "name": "Arcade",
+    "card_type": "SPONSOR",
+    "base_cost": 3,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 2,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "**Income:** Gain {Money-1} per {Appeal-10} . / Gain 2 {Appeal-2} for each zoo with less appeal (score first).",
+    "effect_code": null,
+    "image_url": null,
+    "source": "PROMO",
+    "card_number": "281"
+  },
+  {
+    "id": "282",
+    "name": "Promotion Team",
+    "card_type": "SPONSOR",
+    "base_cost": 5,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Find a **person** Sponsor card. / Each time a **person** Sponsor card is played into **any** **zoo** , gain {Money-2} and {Appeal-1} .",
+    "effect_code": null,
+    "image_url": null,
+    "source": "PROMO",
+    "card_number": "282"
+  },
+  {
+    "id": "101",
+    "name": "Species Diversity",
+    "card_type": "CONSERVATION",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Requires different **animal** **category** icons in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "101"
+  },
+  {
+    "id": "102",
+    "name": "Habitat Diversity",
+    "card_type": "CONSERVATION",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Requires different **continent** icons in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "102"
+  },
+  {
+    "id": "103",
+    "name": "Africa",
+    "card_type": "CONSERVATION",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Requires **Africa** icons <br> in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "103"
+  },
+  {
+    "id": "104",
+    "name": "Americas",
+    "card_type": "CONSERVATION",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Requires **Americas** icons <br> in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "104"
+  },
+  {
+    "id": "105",
+    "name": "Australia",
+    "card_type": "CONSERVATION",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Requires **Australia** icons <br> in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "105"
+  },
+  {
+    "id": "106",
+    "name": "Asia",
+    "card_type": "CONSERVATION",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Requires **Asia** icons in <br> your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "106"
+  },
+  {
+    "id": "107",
+    "name": "Europe",
+    "card_type": "CONSERVATION",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Requires **Europe** icons <br> in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "107"
+  },
+  {
+    "id": "108",
+    "name": "Primates",
+    "card_type": "CONSERVATION",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Requires **primate** icons <br> in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "108"
+  },
+  {
+    "id": "109",
+    "name": "Reptiles",
+    "card_type": "CONSERVATION",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Requires **reptile** icons <br> in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "109"
+  },
+  {
+    "id": "110",
+    "name": "Predators",
+    "card_type": "CONSERVATION",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Requires **predator** icons <br> in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "110"
+  },
+  {
+    "id": "111",
+    "name": "Herbivores",
+    "card_type": "CONSERVATION",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Requires **herbivore** icons <br> in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "111"
+  },
+  {
+    "id": "112",
+    "name": "Birds",
+    "card_type": "CONSERVATION",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Requires **bird** icons <br> in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "112"
+  },
+  {
+    "id": "113",
+    "name": "Bavarian Forest National Park",
+    "card_type": "CONSERVATION",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "**Release** 1 animal with <br> **Europe** icon into the wild.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "113"
+  },
+  {
+    "id": "114",
+    "name": "Yosemite National Park",
+    "card_type": "CONSERVATION",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "**Release** 1 animal with <br> **Americas** icon into the wild.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "114"
+  },
+  {
+    "id": "115",
+    "name": "Angthong National Park",
+    "card_type": "CONSERVATION",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "**Release** 1 animal with <br> **Asia** icon into the wild.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "115"
+  },
+  {
+    "id": "116",
+    "name": "Serengeti National Park",
+    "card_type": "CONSERVATION",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "**Release** 1 animal with <br> **Africa** icon into the wild.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "116"
+  },
+  {
+    "id": "117",
+    "name": "Blue Mountains National Park",
+    "card_type": "CONSERVATION",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "**Release** 1 animal with <br> **Australia** icon into the wild.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "117"
+  },
+  {
+    "id": "118",
+    "name": "Savanna",
+    "card_type": "CONSERVATION",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "**Release** **1** **predator** <br> into the wild.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "118"
+  },
+  {
+    "id": "119",
+    "name": "Low Mountain Range",
+    "card_type": "CONSERVATION",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "**Release** **1** **bird** <br> into the wild.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "119"
+  },
+  {
+    "id": "120",
+    "name": "Bamboo Forest",
+    "card_type": "CONSERVATION",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "**Release** **1** **herbivore** <br> into the wild.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "120"
+  },
+  {
+    "id": "121",
+    "name": "Sea Cave",
+    "card_type": "CONSERVATION",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "**Release** **1** **reptile** <br> into the wild.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "121"
+  },
+  {
+    "id": "122",
+    "name": "Jungle",
+    "card_type": "CONSERVATION",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "**Release** **1** **primate** <br> into the wild.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "122"
+  },
+  {
+    "id": "123",
+    "name": "Bird Breeding Program",
+    "card_type": "CONSERVATION",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Requires 1 **bird** and a **partner** <br> **zoo** of the same continent.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "123"
+  },
+  {
+    "id": "124",
+    "name": "Predator Breeding Program",
+    "card_type": "CONSERVATION",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Requires 1 **predator** and a **partner** <br> **zoo** of the same continent.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "124"
+  },
+  {
+    "id": "125",
+    "name": "Reptile Breeding Program",
+    "card_type": "CONSERVATION",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Requires 1 **reptile** and a **partner** <br> **zoo** of the same continent.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "125"
+  },
+  {
+    "id": "126",
+    "name": "Herbivore Breeding Program",
+    "card_type": "CONSERVATION",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Requires 1 **herbivore** and a **partner** <br> **zoo** of the same continent.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "126"
+  },
+  {
+    "id": "127",
+    "name": "Primate Breeding Program",
+    "card_type": "CONSERVATION",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Requires 1 **primate** and a **partner** <br> **zoo** of the same continent.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "127"
+  },
+  {
+    "id": "128",
+    "name": "Aquatic",
+    "card_type": "CONSERVATION",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Requires **water** icons <br> in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "128"
+  },
+  {
+    "id": "129",
+    "name": "Geological",
+    "card_type": "CONSERVATION",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Requires **rock** icons <br> in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "129"
+  },
+  {
+    "id": "130",
+    "name": "Small Animals",
+    "card_type": "CONSERVATION",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Requires **small** **animals** <br> in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "130"
+  },
+  {
+    "id": "131",
+    "name": "Large Animals",
+    "card_type": "CONSERVATION",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Requires **large** **animals** <br> in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "131"
+  },
+  {
+    "id": "132",
+    "name": "Research",
+    "card_type": "CONSERVATION",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Requires **research** icons in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "132"
+  },
+  {
+    "id": "001",
+    "name": "Large Animal Zoo",
+    "card_type": "FINAL_SCORING",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain {ConservationPoint} for **large** **animals** in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "001"
+  },
+  {
+    "id": "002",
+    "name": "Small Animal Zoo",
+    "card_type": "FINAL_SCORING",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain {ConservationPoint} for **small** **animals** in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "002"
+  },
+  {
+    "id": "003",
+    "name": "Research Zoo",
+    "card_type": "FINAL_SCORING",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain {ConservationPoint} for **research** **icons** in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "003"
+  },
+  {
+    "id": "004",
+    "name": "Architectural Zoo",
+    "card_type": "FINAL_SCORING",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain {ConservationPoint} for **building** of your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "004"
+  },
+  {
+    "id": "005",
+    "name": "Conservation Zoo",
+    "card_type": "FINAL_SCORING",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain {ConservationPoint} for **supporting** **conservation** **projects**",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "005"
+  },
+  {
+    "id": "006",
+    "name": "Naturalists Zoo",
+    "card_type": "FINAL_SCORING",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain {ConservationPoint} for **empty** **building** **spaces** in your zo0.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "006"
+  },
+  {
+    "id": "007",
+    "name": "Favorite Zoo",
+    "card_type": "FINAL_SCORING",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain {ConservationPoint} for the **reputation** of your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "007"
+  },
+  {
+    "id": "008",
+    "name": "Sponsored Zoo",
+    "card_type": "FINAL_SCORING",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain {ConservationPoint} for **sponsors** **cards** in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "008"
+  },
+  {
+    "id": "009",
+    "name": "Diverse Species Zoo",
+    "card_type": "FINAL_SCORING",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": null,
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "009"
+  },
+  {
+    "id": "010",
+    "name": "Climbing Park",
+    "card_type": "FINAL_SCORING",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain {ConservationPoint} for **rock** **icons** in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "010"
+  },
+  {
+    "id": "011",
+    "name": "Aquatic Park",
+    "card_type": "FINAL_SCORING",
+    "base_cost": 0,
+    "min_enclosure_size": null,
+    "tags": [],
+    "requirements": [],
+    "appeal_value": 0,
+    "conservation_value": 0,
+    "reputation_value": 0,
+    "ability_text": "Gain {ConservationPoint} for **water** **icons** in your zoo.",
+    "effect_code": null,
+    "image_url": null,
+    "source": "BASE",
+    "card_number": "011"
+  }
+]

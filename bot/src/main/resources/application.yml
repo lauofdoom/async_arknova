@@ -1,0 +1,78 @@
+spring:
+  application:
+    name: arknova-bot
+
+  datasource:
+    url: jdbc:${DATABASE_URL}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-timeout: 30000
+
+  jpa:
+    hibernate:
+      ddl-auto: validate          # Flyway owns the schema; Hibernate just validates
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          time_zone: UTC
+    open-in-view: false           # Avoid lazy-loading footguns
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: false
+
+  data:
+    redis:
+      url: ${REDIS_URL:redis://localhost:6379}
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    default-property-inclusion: non_null
+    time-zone: UTC
+
+server:
+  port: ${SERVER_PORT:8080}
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+
+# ── App-specific config ────────────────────────────────────────────────────────
+arknova:
+  discord:
+    token: ${DISCORD_TOKEN}
+    client-id: ${DISCORD_CLIENT_ID}
+  storage:
+    image-path: ${IMAGE_STORAGE_PATH:/app/images}
+    card-image-cache-path: ${IMAGE_STORAGE_PATH:/app/images}/card-cache
+  cards:
+    resource-path: classpath:cards/base_game.json
+  security:
+    jwt-secret: ${JWT_SECRET}
+
+---
+# ── Dev profile overrides ──────────────────────────────────────────────────────
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  jpa:
+    show-sql: false               # set true only when debugging queries
+
+logging:
+  level:
+    com.arknova: DEBUG
+    net.dv8tion.jda: INFO
+    org.springframework.security: WARN

@@ -1,0 +1,19 @@
+{
+  "name": "arknova-scripts",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Build scripts for Ark Nova async bot — primarily the card converter",
+  "scripts": {
+    "convert": "python3 src/convert_cards.py",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3",
+    "@types/node": "^22.10.5"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
