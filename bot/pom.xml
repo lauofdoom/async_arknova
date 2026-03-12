@@ -22,6 +22,7 @@
     <jda.version>6.3.1</jda.version>
     <flyway.version>10.23.0</flyway.version>
     <spotless.version>3.2.1</spotless.version>
+    <testcontainers.version>1.21.0</testcontainers.version>
   </properties>
 
   <dependencies>
@@ -106,11 +107,13 @@
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>postgresql</artifactId>
+      <version>${testcontainers.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>junit-jupiter</artifactId>
+      <version>${testcontainers.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

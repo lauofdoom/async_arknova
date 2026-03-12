@@ -2,6 +2,7 @@
   "name": "arknova-scripts",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "description": "Build scripts for Ark Nova async bot — primarily the card converter",
   "scripts": {
     "convert": "python3 src/convert_cards.py",
