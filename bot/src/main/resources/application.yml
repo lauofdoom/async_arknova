@@ -78,3 +78,4 @@ logging:
     com.arknova: DEBUG
     net.dv8tion.jda: INFO
     org.springframework.security: WARN
+    org.flywaydb: DEBUG

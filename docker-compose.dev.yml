@@ -21,7 +21,7 @@ services:
     build:
       target: dev
     ports:
-      - "3000:3000"   # expose frontend directly
+      - "3674:3000"   # expose frontend directly
     environment:
       NODE_ENV: development
 
