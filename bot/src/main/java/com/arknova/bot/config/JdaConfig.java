@@ -52,7 +52,7 @@ public class JdaConfig {
         .addCommands(slashCommandListener.getAllCommandData())
         .queue(
             cmds -> log.info("Registered {} slash command(s) with Discord", cmds.size()),
-            err  -> log.error("Failed to register slash commands", err));
+            err -> log.error("Failed to register slash commands", err));
 
     return jda;
   }

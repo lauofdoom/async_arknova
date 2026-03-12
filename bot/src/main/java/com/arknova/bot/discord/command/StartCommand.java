@@ -36,36 +36,46 @@ public class StartCommand implements ArkNovaCommand {
 
   @Override
   public void handle(SlashCommandInteractionEvent event) {
-    CommandHelper.runSafely(event, () -> {
-      String channelId = event.getChannel().getId();
-      String discordId = event.getUser().getId();
+    CommandHelper.runSafely(
+        event,
+        () -> {
+          String channelId = event.getChannel().getId();
+          String discordId = event.getUser().getId();
 
-      Game game = gameService.startGame(channelId, discordId);
+          Game game = gameService.startGame(channelId, discordId);
 
-      List<PlayerState> players = gameService.getPlayersInOrder(game.getId());
-      List<String> playerIds = players.stream().map(PlayerState::getDiscordId).toList();
+          List<PlayerState> players = gameService.getPlayersInOrder(game.getId());
+          List<String> playerIds = players.stream().map(PlayerState::getDiscordId).toList();
 
-      deckService.initializeDecks(game, playerIds);
+          deckService.initializeDecks(game, playerIds);
 
-      EmbedBuilder embed = new EmbedBuilder()
-          .setColor(CommandHelper.COLOR_SUCCESS)
-          .setTitle("Ark Nova — Game Started!")
-          .setDescription("The game is underway. Turn order and starting resources are set.");
+          EmbedBuilder embed =
+              new EmbedBuilder()
+                  .setColor(CommandHelper.COLOR_SUCCESS)
+                  .setTitle("Ark Nova — Game Started!")
+                  .setDescription(
+                      "The game is underway. Turn order and starting resources are set.");
 
-      StringBuilder turnOrder = new StringBuilder();
-      for (PlayerState p : players) {
-        turnOrder.append("**").append(p.getSeatIndex() + 1).append(".** ")
-            .append(p.getDiscordName())
-            .append(" — ").append(p.getMoney()).append(" 💰\n");
-      }
-      embed.addField("Turn Order & Starting Money", turnOrder.toString().trim(), false);
+          StringBuilder turnOrder = new StringBuilder();
+          for (PlayerState p : players) {
+            turnOrder
+                .append("**")
+                .append(p.getSeatIndex() + 1)
+                .append(".** ")
+                .append(p.getDiscordName())
+                .append(" — ")
+                .append(p.getMoney())
+                .append(" 💰\n");
+          }
+          embed.addField("Turn Order & Starting Money", turnOrder.toString().trim(), false);
 
-      PlayerState first = players.get(0);
-      embed.addField("First Player", first.getDiscordName(), true)
-           .addField("Turn", "1", true)
-           .setFooter("Use /arknova status to see the full board state");
+          PlayerState first = players.get(0);
+          embed
+              .addField("First Player", first.getDiscordName(), true)
+              .addField("Turn", "1", true)
+              .setFooter("Use /arknova status to see the full board state");
 
-      event.getHook().sendMessageEmbeds(embed.build()).queue();
-    });
+          event.getHook().sendMessageEmbeds(embed.build()).queue();
+        });
   }
 }

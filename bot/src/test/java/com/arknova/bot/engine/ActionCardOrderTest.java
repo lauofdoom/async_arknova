@@ -23,7 +23,8 @@ class ActionCardOrderTest {
 
   @BeforeEach
   void setUp() {
-    order = new ActionCardOrder(); // default: CARDS(1) BUILD(2) ANIMALS(3) ASSOCIATION(4) SPONSOR(5)
+    order =
+        new ActionCardOrder(); // default: CARDS(1) BUILD(2) ANIMALS(3) ASSOCIATION(4) SPONSOR(5)
   }
 
   // ── Initial State ────────────────────────────────────────────────────────────
@@ -35,8 +36,7 @@ class ActionCardOrderTest {
     @Test
     @DisplayName("default order matches official starting order")
     void defaultOrder() {
-      assertThat(order.getOrder())
-          .containsExactly(CARDS, BUILD, ANIMALS, ASSOCIATION, SPONSOR);
+      assertThat(order.getOrder()).containsExactly(CARDS, BUILD, ANIMALS, ASSOCIATION, SPONSOR);
     }
 
     @Test
@@ -113,12 +113,12 @@ class ActionCardOrderTest {
     }
 
     @Test
-    @DisplayName("using the rightmost card (strength 5) gives max strength and moves all others right")
+    @DisplayName(
+        "using the rightmost card (strength 5) gives max strength and moves all others right")
     void useRightmostCard() {
       int strength = order.use(SPONSOR);
       assertThat(strength).isEqualTo(5);
-      assertThat(order.getOrder())
-          .containsExactly(SPONSOR, CARDS, BUILD, ANIMALS, ASSOCIATION);
+      assertThat(order.getOrder()).containsExactly(SPONSOR, CARDS, BUILD, ANIMALS, ASSOCIATION);
     }
 
     @Test
@@ -129,22 +129,19 @@ class ActionCardOrderTest {
       order.use(SPONSOR);
       // [SPONSOR(1), CARDS(2), BUILD(3), ANIMALS(4), ASSOCIATION(5)]
 
-      assertThat(order.getOrder())
-          .containsExactly(SPONSOR, CARDS, BUILD, ANIMALS, ASSOCIATION);
+      assertThat(order.getOrder()).containsExactly(SPONSOR, CARDS, BUILD, ANIMALS, ASSOCIATION);
 
       // Turn 2: player uses ASSOCIATION (now at strength 5)
       order.use(ASSOCIATION);
       // [ASSOCIATION(1), SPONSOR(2), CARDS(3), BUILD(4), ANIMALS(5)]
-      assertThat(order.getOrder())
-          .containsExactly(ASSOCIATION, SPONSOR, CARDS, BUILD, ANIMALS);
+      assertThat(order.getOrder()).containsExactly(ASSOCIATION, SPONSOR, CARDS, BUILD, ANIMALS);
       assertThat(order.getStrength(ANIMALS)).isEqualTo(5);
 
       // Turn 3: player uses CARDS (now at strength 3)
       int strength = order.use(CARDS);
       assertThat(strength).isEqualTo(3);
       // [CARDS(1), ASSOCIATION(2), SPONSOR(3), BUILD(4), ANIMALS(5)]
-      assertThat(order.getOrder())
-          .containsExactly(CARDS, ASSOCIATION, SPONSOR, BUILD, ANIMALS);
+      assertThat(order.getOrder()).containsExactly(CARDS, ASSOCIATION, SPONSOR, BUILD, ANIMALS);
     }
 
     @Test
@@ -271,7 +268,7 @@ class ActionCardOrderTest {
     void fromArrays_nullUpgradedArray() {
       ActionCardOrder restored =
           ActionCardOrder.fromArrays(
-              new String[]{"CARDS", "BUILD", "ANIMALS", "ASSOCIATION", "SPONSOR"}, null);
+              new String[] {"CARDS", "BUILD", "ANIMALS", "ASSOCIATION", "SPONSOR"}, null);
       assertThat(restored.getUpgradedCards()).isEmpty();
     }
   }
@@ -285,8 +282,7 @@ class ActionCardOrderTest {
     @Test
     @DisplayName("constructor rejects order with wrong number of cards")
     void rejectsWrongSize() {
-      assertThatThrownBy(
-              () -> new ActionCardOrder(List.of(CARDS, BUILD, ANIMALS), Set.of()))
+      assertThatThrownBy(() -> new ActionCardOrder(List.of(CARDS, BUILD, ANIMALS), Set.of()))
           .isInstanceOf(IllegalArgumentException.class)
           .hasMessageContaining("exactly 5 cards");
     }

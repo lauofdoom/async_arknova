@@ -48,8 +48,8 @@ public class ActionLogEntry {
   private Integer strengthUsed;
 
   /**
-   * All parameters of this action (card IDs, locations, amounts, etc.) encoded as JSONB. The
-   * exact schema varies by action type and is documented in the engine layer.
+   * All parameters of this action (card IDs, locations, amounts, etc.) encoded as JSONB. The exact
+   * schema varies by action type and is documented in the engine layer.
    */
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "params", columnDefinition = "jsonb", nullable = false)
@@ -57,8 +57,8 @@ public class ActionLogEntry {
 
   /**
    * The state changes that resulted from this action. Used to display human-readable action
-   * summaries and to support undo. Null for manual-resolution actions until the player confirms
-   * the outcome.
+   * summaries and to support undo. Null for manual-resolution actions until the player confirms the
+   * outcome.
    */
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "result", columnDefinition = "jsonb")
@@ -71,7 +71,9 @@ public class ActionLogEntry {
   @Column(name = "requires_manual", nullable = false)
   private boolean requiresManual = false;
 
-  /** Discord message ID that triggered this action. Useful for linking back to the original message. */
+  /**
+   * Discord message ID that triggered this action. Useful for linking back to the original message.
+   */
   @Column(name = "discord_message_id", length = 20)
   private String discordMessageId;
 

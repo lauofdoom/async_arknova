@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
  * Handles the CARDS action — draw cards from the deck, take from the display, or break.
  *
  * <h2>Card rules</h2>
+ *
  * <pre>
  * Unupgraded (I): Draw cards from the deck OR snap.
  *                 BREAK: fixed 2💰 (shown on card, not strength-based).
@@ -39,22 +40,25 @@ import org.springframework.stereotype.Component;
  * </pre>
  *
  * "Discard" = discard from your FULL HAND after drawing (choose any card, including newly drawn).
- * "Snap" = take from the break pile; requires manual resolution in Phase 1.
- * Upgraded "within reputation range" = take from the face-up display within rep range instead
- * of (or in addition to) drawing from the deck.
+ * "Snap" = take from the break pile; requires manual resolution in Phase 1. Upgraded "within
+ * reputation range" = take from the face-up display within rep range instead of (or in addition to)
+ * drawing from the deck.
  *
  * <h2>Request parameters — DRAW (default)</h2>
+ *
  * <ul>
  *   <li>{@code "display_card_ids"} — cards to take from display (upgraded only, rep range)
- *   <li>{@code "discard_ids"}      — card IDs from hand to discard (required when Discard ≥ 1)
+ *   <li>{@code "discard_ids"} — card IDs from hand to discard (required when Discard ≥ 1)
  * </ul>
  *
  * <h2>Request parameters — BREAK</h2>
+ *
  * <ul>
  *   <li>{@code "action"} = "BREAK" → gain 2💰 (fixed); no cards drawn
  * </ul>
  *
  * <h2>Request parameters — SNAP</h2>
+ *
  * <ul>
  *   <li>{@code "action"} = "SNAP" → take from break pile; manual resolution required
  * </ul>
@@ -69,36 +73,36 @@ public class CardsActionHandler implements ActionHandler {
   static final int BREAK_VALUE = 2;
 
   /**
-   * Draw config per strength: [drawCount, handDiscardCount, snapAllowed(0/1)].
-   * Index = strength (1–5); index 0 unused.
+   * Draw config per strength: [drawCount, handDiscardCount, snapAllowed(0/1)]. Index = strength
+   * (1–5); index 0 unused.
    */
   private static final int[][] CONFIG_BASE = {
-      {0, 0, 0}, // unused
-      {1, 1, 0}, // S1: draw 1, discard 1 from hand
-      {1, 0, 0}, // S2: draw 1, no discard
-      {2, 1, 0}, // S3: draw 2, discard 1 from hand
-      {2, 0, 0}, // S4: draw 2, no discard
-      {3, 1, 1}, // S5: draw 3, discard 1 from hand, snap available
+    {0, 0, 0}, // unused
+    {1, 1, 0}, // S1: draw 1, discard 1 from hand
+    {1, 0, 0}, // S2: draw 1, no discard
+    {2, 1, 0}, // S3: draw 2, discard 1 from hand
+    {2, 0, 0}, // S4: draw 2, no discard
+    {3, 1, 1}, // S5: draw 3, discard 1 from hand, snap available
   };
 
   private static final int[][] CONFIG_UPGRADED = {
-      {0, 0, 0}, // unused
-      {1, 0, 0}, // S1: draw 1, no discard        (from deck or display)
-      {2, 1, 0}, // S2: draw 2, discard 1 from hand
-      {2, 0, 1}, // S3: draw 2, no discard, snap available
-      {3, 1, 1}, // S4: draw 3, discard 1 from hand, snap available
-      {4, 1, 1}, // S5: draw 4, discard 1 from hand, snap available
+    {0, 0, 0}, // unused
+    {1, 0, 0}, // S1: draw 1, no discard        (from deck or display)
+    {2, 1, 0}, // S2: draw 2, discard 1 from hand
+    {2, 0, 1}, // S3: draw 2, no discard, snap available
+    {3, 1, 1}, // S4: draw 3, discard 1 from hand, snap available
+    {4, 1, 1}, // S5: draw 4, discard 1 from hand, snap available
   };
 
   private final DeckService deckService;
 
   /**
-   * Returns [drawCount, handDiscardCount] for the given strength.
-   * handDiscardCount = cards to discard from full hand after drawing.
+   * Returns [drawCount, handDiscardCount] for the given strength. handDiscardCount = cards to
+   * discard from full hand after drawing.
    */
   static int[] drawConfig(int strength, boolean upgraded) {
     int[] cfg = upgraded ? CONFIG_UPGRADED[strength] : CONFIG_BASE[strength];
-    return new int[]{cfg[0], cfg[1]};
+    return new int[] {cfg[0], cfg[1]};
   }
 
   /** Returns true if snapping is available at the given strength. */
@@ -113,12 +117,12 @@ public class CardsActionHandler implements ActionHandler {
   }
 
   @Override
-  public ActionResult execute(ActionRequest request, PlayerState player,
-      SharedBoardState sharedBoard) {
+  public ActionResult execute(
+      ActionRequest request, PlayerState player, SharedBoardState sharedBoard) {
 
-    int strength   = player.getStrengthOf(ActionCard.CARDS);
+    int strength = player.getStrengthOf(ActionCard.CARDS);
     boolean upgraded = player.getActionCardOrder().isUpgraded(ActionCard.CARDS);
-    UUID gameId    = request.gameId();
+    UUID gameId = request.gameId();
     String discordId = request.discordId();
 
     String action = request.paramStr("action");
@@ -128,8 +132,8 @@ public class CardsActionHandler implements ActionHandler {
       player.setMoney(player.getMoney() + BREAK_VALUE);
       String summary = request.discordName() + " broke **Cards** → +" + BREAK_VALUE + "💰.";
       log.info("Game {}: {} CARDS break +{}", gameId, discordId, BREAK_VALUE);
-      return ActionResult.success(ActionCard.CARDS, strength, summary,
-          Map.of("money_gained", BREAK_VALUE, "break", true));
+      return ActionResult.success(
+          ActionCard.CARDS, strength, summary, Map.of("money_gained", BREAK_VALUE, "break", true));
     }
 
     // ── SNAP ─────────────────────────────────────────────────────────────────
@@ -139,53 +143,73 @@ public class CardsActionHandler implements ActionHandler {
     if ("SNAP".equalsIgnoreCase(action)) {
       if (!snapAllowed) {
         return ActionResult.failure(
-            "Snapping is not available at strength " + strength
-            + (upgraded ? " (upgraded)" : "") + ".");
+            "Snapping is not available at strength "
+                + strength
+                + (upgraded ? " (upgraded)" : "")
+                + ".");
       }
       // Snap = take from break pile. Requires multi-step flow (Phase 2).
       // For Phase 1: accept the action and flag for manual resolution.
-      String summary = request.discordName()
-          + " snapped a card ⚠️ (manual: take 1 card from the break pile).";
+      String summary =
+          request.discordName() + " snapped a card ⚠️ (manual: take 1 card from the break pile).";
       log.info("Game {}: {} CARDS snap at strength={}", gameId, discordId, strength);
-      return new ActionResult(true, null, ActionCard.CARDS, strength, summary,
-          Map.of("snap", true), List.of(), false, true, null);
+      return new ActionResult(
+          true,
+          null,
+          ActionCard.CARDS,
+          strength,
+          summary,
+          Map.of("snap", true),
+          List.of(),
+          false,
+          true,
+          null);
     }
 
     // ── DRAW (default) ───────────────────────────────────────────────────────
-    int drawCount      = cfg[0];
-    int handDiscard    = cfg[1];
+    int drawCount = cfg[0];
+    int handDiscard = cfg[1];
 
     List<String> displayCardIds = request.paramList("display_card_ids");
-    List<String> discardIds     = request.paramList("discard_ids");
+    List<String> discardIds = request.paramList("discard_ids");
 
     // Display takes only for upgraded
     if (!displayCardIds.isEmpty() && !upgraded) {
-      return ActionResult.failure(
-          "Drawing from the display requires the upgraded CARDS card.");
+      return ActionResult.failure("Drawing from the display requires the upgraded CARDS card.");
     }
 
     // Total cards drawn = deck draws + display takes ≤ drawCount
     if (displayCardIds.size() > drawCount) {
       return ActionResult.failure(
-          "You can take at most " + drawCount + " card(s) total at strength " + strength
-          + " (requested " + displayCardIds.size() + " from display).");
+          "You can take at most "
+              + drawCount
+              + " card(s) total at strength "
+              + strength
+              + " (requested "
+              + displayCardIds.size()
+              + " from display).");
     }
 
     // Reputation check for display takes
-    List<PlayerCard> display = displayCardIds.isEmpty() ? List.of()
-        : deckService.getDisplay(gameId);
+    List<PlayerCard> display =
+        displayCardIds.isEmpty() ? List.of() : deckService.getDisplay(gameId);
     for (String cardId : displayCardIds) {
-      PlayerCard pc = display.stream()
-          .filter(c -> c.getCard().getId().equals(cardId)).findFirst().orElse(null);
+      PlayerCard pc =
+          display.stream().filter(c -> c.getCard().getId().equals(cardId)).findFirst().orElse(null);
       if (pc == null) {
         return ActionResult.failure("Card " + cardId + " is not in the display.");
       }
       int slot = pc.getSortOrder(); // 0-based slot index
       if (player.getReputation() < slot) {
         return ActionResult.failure(
-            pc.getCard().getName() + " is in display slot " + (slot + 1)
-            + " which requires reputation " + slot
-            + " (you have " + player.getReputation() + ").");
+            pc.getCard().getName()
+                + " is in display slot "
+                + (slot + 1)
+                + " which requires reputation "
+                + slot
+                + " (you have "
+                + player.getReputation()
+                + ").");
       }
     }
 
@@ -212,15 +236,18 @@ public class CardsActionHandler implements ActionHandler {
       player.setPendingDiscardCount(handDiscard);
     } else if (!discardIds.isEmpty()) {
       return ActionResult.failure(
-          "No discard required at strength " + strength
-          + (upgraded ? " (upgraded)" : "") + ".");
+          "No discard required at strength " + strength + (upgraded ? " (upgraded)" : "") + ".");
     }
 
     // ── Build result ─────────────────────────────────────────────────────────
     StringBuilder summary = new StringBuilder();
-    summary.append(request.discordName())
-        .append(" used **Cards** (strength ").append(strength)
-        .append(", X=").append(strength).append(")");
+    summary
+        .append(request.discordName())
+        .append(" used **Cards** (strength ")
+        .append(strength)
+        .append(", X=")
+        .append(strength)
+        .append(")");
     if (!displayCardIds.isEmpty()) {
       summary.append(", took ").append(displayCardIds.size()).append(" from display");
     }
@@ -228,20 +255,33 @@ public class CardsActionHandler implements ActionHandler {
       summary.append(", drew ").append(drawn.size()).append(" from deck");
     }
     if (discardRequired) {
-      summary.append(" — please discard ").append(handDiscard)
+      summary
+          .append(" — please discard ")
+          .append(handDiscard)
           .append(" card(s) with `/arknova discard`");
     }
-    summary.append(". Hand: ")
-        .append(deckService.getHand(gameId, discordId).size()).append(" card(s).");
+    summary
+        .append(". Hand: ")
+        .append(deckService.getHand(gameId, discordId).size())
+        .append(" card(s).");
 
-    log.info("Game {}: {} CARDS strength={} deck={} display={} pendingDiscard={}",
-        gameId, discordId, strength, drawn.size(), displayCardIds.size(), handDiscard);
+    log.info(
+        "Game {}: {} CARDS strength={} deck={} display={} pendingDiscard={}",
+        gameId,
+        discordId,
+        strength,
+        drawn.size(),
+        displayCardIds.size(),
+        handDiscard);
 
     return ActionResult.successWithCards(
-        ActionCard.CARDS, strength, summary.toString(),
-        Map.of("cards_drawn",        drawn.size(),
-               "cards_from_display", displayCardIds.size(),
-               "pending_discard",    discardRequired ? handDiscard : 0),
+        ActionCard.CARDS,
+        strength,
+        summary.toString(),
+        Map.of(
+            "cards_drawn", drawn.size(),
+            "cards_from_display", displayCardIds.size(),
+            "pending_discard", discardRequired ? handDiscard : 0),
         acquired);
   }
 }

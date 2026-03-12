@@ -21,8 +21,9 @@ import org.springframework.stereotype.Component;
  * /arknova animals — place an animal card from your hand into an enclosure.
  *
  * <p>Options:
+ *
  * <ul>
- *   <li>{@code card_id}     — ID of the animal card to place (required)
+ *   <li>{@code card_id} — ID of the animal card to place (required)
  *   <li>{@code enclosure_id}— enclosure reference, e.g. E1 (required)
  * </ul>
  */
@@ -42,33 +43,38 @@ public class AnimalsCommand implements ArkNovaCommand {
   @Override
   public SubcommandData getSubcommandData() {
     return new SubcommandData("animals", "Place an animal card into an enclosure")
-        .addOption(OptionType.STRING, "card_id",      "Animal card ID",               true)
+        .addOption(OptionType.STRING, "card_id", "Animal card ID", true)
         .addOption(OptionType.STRING, "enclosure_id", "Enclosure reference, e.g. E1", true);
   }
 
   @Override
   public void handle(SlashCommandInteractionEvent event) {
-    CommandHelper.runSafely(event, () -> {
-      Optional<Game> maybeGame = commandHelper.getActiveGame(event);
-      if (maybeGame.isEmpty()) return;
-      Game game = maybeGame.get();
+    CommandHelper.runSafely(
+        event,
+        () -> {
+          Optional<Game> maybeGame = commandHelper.getActiveGame(event);
+          if (maybeGame.isEmpty()) return;
+          Game game = maybeGame.get();
 
-      String discordId   = event.getUser().getId();
-      String discordName = event.getMember() != null
-          ? event.getMember().getEffectiveName() : event.getUser().getName();
+          String discordId = event.getUser().getId();
+          String discordName =
+              event.getMember() != null
+                  ? event.getMember().getEffectiveName()
+                  : event.getUser().getName();
 
-      Map<String, Object> params = new HashMap<>();
-      params.put("card_id",      event.getOption("card_id",      o -> o.getAsString()));
-      params.put("enclosure_id", event.getOption("enclosure_id", o -> o.getAsString()));
+          Map<String, Object> params = new HashMap<>();
+          params.put("card_id", event.getOption("card_id", o -> o.getAsString()));
+          params.put("enclosure_id", event.getOption("enclosure_id", o -> o.getAsString()));
 
-      ActionRequest request = new ActionRequest(
-          game.getId(), discordId, discordName, ActionCard.ANIMALS, params, null);
+          ActionRequest request =
+              new ActionRequest(
+                  game.getId(), discordId, discordName, ActionCard.ANIMALS, params, null);
 
-      ActionResult result = gameEngine.executeAction(request);
+          ActionResult result = gameEngine.executeAction(request);
 
-      Game updatedGame = gameService.findByThreadId(event.getChannel().getId()).orElse(game);
-      List<PlayerState> players = gameService.getPlayersInOrder(game.getId());
-      commandHelper.sendActionResult(event, result, updatedGame, players);
-    });
+          Game updatedGame = gameService.findByThreadId(event.getChannel().getId()).orElse(game);
+          List<PlayerState> players = gameService.getPlayersInOrder(game.getId());
+          commandHelper.sendActionResult(event, result, updatedGame, players);
+        });
   }
 }

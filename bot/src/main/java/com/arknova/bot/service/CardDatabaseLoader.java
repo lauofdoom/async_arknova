@@ -20,9 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 /**
  * Loads the Ark Nova card database from {@code cards/base_game.json} at startup.
  *
- * <p>The JSON file is generated from the Next-Ark-Nova-Cards community repository by running
- * {@code scripts/convert-cards.ts}. Cards already in the database are updated with any new data
- * (name changes, image URL updates); new cards are inserted; no cards are deleted (preserving game
+ * <p>The JSON file is generated from the Next-Ark-Nova-Cards community repository by running {@code
+ * scripts/convert-cards.ts}. Cards already in the database are updated with any new data (name
+ * changes, image URL updates); new cards are inserted; no cards are deleted (preserving game
  * references to retired/corrected cards).
  *
  * <p>Card loading is idempotent — safe to run on every startup.
@@ -83,7 +83,11 @@ public class CardDatabaseLoader {
       long automated = cardRepo.countByEffectCodeIsNotNull();
       log.info(
           "Card database loaded: {} new, {} updated, {} total ({}/{} automated)",
-          newCount, updatedCount, total, automated, total);
+          newCount,
+          updatedCount,
+          total,
+          automated,
+          total);
 
     } catch (Exception e) {
       log.error("Failed to load card database from {}: {}", resourcePath, e.getMessage(), e);
@@ -136,7 +140,7 @@ public class CardDatabaseLoader {
 
   private String[] parseStringArray(JsonNode arrayNode) {
     if (arrayNode.isMissingNode() || arrayNode.isNull() || !arrayNode.isArray()) {
-      return new String[]{};
+      return new String[] {};
     }
     List<String> values = new ArrayList<>();
     for (JsonNode element : arrayNode) {

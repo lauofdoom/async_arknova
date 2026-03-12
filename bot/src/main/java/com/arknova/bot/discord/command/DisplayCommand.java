@@ -43,21 +43,24 @@ public class DisplayCommand implements ArkNovaCommand {
 
   @Override
   public void handle(SlashCommandInteractionEvent event) {
-    CommandHelper.runSafely(event, () -> {
-      Optional<Game> maybeGame = commandHelper.getGame(event);
-      if (maybeGame.isEmpty()) return;
-      Game game = maybeGame.get();
+    CommandHelper.runSafely(
+        event,
+        () -> {
+          Optional<Game> maybeGame = commandHelper.getGame(event);
+          if (maybeGame.isEmpty()) return;
+          Game game = maybeGame.get();
 
-      List<PlayerCard> display = deckService.getDisplay(game.getId());
-      int deckRemaining = deckService.deckSize(game.getId());
+          List<PlayerCard> display = deckService.getDisplay(game.getId());
+          int deckRemaining = deckService.deckSize(game.getId());
 
-      EmbedBuilder embed = new EmbedBuilder()
-          .setColor(CommandHelper.COLOR_INFO)
-          .setTitle("Card Display (" + display.size() + " cards)")
-          .setDescription(CommandHelper.formatCardList(display, true))
-          .setFooter(deckRemaining + " cards remaining in deck");
+          EmbedBuilder embed =
+              new EmbedBuilder()
+                  .setColor(CommandHelper.COLOR_INFO)
+                  .setTitle("Card Display (" + display.size() + " cards)")
+                  .setDescription(CommandHelper.formatCardList(display, true))
+                  .setFooter(deckRemaining + " cards remaining in deck");
 
-      event.getHook().sendMessageEmbeds(embed.build()).queue();
-    });
+          event.getHook().sendMessageEmbeds(embed.build()).queue();
+        });
   }
 }

@@ -80,13 +80,47 @@ class BuildActionHandlerTest {
   @DisplayName("maxSizeForStrength()")
   class MaxSize {
 
-    @Test @DisplayName("strength 1: max 1") void s1()  { assertThat(maxSizeForStrength(1, false)).isEqualTo(1); }
-    @Test @DisplayName("strength 2: max 2") void s2()  { assertThat(maxSizeForStrength(2, false)).isEqualTo(2); }
-    @Test @DisplayName("strength 3: max 3") void s3()  { assertThat(maxSizeForStrength(3, false)).isEqualTo(3); }
-    @Test @DisplayName("strength 4: max 4") void s4()  { assertThat(maxSizeForStrength(4, false)).isEqualTo(4); }
-    @Test @DisplayName("strength 5: max 5") void s5()  { assertThat(maxSizeForStrength(5, false)).isEqualTo(5); }
-    @Test @DisplayName("strength 5 upgraded: still max 5 per building") void s5u() { assertThat(maxSizeForStrength(5, true)).isEqualTo(5); }
-    @Test @DisplayName("strength 1 upgraded: still max 1 per building") void s1u() { assertThat(maxSizeForStrength(1, true)).isEqualTo(1); }
+    @Test
+    @DisplayName("strength 1: max 1")
+    void s1() {
+      assertThat(maxSizeForStrength(1, false)).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("strength 2: max 2")
+    void s2() {
+      assertThat(maxSizeForStrength(2, false)).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("strength 3: max 3")
+    void s3() {
+      assertThat(maxSizeForStrength(3, false)).isEqualTo(3);
+    }
+
+    @Test
+    @DisplayName("strength 4: max 4")
+    void s4() {
+      assertThat(maxSizeForStrength(4, false)).isEqualTo(4);
+    }
+
+    @Test
+    @DisplayName("strength 5: max 5")
+    void s5() {
+      assertThat(maxSizeForStrength(5, false)).isEqualTo(5);
+    }
+
+    @Test
+    @DisplayName("strength 5 upgraded: still max 5 per building")
+    void s5u() {
+      assertThat(maxSizeForStrength(5, true)).isEqualTo(5);
+    }
+
+    @Test
+    @DisplayName("strength 1 upgraded: still max 1 per building")
+    void s1u() {
+      assertThat(maxSizeForStrength(1, true)).isEqualTo(1);
+    }
   }
 
   // ── Validation ────────────────────────────────────────────────────────────────
@@ -98,8 +132,7 @@ class BuildActionHandlerTest {
     @Test
     @DisplayName("fails when size is missing or zero")
     void missingSize() {
-      ActionResult result = handler.execute(
-          req(Map.of("row", 0, "col", 0)), player, sharedBoard);
+      ActionResult result = handler.execute(req(Map.of("row", 0, "col", 0)), player, sharedBoard);
       assertThat(result.success()).isFalse();
       assertThat(result.errorMessage()).containsIgnoringCase("size");
     }
@@ -107,8 +140,7 @@ class BuildActionHandlerTest {
     @Test
     @DisplayName("fails when row is missing")
     void missingRow() {
-      ActionResult result = handler.execute(
-          req(Map.of("size", 1, "col", 0)), player, sharedBoard);
+      ActionResult result = handler.execute(req(Map.of("size", 1, "col", 0)), player, sharedBoard);
       assertThat(result.success()).isFalse();
       assertThat(result.errorMessage()).containsIgnoringCase("location");
     }
@@ -116,8 +148,7 @@ class BuildActionHandlerTest {
     @Test
     @DisplayName("fails when col is missing")
     void missingCol() {
-      ActionResult result = handler.execute(
-          req(Map.of("size", 1, "row", 0)), player, sharedBoard);
+      ActionResult result = handler.execute(req(Map.of("size", 1, "row", 0)), player, sharedBoard);
       assertThat(result.success()).isFalse();
       assertThat(result.errorMessage()).containsIgnoringCase("location");
     }
@@ -126,8 +157,8 @@ class BuildActionHandlerTest {
     @DisplayName("fails when enclosure size exceeds strength X")
     void sizeTooLargeForStrength() {
       setBuildStrength(1); // X=1, max size 1
-      ActionResult result = handler.execute(
-          req(Map.of("size", 2, "row", 0, "col", 0)), player, sharedBoard);
+      ActionResult result =
+          handler.execute(req(Map.of("size", 2, "row", 0, "col", 0)), player, sharedBoard);
       assertThat(result.success()).isFalse();
       assertThat(result.errorMessage()).contains("maximum enclosure size is 1");
     }
@@ -137,8 +168,8 @@ class BuildActionHandlerTest {
     void insufficientMoney() {
       setBuildStrength(2); // size-2 costs 2×2 = 4
       player.setMoney(3);
-      ActionResult result = handler.execute(
-          req(Map.of("size", 2, "row", 0, "col", 0)), player, sharedBoard);
+      ActionResult result =
+          handler.execute(req(Map.of("size", 2, "row", 0, "col", 0)), player, sharedBoard);
       assertThat(result.success()).isFalse();
       assertThat(result.errorMessage()).containsIgnoringCase("money");
     }
@@ -148,8 +179,8 @@ class BuildActionHandlerTest {
     void gridCollision() {
       player.setBoardState(BOARD_E1_AT_0_0);
       setBuildStrength(2);
-      ActionResult result = handler.execute(
-          req(Map.of("size", 2, "row", 0, "col", 0)), player, sharedBoard);
+      ActionResult result =
+          handler.execute(req(Map.of("size", 2, "row", 0, "col", 0)), player, sharedBoard);
       assertThat(result.success()).isFalse();
       assertThat(result.errorMessage()).contains("already has a structure");
     }
@@ -158,11 +189,16 @@ class BuildActionHandlerTest {
     @DisplayName("multi-build rejected on un-upgraded card")
     void multiBuildRequiresUpgrade() {
       setBuildStrength(3);
-      ActionResult result = handler.execute(
-          req(Map.of("buildings", List.of(
-              Map.of("size", 1, "row", 0, "col", 0, "tags", List.of()),
-              Map.of("size", 1, "row", 1, "col", 0, "tags", List.of())))),
-          player, sharedBoard);
+      ActionResult result =
+          handler.execute(
+              req(
+                  Map.of(
+                      "buildings",
+                      List.of(
+                          Map.of("size", 1, "row", 0, "col", 0, "tags", List.of()),
+                          Map.of("size", 1, "row", 1, "col", 0, "tags", List.of())))),
+              player,
+              sharedBoard);
       assertThat(result.success()).isFalse();
       assertThat(result.errorMessage()).containsIgnoringCase("upgraded");
     }
@@ -171,8 +207,8 @@ class BuildActionHandlerTest {
     @DisplayName("upgrade sub-action fails when BUILD strength is below 4")
     void upgradeRequiresStrength4() {
       setBuildStrength(3);
-      ActionResult result = handler.execute(
-          req(Map.of("upgrade_action", "CARDS")), player, sharedBoard);
+      ActionResult result =
+          handler.execute(req(Map.of("upgrade_action", "CARDS")), player, sharedBoard);
       assertThat(result.success()).isFalse();
       assertThat(result.errorMessage()).contains("strength 4");
     }
@@ -181,8 +217,8 @@ class BuildActionHandlerTest {
     @DisplayName("upgrade sub-action fails for unknown action card name")
     void upgradeUnknownCard() {
       setBuildStrength(4);
-      ActionResult result = handler.execute(
-          req(Map.of("upgrade_action", "INVALID")), player, sharedBoard);
+      ActionResult result =
+          handler.execute(req(Map.of("upgrade_action", "INVALID")), player, sharedBoard);
       assertThat(result.success()).isFalse();
       assertThat(result.errorMessage()).containsIgnoringCase("Unknown action card");
     }
@@ -195,8 +231,8 @@ class BuildActionHandlerTest {
       cards.add(3, ActionCard.BUILD); // strength 4
       player.setActionCardOrder(new ActionCardOrder(cards, Set.of(ActionCard.CARDS)));
 
-      ActionResult result = handler.execute(
-          req(Map.of("upgrade_action", "CARDS")), player, sharedBoard);
+      ActionResult result =
+          handler.execute(req(Map.of("upgrade_action", "CARDS")), player, sharedBoard);
       assertThat(result.success()).isFalse();
       assertThat(result.errorMessage()).containsIgnoringCase("already upgraded");
     }
@@ -206,8 +242,8 @@ class BuildActionHandlerTest {
     void upgradeInsufficientMoney() {
       setBuildStrength(4);
       player.setMoney(3); // upgrade costs 4
-      ActionResult result = handler.execute(
-          req(Map.of("upgrade_action", "ANIMALS")), player, sharedBoard);
+      ActionResult result =
+          handler.execute(req(Map.of("upgrade_action", "ANIMALS")), player, sharedBoard);
       assertThat(result.success()).isFalse();
       assertThat(result.errorMessage()).containsIgnoringCase("money");
     }
@@ -225,8 +261,8 @@ class BuildActionHandlerTest {
       setBuildStrength(1);
       player.setMoney(10);
 
-      ActionResult result = handler.execute(
-          req(Map.of("size", 1, "row", 0, "col", 0)), player, sharedBoard);
+      ActionResult result =
+          handler.execute(req(Map.of("size", 1, "row", 0, "col", 0)), player, sharedBoard);
 
       assertThat(result.success()).isTrue();
       assertThat(player.getMoney()).isEqualTo(8); // 10 - (1×2)
@@ -240,8 +276,8 @@ class BuildActionHandlerTest {
       setBuildStrength(5);
       player.setMoney(20);
 
-      ActionResult result = handler.execute(
-          req(Map.of("size", 5, "row", 0, "col", 0)), player, sharedBoard);
+      ActionResult result =
+          handler.execute(req(Map.of("size", 5, "row", 0, "col", 0)), player, sharedBoard);
 
       assertThat(result.success()).isTrue();
       assertThat(player.getMoney()).isEqualTo(10); // 20 - (5×2)
@@ -254,9 +290,11 @@ class BuildActionHandlerTest {
       player.setMoney(20);
       // size-3 base = 6; + WATER (2) + ROCK (2) = 10 total
 
-      ActionResult result = handler.execute(
-          req(Map.of("size", 3, "row", 0, "col", 0, "tags", List.of("WATER", "ROCK"))),
-          player, sharedBoard);
+      ActionResult result =
+          handler.execute(
+              req(Map.of("size", 3, "row", 0, "col", 0, "tags", List.of("WATER", "ROCK"))),
+              player,
+              sharedBoard);
 
       assertThat(result.success()).isTrue();
       assertThat(player.getMoney()).isEqualTo(10); // 20 - 10
@@ -268,9 +306,11 @@ class BuildActionHandlerTest {
       setBuildStrength(3);
       player.setMoney(20);
 
-      ActionResult result = handler.execute(
-          req(Map.of("size", 3, "row", 0, "col", 0, "tags", List.of("MAGIC", "WATER"))),
-          player, sharedBoard);
+      ActionResult result =
+          handler.execute(
+              req(Map.of("size", 3, "row", 0, "col", 0, "tags", List.of("MAGIC", "WATER"))),
+              player,
+              sharedBoard);
 
       // Only WATER applies (+2), MAGIC ignored → cost = 6 + 2 = 8
       assertThat(result.success()).isTrue();
@@ -284,11 +324,16 @@ class BuildActionHandlerTest {
       player.setMoney(30);
       // Two buildings: size 3 + size 2 = total 5 ≤ X=5. Cost = (3+2)×2 = 10.
 
-      ActionResult result = handler.execute(
-          req(Map.of("buildings", List.of(
-              Map.of("size", 3, "row", 0, "col", 0, "tags", List.of()),
-              Map.of("size", 2, "row", 1, "col", 0, "tags", List.of())))),
-          player, sharedBoard);
+      ActionResult result =
+          handler.execute(
+              req(
+                  Map.of(
+                      "buildings",
+                      List.of(
+                          Map.of("size", 3, "row", 0, "col", 0, "tags", List.of()),
+                          Map.of("size", 2, "row", 1, "col", 0, "tags", List.of())))),
+              player,
+              sharedBoard);
 
       assertThat(result.success()).isTrue();
       assertThat(player.getMoney()).isEqualTo(20); // 30 - 10
@@ -300,11 +345,17 @@ class BuildActionHandlerTest {
       setBuildStrengthUpgraded(3); // X=3
       player.setMoney(30);
 
-      ActionResult result = handler.execute(
-          req(Map.of("buildings", List.of(
-              Map.of("size", 2, "row", 0, "col", 0, "tags", List.of()),
-              Map.of("size", 2, "row", 1, "col", 0, "tags", List.of())))), // total=4 > X=3
-          player, sharedBoard);
+      ActionResult result =
+          handler.execute(
+              req(
+                  Map.of(
+                      "buildings",
+                      List.of(
+                          Map.of("size", 2, "row", 0, "col", 0, "tags", List.of()),
+                          Map.of(
+                              "size", 2, "row", 1, "col", 0, "tags", List.of())))), // total=4 > X=3
+              player,
+              sharedBoard);
 
       assertThat(result.success()).isFalse();
       assertThat(result.errorMessage()).containsIgnoringCase("total");
@@ -316,8 +367,8 @@ class BuildActionHandlerTest {
       setBuildStrength(4);
       player.setMoney(10);
 
-      ActionResult result = handler.execute(
-          req(Map.of("upgrade_action", "ANIMALS")), player, sharedBoard);
+      ActionResult result =
+          handler.execute(req(Map.of("upgrade_action", "ANIMALS")), player, sharedBoard);
 
       assertThat(result.success()).isTrue();
       assertThat(player.getMoney()).isEqualTo(6); // 10 - 4
@@ -331,8 +382,8 @@ class BuildActionHandlerTest {
       setBuildStrength(4);
       player.setMoney(10);
 
-      ActionResult result = handler.execute(
-          req(Map.of("upgrade_action", "cards")), player, sharedBoard);
+      ActionResult result =
+          handler.execute(req(Map.of("upgrade_action", "cards")), player, sharedBoard);
 
       assertThat(result.success()).isTrue();
       assertThat(player.getActionCardOrder().isUpgraded(ActionCard.CARDS)).isTrue();
@@ -345,8 +396,8 @@ class BuildActionHandlerTest {
       setBuildStrength(2);
       player.setMoney(20);
 
-      ActionResult result = handler.execute(
-          req(Map.of("size", 2, "row", 1, "col", 1)), player, sharedBoard);
+      ActionResult result =
+          handler.execute(req(Map.of("size", 2, "row", 1, "col", 1)), player, sharedBoard);
 
       assertThat(result.success()).isTrue();
       assertThat((String) result.deltas().get("enclosure_id")).isEqualTo("E2");

@@ -117,10 +117,7 @@ public class PlayerState {
    * </pre>
    */
   @JdbcTypeCode(SqlTypes.JSON)
-  @Column(
-      name = "board_state",
-      columnDefinition = "jsonb",
-      nullable = false)
+  @Column(name = "board_state", columnDefinition = "jsonb", nullable = false)
   private String boardState =
       "{\"enclosures\":[],\"kioskCount\":0,\"pavilionBuilt\":false,\"specialBuildings\":[]}";
 

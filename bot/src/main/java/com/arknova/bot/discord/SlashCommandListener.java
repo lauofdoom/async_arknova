@@ -30,14 +30,12 @@ public class SlashCommandListener extends ListenerAdapter {
         commands.stream()
             .collect(Collectors.toMap(ArkNovaCommand::getSubcommandName, Function.identity()));
     log.info(
-        "Registered {} slash command handlers: {}",
-        commands.size(),
-        commandsBySubcommand.keySet());
+        "Registered {} slash command handlers: {}", commands.size(), commandsBySubcommand.keySet());
   }
 
   /**
-   * Builds the single {@code /arknova} parent command with all subcommands attached.
-   * Called by JdaConfig to register commands with Discord.
+   * Builds the single {@code /arknova} parent command with all subcommands attached. Called by
+   * JdaConfig to register commands with Discord.
    */
   public List<CommandData> getAllCommandData() {
     var parent = Commands.slash("arknova", "Ark Nova async game commands");

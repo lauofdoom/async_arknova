@@ -12,9 +12,9 @@ import org.hibernate.type.SqlTypes;
  * cards/base_game.json} (which is generated from the Next-Ark-Nova-Cards community repo).
  *
  * <p>The {@code effectCode} field is null for cards where machine-executable effects have not yet
- * been implemented. In those cases, the bot displays {@code abilityText} to the player and
- * requests manual resolution. This is the "progressive automation" model that lets us ship an
- * alpha before all effects are coded.
+ * been implemented. In those cases, the bot displays {@code abilityText} to the player and requests
+ * manual resolution. This is the "progressive automation" model that lets us ship an alpha before
+ * all effects are coded.
  */
 @Entity
 @Table(name = "card_definitions")

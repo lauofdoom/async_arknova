@@ -22,11 +22,12 @@ import org.springframework.stereotype.Component;
  * /arknova build — build an enclosure or special building on your zoo board.
  *
  * <p>Options:
+ *
  * <ul>
- *   <li>{@code size}           — enclosure size (required)
- *   <li>{@code row}            — grid row 0-based (required)
- *   <li>{@code col}            — grid column 0-based (required)
- *   <li>{@code tags}           — optional terrain tags, comma-separated e.g. "WATER,ROCK"
+ *   <li>{@code size} — enclosure size (required)
+ *   <li>{@code row} — grid row 0-based (required)
+ *   <li>{@code col} — grid column 0-based (required)
+ *   <li>{@code tags} — optional terrain tags, comma-separated e.g. "WATER,ROCK"
  *   <li>{@code upgrade_action} — action card to upgrade (strength 4+ only)
  * </ul>
  *
@@ -48,51 +49,57 @@ public class BuildCommand implements ArkNovaCommand {
   @Override
   public SubcommandData getSubcommandData() {
     return new SubcommandData("build", "Build an enclosure or special building")
-        .addOption(OptionType.INTEGER, "size",           "Enclosure size (1–5)",           true)
-        .addOption(OptionType.INTEGER, "row",            "Grid row (0-based)",             true)
-        .addOption(OptionType.INTEGER, "col",            "Grid column (0-based)",          true)
-        .addOption(OptionType.STRING,  "tags",           "Terrain tags, e.g. WATER,ROCK",  false)
-        .addOption(OptionType.STRING,  "upgrade_action", "Action card to upgrade (strength 4+)", false);
+        .addOption(OptionType.INTEGER, "size", "Enclosure size (1–5)", true)
+        .addOption(OptionType.INTEGER, "row", "Grid row (0-based)", true)
+        .addOption(OptionType.INTEGER, "col", "Grid column (0-based)", true)
+        .addOption(OptionType.STRING, "tags", "Terrain tags, e.g. WATER,ROCK", false)
+        .addOption(
+            OptionType.STRING, "upgrade_action", "Action card to upgrade (strength 4+)", false);
   }
 
   @Override
   public void handle(SlashCommandInteractionEvent event) {
-    CommandHelper.runSafely(event, () -> {
-      Optional<Game> maybeGame = commandHelper.getActiveGame(event);
-      if (maybeGame.isEmpty()) return;
-      Game game = maybeGame.get();
+    CommandHelper.runSafely(
+        event,
+        () -> {
+          Optional<Game> maybeGame = commandHelper.getActiveGame(event);
+          if (maybeGame.isEmpty()) return;
+          Game game = maybeGame.get();
 
-      String discordId   = event.getUser().getId();
-      String discordName = event.getMember() != null
-          ? event.getMember().getEffectiveName() : event.getUser().getName();
+          String discordId = event.getUser().getId();
+          String discordName =
+              event.getMember() != null
+                  ? event.getMember().getEffectiveName()
+                  : event.getUser().getName();
 
-      int size = event.getOption("size",  OptionMapping::getAsInt);
-      int row  = event.getOption("row",   OptionMapping::getAsInt);
-      int col  = event.getOption("col",   OptionMapping::getAsInt);
+          int size = event.getOption("size", OptionMapping::getAsInt);
+          int row = event.getOption("row", OptionMapping::getAsInt);
+          int col = event.getOption("col", OptionMapping::getAsInt);
 
-      Map<String, Object> params = new HashMap<>();
-      params.put("size", size);
-      params.put("row",  row);
-      params.put("col",  col);
+          Map<String, Object> params = new HashMap<>();
+          params.put("size", size);
+          params.put("row", row);
+          params.put("col", col);
 
-      OptionMapping tagsOpt = event.getOption("tags");
-      if (tagsOpt != null) {
-        params.put("tags", CommandHelper.splitCsv(tagsOpt.getAsString()));
-      }
+          OptionMapping tagsOpt = event.getOption("tags");
+          if (tagsOpt != null) {
+            params.put("tags", CommandHelper.splitCsv(tagsOpt.getAsString()));
+          }
 
-      OptionMapping upgradeOpt = event.getOption("upgrade_action");
-      if (upgradeOpt != null) {
-        params.put("upgrade_action", upgradeOpt.getAsString().toUpperCase());
-      }
+          OptionMapping upgradeOpt = event.getOption("upgrade_action");
+          if (upgradeOpt != null) {
+            params.put("upgrade_action", upgradeOpt.getAsString().toUpperCase());
+          }
 
-      ActionRequest request = new ActionRequest(
-          game.getId(), discordId, discordName, ActionCard.BUILD, params, null);
+          ActionRequest request =
+              new ActionRequest(
+                  game.getId(), discordId, discordName, ActionCard.BUILD, params, null);
 
-      ActionResult result = gameEngine.executeAction(request);
+          ActionResult result = gameEngine.executeAction(request);
 
-      Game updatedGame = gameService.findByThreadId(event.getChannel().getId()).orElse(game);
-      List<PlayerState> players = gameService.getPlayersInOrder(game.getId());
-      commandHelper.sendActionResult(event, result, updatedGame, players);
-    });
+          Game updatedGame = gameService.findByThreadId(event.getChannel().getId()).orElse(game);
+          List<PlayerState> players = gameService.getPlayersInOrder(game.getId());
+          commandHelper.sendActionResult(event, result, updatedGame, players);
+        });
   }
 }

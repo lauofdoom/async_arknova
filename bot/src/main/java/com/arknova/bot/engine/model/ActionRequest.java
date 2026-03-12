@@ -22,6 +22,7 @@ public record ActionRequest(
      * Action-specific parameters.
      *
      * <p>CARDS action:
+     *
      * <ul>
      *   <li>{@code "display_card_ids"} — list of card IDs to take from the display (may be empty)
      *   <li>{@code "draw_count"} — how many to draw from the deck (engine validates vs. strength)
@@ -29,12 +30,14 @@ public record ActionRequest(
      * </ul>
      *
      * <p>ANIMALS action:
+     *
      * <ul>
      *   <li>{@code "card_id"} — card ID of the animal being placed
      *   <li>{@code "enclosure_id"} — which enclosure to place it in (e.g. "E1")
      * </ul>
      *
      * <p>BUILD action:
+     *
      * <ul>
      *   <li>{@code "size"} — enclosure size (1–7)
      *   <li>{@code "row"} — grid row
@@ -44,14 +47,16 @@ public record ActionRequest(
      * </ul>
      *
      * <p>ASSOCIATION action:
+     *
      * <ul>
-     *   <li>{@code "sub_actions"}  — ordered list of 1–3 strings:
-     *       PARTNER_ZOO | UNIVERSITY | CONSERVATION_PROJECT | RETURN_WORKERS
-     *   <li>{@code "project_ids"}  — one conservation project card ID per
-     *       CONSERVATION_PROJECT entry (in order)
+     *   <li>{@code "sub_actions"} — ordered list of 1–3 strings: PARTNER_ZOO | UNIVERSITY |
+     *       CONSERVATION_PROJECT | RETURN_WORKERS
+     *   <li>{@code "project_ids"} — one conservation project card ID per CONSERVATION_PROJECT entry
+     *       (in order)
      * </ul>
      *
      * <p>SPONSOR action:
+     *
      * <ul>
      *   <li>{@code "card_ids"} — ordered list of sponsor card IDs from hand to play
      * </ul>
@@ -72,7 +77,11 @@ public record ActionRequest(
     Object v = params.get(key);
     if (v == null) return defaultValue;
     if (v instanceof Number n) return n.intValue();
-    try { return Integer.parseInt(v.toString()); } catch (NumberFormatException e) { return defaultValue; }
+    try {
+      return Integer.parseInt(v.toString());
+    } catch (NumberFormatException e) {
+      return defaultValue;
+    }
   }
 
   /** Convenience getter — casts a param value to a List of Strings. */

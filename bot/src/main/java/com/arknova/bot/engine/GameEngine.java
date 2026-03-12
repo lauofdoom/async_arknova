@@ -10,8 +10,9 @@ import java.util.UUID;
 /**
  * Core game rules engine. Validates and applies player actions to game state.
  *
- * <p>Callers (Discord command handlers) build an {@link ActionRequest} and call
- * {@link #executeAction}. The engine:
+ * <p>Callers (Discord command handlers) build an {@link ActionRequest} and call {@link
+ * #executeAction}. The engine:
+ *
  * <ol>
  *   <li>Validates the action (correct player's turn, legal move, sufficient resources)
  *   <li>Takes a state snapshot for undo
@@ -36,12 +37,12 @@ public interface GameEngine {
   ActionResult executeAction(ActionRequest request);
 
   /**
-   * Complete a pending hand discard after a CARDS draw action. Called via the
-   * {@code /arknova discard} command. Validates and applies the discard, then advances the turn.
+   * Complete a pending hand discard after a CARDS draw action. Called via the {@code /arknova
+   * discard} command. Validates and applies the discard, then advances the turn.
    *
-   * @param gameId     the game to act within
-   * @param discordId  the player completing the discard
-   * @param cardIds    card IDs from the player's hand to discard
+   * @param gameId the game to act within
+   * @param discordId the player completing the discard
+   * @param cardIds card IDs from the player's hand to discard
    * @return result describing the outcome
    */
   ActionResult executeDiscard(UUID gameId, String discordId, List<String> cardIds);
@@ -50,20 +51,21 @@ public interface GameEngine {
    * Undo the last action taken by the specified player, if eligible.
    *
    * <p>Undo is only allowed if:
+   *
    * <ul>
    *   <li>The requesting player took the last action in this game
    *   <li>A snapshot exists for that action
    * </ul>
    *
-   * @param gameId     the game to undo within
-   * @param discordId  the player requesting the undo
+   * @param gameId the game to undo within
+   * @param discordId the player requesting the undo
    * @return result describing the undo outcome
    */
   ActionResult undo(UUID gameId, String discordId);
 
   /**
-   * Validate whether it is currently this player's turn in the given game.
-   * Cheap check — does not require loading full game state.
+   * Validate whether it is currently this player's turn in the given game. Cheap check — does not
+   * require loading full game state.
    */
   boolean isPlayerTurn(Game game, PlayerState player);
 }

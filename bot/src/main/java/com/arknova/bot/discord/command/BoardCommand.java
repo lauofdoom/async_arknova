@@ -54,40 +54,42 @@ public class BoardCommand implements ArkNovaCommand {
 
   @Override
   public void handle(SlashCommandInteractionEvent event) {
-    CommandHelper.runSafely(event, () -> {
-      Optional<Game> maybeGame = commandHelper.getGame(event);
-      if (maybeGame.isEmpty()) return;
-      Game game = maybeGame.get();
+    CommandHelper.runSafely(
+        event,
+        () -> {
+          Optional<Game> maybeGame = commandHelper.getGame(event);
+          if (maybeGame.isEmpty()) return;
+          Game game = maybeGame.get();
 
-      // Resolve which player's board to show
-      OptionMapping playerOpt = event.getOption("player");
-      String targetDiscordId = playerOpt != null
-          ? playerOpt.getAsUser().getId()
-          : event.getUser().getId();
+          // Resolve which player's board to show
+          OptionMapping playerOpt = event.getOption("player");
+          String targetDiscordId =
+              playerOpt != null ? playerOpt.getAsUser().getId() : event.getUser().getId();
 
-      Optional<PlayerState> maybePlayer =
-          gameService.getPlayerState(game.getId(), targetDiscordId);
+          Optional<PlayerState> maybePlayer =
+              gameService.getPlayerState(game.getId(), targetDiscordId);
 
-      if (maybePlayer.isEmpty()) {
-        CommandHelper.replyError(event, "That player is not in this game.");
-        return;
-      }
-      PlayerState player = maybePlayer.get();
+          if (maybePlayer.isEmpty()) {
+            CommandHelper.replyError(event, "That player is not in this game.");
+            return;
+          }
+          PlayerState player = maybePlayer.get();
 
-      // Render
-      BufferedImage img = renderer.render(player);
-      byte[] pngBytes = toPng(img);
-      if (pngBytes == null) {
-        CommandHelper.replyError(event, "Failed to render board image. Please try again.");
-        return;
-      }
+          // Render
+          BufferedImage img = renderer.render(player);
+          byte[] pngBytes = toPng(img);
+          if (pngBytes == null) {
+            CommandHelper.replyError(event, "Failed to render board image. Please try again.");
+            return;
+          }
 
-      String filename = "board_" + player.getDiscordId() + ".png";
-      event.getHook()
-          .sendMessage(player.getDiscordName() + "'s zoo board:")
-          .addFiles(FileUpload.fromData(pngBytes, filename))
-          .queue();
-    });
+          String filename = "board_" + player.getDiscordId() + ".png";
+          event
+              .getHook()
+              .sendMessage(player.getDiscordName() + "'s zoo board:")
+              .addFiles(FileUpload.fromData(pngBytes, filename))
+              .queue();
+        });
   }
 
   private static byte[] toPng(BufferedImage img) {

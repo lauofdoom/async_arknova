@@ -9,8 +9,8 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 /**
- * The shared board state for one game — the association board, card display, and decks.
- * One row per game, keyed by game_id. Created when the game starts.
+ * The shared board state for one game — the association board, card display, and decks. One row per
+ * game, keyed by game_id. Created when the game starts.
  */
 @Entity
 @Table(name = "shared_board_state")

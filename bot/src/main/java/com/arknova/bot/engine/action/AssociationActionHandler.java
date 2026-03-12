@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
  * Handles the ASSOCIATION action — perform tasks on the association board.
  *
  * <h2>Card rules</h2>
+ *
  * <pre>
  * Unupgraded (I): Perform 1 association task with a maximum value of X.
  *
@@ -35,21 +36,23 @@ import org.springframework.stereotype.Component;
  * X = current strength of this action card (1–5).
  *
  * <h2>Task types and their values</h2>
+ *
  * <ul>
- *   <li>PARTNER_ZOO            — value = next partner zoo slot number (1st=1, 2nd=2, 3rd=3)</li>
- *   <li>UNIVERSITY             — value = next university slot number (1st=1, 2nd=2)</li>
- *   <li>CONSERVATION_PROJECT   — value = 1; sends 1 worker to a face-up project</li>
- *   <li>RETURN_WORKERS         — value = 1; returns all workers from the board</li>
+ *   <li>PARTNER_ZOO — value = next partner zoo slot number (1st=1, 2nd=2, 3rd=3)
+ *   <li>UNIVERSITY — value = next university slot number (1st=1, 2nd=2)
+ *   <li>CONSERVATION_PROJECT — value = 1; sends 1 worker to a face-up project
+ *   <li>RETURN_WORKERS — value = 1; returns all workers from the board
  * </ul>
  *
- * Partner zoo costs: slot 1 = 2💰, slot 2 = 3💰, slot 3 = 4💰.
- * University costs: slot 1 = 2💰, slot 2 = 3💰.
+ * Partner zoo costs: slot 1 = 2💰, slot 2 = 3💰, slot 3 = 4💰. University costs: slot 1 = 2💰, slot
+ * 2 = 3💰.
  *
  * <h2>Request parameters</h2>
+ *
  * <ul>
- *   <li>{@code "sub_actions"}     — ordered list of 1+ task type strings</li>
- *   <li>{@code "project_ids"}     — one project card ID per CONSERVATION_PROJECT entry (in order)</li>
- *   <li>{@code "donation_amount"} — money to donate (upgraded only; optional; multiple of 3)</li>
+ *   <li>{@code "sub_actions"} — ordered list of 1+ task type strings
+ *   <li>{@code "project_ids"} — one project card ID per CONSERVATION_PROJECT entry (in order)
+ *   <li>{@code "donation_amount"} — money to donate (upgraded only; optional; multiple of 3)
  * </ul>
  */
 @Component
@@ -79,21 +82,21 @@ public class AssociationActionHandler implements ActionHandler {
   }
 
   @Override
-  public ActionResult execute(ActionRequest request, PlayerState player,
-      SharedBoardState sharedBoard) {
+  public ActionResult execute(
+      ActionRequest request, PlayerState player, SharedBoardState sharedBoard) {
 
-    int strength   = player.getStrengthOf(ActionCard.ASSOCIATION);
+    int strength = player.getStrengthOf(ActionCard.ASSOCIATION);
     boolean upgraded = player.getActionCardOrder().isUpgraded(ActionCard.ASSOCIATION);
     String discordId = request.discordId();
 
-    List<String> subActions    = request.paramList("sub_actions");
-    List<String> projectIds    = request.paramList("project_ids");
-    int donationAmount         = request.paramInt("donation_amount", 0);
+    List<String> subActions = request.paramList("sub_actions");
+    List<String> projectIds = request.paramList("project_ids");
+    int donationAmount = request.paramInt("donation_amount", 0);
 
     if (subActions.isEmpty()) {
       return ActionResult.failure(
           "Please specify at least one sub-action: PARTNER_ZOO, UNIVERSITY, "
-          + "CONSERVATION_PROJECT, or RETURN_WORKERS.");
+              + "CONSERVATION_PROJECT, or RETURN_WORKERS.");
     }
 
     // Unupgraded: exactly 1 task
@@ -124,12 +127,12 @@ public class AssociationActionHandler implements ActionHandler {
 
     // ── Pre-validate: compute total task value and check money/workers ─────────
     ConservationSlots conservationSlots = readConservationSlots(player);
-    int totalValue    = 0;
-    int pendingMoney  = donationAmount; // donation counts against money but not against X
+    int totalValue = 0;
+    int pendingMoney = donationAmount; // donation counts against money but not against X
     int pendingWorkers = 0;
-    int pendingPartnerZoos  = 0;
+    int pendingPartnerZoos = 0;
     int pendingUniversities = 0;
-    int projectIdCursor     = 0;
+    int projectIdCursor = 0;
 
     for (String raw : subActions) {
       String type = raw.toUpperCase();
@@ -141,17 +144,22 @@ public class AssociationActionHandler implements ActionHandler {
                 "You already have the maximum " + PARTNER_ZOO_COSTS.length + " partner zoos.");
           }
           int taskValue = slot + 1; // slot 0 → value 1, slot 1 → value 2, etc.
-          int cost      = PARTNER_ZOO_COSTS[slot];
+          int cost = PARTNER_ZOO_COSTS[slot];
           if (player.getMoney() - pendingMoney < cost) {
             return ActionResult.failure(
-                "Partner zoo #" + (slot + 1) + " costs " + cost
-                + "💰 (you have " + (player.getMoney() - pendingMoney) + " remaining).");
+                "Partner zoo #"
+                    + (slot + 1)
+                    + " costs "
+                    + cost
+                    + "💰 (you have "
+                    + (player.getMoney() - pendingMoney)
+                    + " remaining).");
           }
           if (player.getAssocWorkersAvailable() - pendingWorkers < 1) {
             return ActionResult.failure("You have no available association workers.");
           }
-          totalValue      += taskValue;
-          pendingMoney    += cost;
+          totalValue += taskValue;
+          pendingMoney += cost;
           pendingWorkers++;
           pendingPartnerZoos++;
         }
@@ -162,17 +170,22 @@ public class AssociationActionHandler implements ActionHandler {
                 "You already have the maximum " + UNIVERSITY_COSTS.length + " universities.");
           }
           int taskValue = slot + 1;
-          int cost      = UNIVERSITY_COSTS[slot];
+          int cost = UNIVERSITY_COSTS[slot];
           if (player.getMoney() - pendingMoney < cost) {
             return ActionResult.failure(
-                "University #" + (slot + 1) + " costs " + cost
-                + "💰 (you have " + (player.getMoney() - pendingMoney) + " remaining).");
+                "University #"
+                    + (slot + 1)
+                    + " costs "
+                    + cost
+                    + "💰 (you have "
+                    + (player.getMoney() - pendingMoney)
+                    + " remaining).");
           }
           if (player.getAssocWorkersAvailable() - pendingWorkers < 1) {
             return ActionResult.failure("You have no available association workers.");
           }
-          totalValue      += taskValue;
-          pendingMoney    += cost;
+          totalValue += taskValue;
+          pendingMoney += cost;
           pendingWorkers++;
           pendingUniversities++;
         }
@@ -180,7 +193,7 @@ public class AssociationActionHandler implements ActionHandler {
           if (projectIdCursor >= projectIds.size()) {
             return ActionResult.failure(
                 "Please supply a project card ID for each CONSERVATION_PROJECT "
-                + "(param: project_ids).");
+                    + "(param: project_ids).");
           }
           String projectId = projectIds.get(projectIdCursor++);
           CardDefinition proj = cardDefRepo.findById(projectId).orElse(null);
@@ -197,8 +210,9 @@ public class AssociationActionHandler implements ActionHandler {
         case "RETURN_WORKERS" -> totalValue += 1;
         default -> {
           return ActionResult.failure(
-              "Unknown sub-action: " + raw
-              + ". Valid types: PARTNER_ZOO, UNIVERSITY, CONSERVATION_PROJECT, RETURN_WORKERS.");
+              "Unknown sub-action: "
+                  + raw
+                  + ". Valid types: PARTNER_ZOO, UNIVERSITY, CONSERVATION_PROJECT, RETURN_WORKERS.");
         }
       }
     }
@@ -206,25 +220,31 @@ public class AssociationActionHandler implements ActionHandler {
     // Core constraint: total task value ≤ X (strength)
     if (totalValue > strength) {
       return ActionResult.failure(
-          "Total task value " + totalValue + " exceeds the maximum of X=" + strength
-          + " at current strength. Choose tasks with a lower combined value.");
+          "Total task value "
+              + totalValue
+              + " exceeds the maximum of X="
+              + strength
+              + " at current strength. Choose tasks with a lower combined value.");
     }
 
     // Validate donation money
     if (donationAmount > 0 && player.getMoney() - pendingMoney + donationAmount < 0) {
-      return ActionResult.failure(
-          "Insufficient money for donation of " + donationAmount + "💰.");
+      return ActionResult.failure("Insufficient money for donation of " + donationAmount + "💰.");
     }
 
     // ── Apply all sub-actions ─────────────────────────────────────────────────
 
     StringBuilder summary = new StringBuilder();
-    summary.append(request.discordName())
-        .append(" used **Association** (strength ").append(strength).append(", X=")
-        .append(strength).append("):");
+    summary
+        .append(request.discordName())
+        .append(" used **Association** (strength ")
+        .append(strength)
+        .append(", X=")
+        .append(strength)
+        .append("):");
 
-    int totalMoneyCost       = 0;
-    int totalConservation    = 0;
+    int totalMoneyCost = 0;
+    int totalConservation = 0;
     boolean anyManualResolution = false;
 
     projectIdCursor = 0;
@@ -238,8 +258,12 @@ public class AssociationActionHandler implements ActionHandler {
           player.setAssocWorkersAvailable(player.getAssocWorkersAvailable() - 1);
           totalMoneyCost += cost;
           conservationSlots = conservationSlots.withPartnerZoo("PARTNER_ZOO_" + (slot + 1));
-          summary.append("\n  • Partner zoo #").append(slot + 1)
-              .append(" claimed for ").append(cost).append("💰 — effect: manual resolution.");
+          summary
+              .append("\n  • Partner zoo #")
+              .append(slot + 1)
+              .append(" claimed for ")
+              .append(cost)
+              .append("💰 — effect: manual resolution.");
           anyManualResolution = true;
         }
         case "UNIVERSITY" -> {
@@ -249,8 +273,12 @@ public class AssociationActionHandler implements ActionHandler {
           player.setAssocWorkersAvailable(player.getAssocWorkersAvailable() - 1);
           totalMoneyCost += cost;
           conservationSlots = conservationSlots.withUniversity("UNIVERSITY_" + (slot + 1));
-          summary.append("\n  • University #").append(slot + 1)
-              .append(" claimed for ").append(cost).append("💰 — effect: manual resolution.");
+          summary
+              .append("\n  • University #")
+              .append(slot + 1)
+              .append(" claimed for ")
+              .append(cost)
+              .append("💰 — effect: manual resolution.");
           anyManualResolution = true;
         }
         case "CONSERVATION_PROJECT" -> {
@@ -263,16 +291,22 @@ public class AssociationActionHandler implements ActionHandler {
             int cp = proj.getConservationValue();
             player.setConservation(player.getConservation() + cp);
             totalConservation += cp;
-            summary.append("\n  • Conservation project **").append(proj.getName())
-                .append("** completed! +").append(cp).append(" conservation.");
+            summary
+                .append("\n  • Conservation project **")
+                .append(proj.getName())
+                .append("** completed! +")
+                .append(cp)
+                .append(" conservation.");
           } else {
             summary.append("\n  • Worker sent to **").append(proj.getName()).append("**.");
           }
         }
         case "RETURN_WORKERS" -> {
           player.setAssocWorkersAvailable(player.getAssocWorkers());
-          summary.append("\n  • All workers returned (")
-              .append(player.getAssocWorkers()).append(" available).");
+          summary
+              .append("\n  • All workers returned (")
+              .append(player.getAssocWorkers())
+              .append(" available).");
         }
       }
     }
@@ -282,45 +316,68 @@ public class AssociationActionHandler implements ActionHandler {
       int cp = donationAmount / DONATION_RATE;
       player.setMoney(player.getMoney() - donationAmount);
       player.setConservation(player.getConservation() + cp);
-      totalMoneyCost   += donationAmount;
+      totalMoneyCost += donationAmount;
       totalConservation += cp;
-      summary.append("\n  • Donated ").append(donationAmount).append("💰 → +").append(cp)
+      summary
+          .append("\n  • Donated ")
+          .append(donationAmount)
+          .append("💰 → +")
+          .append(cp)
           .append(" conservation.");
     }
 
     writeConservationSlots(player, conservationSlots);
 
-    log.info("Game {}: {} ASSOCIATION strength={} total_value={} money={} cp={} workers={}",
-        request.gameId(), discordId, strength, totalValue, totalMoneyCost,
-        totalConservation, player.getAssocWorkersAvailable());
+    log.info(
+        "Game {}: {} ASSOCIATION strength={} total_value={} money={} cp={} workers={}",
+        request.gameId(),
+        discordId,
+        strength,
+        totalValue,
+        totalMoneyCost,
+        totalConservation,
+        player.getAssocWorkersAvailable());
 
     return new ActionResult(
-        true, null, ActionCard.ASSOCIATION, strength, summary.toString(),
-        Map.of("money_spent",          totalMoneyCost,
-               "conservation_gained",  totalConservation,
-               "total_task_value",     totalValue,
-               "workers_available",    player.getAssocWorkersAvailable()),
-        List.of(), false, anyManualResolution, null);
+        true,
+        null,
+        ActionCard.ASSOCIATION,
+        strength,
+        summary.toString(),
+        Map.of(
+            "money_spent", totalMoneyCost,
+            "conservation_gained", totalConservation,
+            "total_task_value", totalValue,
+            "workers_available", player.getAssocWorkersAvailable()),
+        List.of(),
+        false,
+        anyManualResolution,
+        null);
   }
 
   // ── Conservation project board ────────────────────────────────────────────────
 
   @SuppressWarnings("unchecked")
-  private boolean contributeToProject(SharedBoardState sharedBoard,
-      String projectId, String discordId) {
+  private boolean contributeToProject(
+      SharedBoardState sharedBoard, String projectId, String discordId) {
     try {
-      Map<String, Object> board = objectMapper.readValue(
-          sharedBoard.getConservationBoard(), new TypeReference<>() {});
+      Map<String, Object> board =
+          objectMapper.readValue(sharedBoard.getConservationBoard(), new TypeReference<>() {});
       Map<String, Object> projects =
           (Map<String, Object>) board.getOrDefault("projects", new HashMap<>());
 
-      Map<String, Object> proj = (Map<String, Object>) projects.computeIfAbsent(
-          projectId, k -> {
-            Map<String, Object> p = new HashMap<>();
-            p.put("status", "available");
-            p.put("slots", new ArrayList<>(java.util.Arrays.asList(new Object[PROJECT_SLOTS])));
-            return p;
-          });
+      Map<String, Object> proj =
+          (Map<String, Object>)
+              projects.computeIfAbsent(
+                  projectId,
+                  k -> {
+                    Map<String, Object> p = new HashMap<>();
+                    p.put("status", "available");
+                    p.put(
+                        "slots",
+                        new ArrayList<>(java.util.Arrays.asList(new Object[PROJECT_SLOTS])));
+                    return p;
+                  });
 
       List<Object> slots = (List<Object>) proj.get("slots");
       if (slots == null) {
@@ -351,12 +408,12 @@ public class AssociationActionHandler implements ActionHandler {
   @SuppressWarnings("unchecked")
   private ConservationSlots readConservationSlots(PlayerState player) {
     try {
-      Map<String, Object> raw = objectMapper.readValue(
-          player.getConservationSlots(), new TypeReference<>() {});
+      Map<String, Object> raw =
+          objectMapper.readValue(player.getConservationSlots(), new TypeReference<>() {});
       return new ConservationSlots(
-          (List<Object>) raw.getOrDefault("partnerZoos",  List.of()),
+          (List<Object>) raw.getOrDefault("partnerZoos", List.of()),
           (List<Object>) raw.getOrDefault("universities", List.of()),
-          (List<Object>) raw.getOrDefault("projects",     List.of()));
+          (List<Object>) raw.getOrDefault("projects", List.of()));
     } catch (Exception e) {
       log.error("Failed to read conservationSlots for {}", player.getDiscordId(), e);
       return new ConservationSlots(new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
@@ -366,9 +423,9 @@ public class AssociationActionHandler implements ActionHandler {
   private void writeConservationSlots(PlayerState player, ConservationSlots slots) {
     try {
       Map<String, Object> raw = new HashMap<>();
-      raw.put("partnerZoos",  slots.partnerZoos());
+      raw.put("partnerZoos", slots.partnerZoos());
       raw.put("universities", slots.universities());
-      raw.put("projects",     slots.projects());
+      raw.put("projects", slots.projects());
       player.setConservationSlots(objectMapper.writeValueAsString(raw));
     } catch (Exception e) {
       log.error("Failed to write conservationSlots for {}", player.getDiscordId(), e);
@@ -377,11 +434,16 @@ public class AssociationActionHandler implements ActionHandler {
 
   // ── Value objects ─────────────────────────────────────────────────────────────
 
-  record ConservationSlots(List<Object> partnerZoos, List<Object> universities,
-      List<Object> projects) {
+  record ConservationSlots(
+      List<Object> partnerZoos, List<Object> universities, List<Object> projects) {
 
-    int partnerZooCount()  { return (int) partnerZoos.stream().filter(s -> s != null).count(); }
-    int universityCount()  { return (int) universities.stream().filter(s -> s != null).count(); }
+    int partnerZooCount() {
+      return (int) partnerZoos.stream().filter(s -> s != null).count();
+    }
+
+    int universityCount() {
+      return (int) universities.stream().filter(s -> s != null).count();
+    }
 
     ConservationSlots withPartnerZoo(String label) {
       List<Object> updated = new ArrayList<>(partnerZoos);

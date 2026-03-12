@@ -30,8 +30,8 @@ public interface ArkNovaCommand {
   }
 
   /**
-   * Handle the interaction. The interaction has already been deferred — use {@code
-   * event.getHook()} to send the response.
+   * Handle the interaction. The interaction has already been deferred — use {@code event.getHook()}
+   * to send the response.
    */
   void handle(SlashCommandInteractionEvent event);
 }

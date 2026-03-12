@@ -31,26 +31,30 @@ public class CreateCommand implements ArkNovaCommand {
 
   @Override
   public void handle(SlashCommandInteractionEvent event) {
-    CommandHelper.runSafely(event, () -> {
-      String channelId = event.getChannel().getId();
-      String guildId   = event.getGuild() != null ? event.getGuild().getId() : "DM";
-      String discordId = event.getUser().getId();
-      String name      = event.getMember() != null
-          ? event.getMember().getEffectiveName()
-          : event.getUser().getName();
+    CommandHelper.runSafely(
+        event,
+        () -> {
+          String channelId = event.getChannel().getId();
+          String guildId = event.getGuild() != null ? event.getGuild().getId() : "DM";
+          String discordId = event.getUser().getId();
+          String name =
+              event.getMember() != null
+                  ? event.getMember().getEffectiveName()
+                  : event.getUser().getName();
 
-      Game game = gameService.createGame(guildId, channelId, discordId, name);
+          Game game = gameService.createGame(guildId, channelId, discordId, name);
 
-      EmbedBuilder embed = new EmbedBuilder()
-          .setColor(CommandHelper.COLOR_SUCCESS)
-          .setTitle("Ark Nova — Game Created")
-          .setDescription("Game created. Waiting for players to join.")
-          .addField("Game ID", game.getId().toString().substring(0, 8) + "...", true)
-          .addField("Host", name, true)
-          .addField("Join", "Other players: `/arknova join`", false)
-          .addField("Start", "Once 2–4 players have joined: `/arknova start`", false);
+          EmbedBuilder embed =
+              new EmbedBuilder()
+                  .setColor(CommandHelper.COLOR_SUCCESS)
+                  .setTitle("Ark Nova — Game Created")
+                  .setDescription("Game created. Waiting for players to join.")
+                  .addField("Game ID", game.getId().toString().substring(0, 8) + "...", true)
+                  .addField("Host", name, true)
+                  .addField("Join", "Other players: `/arknova join`", false)
+                  .addField("Start", "Once 2–4 players have joined: `/arknova start`", false);
 
-      event.getHook().sendMessageEmbeds(embed.build()).queue();
-    });
+          event.getHook().sendMessageEmbeds(embed.build()).queue();
+        });
   }
 }

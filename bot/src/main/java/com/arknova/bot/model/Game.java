@@ -62,7 +62,9 @@ public class Game {
   @Column(name = "settings", columnDefinition = "jsonb", nullable = false)
   private String settings = "{}";
 
-  /** Optimistic locking — incremented on every update. Prevents lost updates from race conditions. */
+  /**
+   * Optimistic locking — incremented on every update. Prevents lost updates from race conditions.
+   */
   @Version
   @Column(name = "state_version", nullable = false)
   private int stateVersion = 0;

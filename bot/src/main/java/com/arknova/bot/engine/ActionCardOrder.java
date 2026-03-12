@@ -65,10 +65,12 @@ public final class ActionCardOrder {
       throw new IllegalArgumentException("ActionCardOrder must contain exactly 5 cards");
     }
     if (!EnumSet.allOf(ActionCard.class).equals(EnumSet.copyOf(order))) {
-      throw new IllegalArgumentException("ActionCardOrder must contain each ActionCard exactly once");
+      throw new IllegalArgumentException(
+          "ActionCardOrder must contain each ActionCard exactly once");
     }
     this.order = new ArrayList<>(order);
-    this.upgraded = EnumSet.copyOf(upgraded.isEmpty() ? EnumSet.noneOf(ActionCard.class) : upgraded);
+    this.upgraded =
+        EnumSet.copyOf(upgraded.isEmpty() ? EnumSet.noneOf(ActionCard.class) : upgraded);
   }
 
   // ── Queries ────────────────────────────────────────────────────────────────
@@ -101,8 +103,8 @@ public final class ActionCardOrder {
   // ── Mutations ──────────────────────────────────────────────────────────────
 
   /**
-   * Uses the given card: captures its current strength, moves it to the leftmost position
-   * (strength 1), and returns the strength at the time of use.
+   * Uses the given card: captures its current strength, moves it to the leftmost position (strength
+   * 1), and returns the strength at the time of use.
    *
    * @param card the card being used
    * @return the strength (1–5) the card had when it was used
@@ -126,10 +128,11 @@ public final class ActionCardOrder {
   // ── Serialisation ──────────────────────────────────────────────────────────
 
   /**
-   * Serialises the order to a String array suitable for storage in the {@code
-   * action_card_order} DB column (PostgreSQL text array).
+   * Serialises the order to a String array suitable for storage in the {@code action_card_order} DB
+   * column (PostgreSQL text array).
    *
-   * @return 5-element array of ActionCard names, e.g. ["CARDS","BUILD","ANIMALS","ASSOCIATION","SPONSOR"]
+   * @return 5-element array of ActionCard names, e.g.
+   *     ["CARDS","BUILD","ANIMALS","ASSOCIATION","SPONSOR"]
    */
   public String[] toOrderArray() {
     return order.stream().map(Enum::name).toArray(String[]::new);
@@ -147,12 +150,11 @@ public final class ActionCardOrder {
   /**
    * Deserialises from DB column values.
    *
-   * @param orderArray  5-element array of ActionCard names (must not be null)
+   * @param orderArray 5-element array of ActionCard names (must not be null)
    * @param upgradedArray array of upgraded card names (may be null or empty)
    */
   public static ActionCardOrder fromArrays(String[] orderArray, String[] upgradedArray) {
-    List<ActionCard> order =
-        Arrays.stream(orderArray).map(ActionCard::valueOf).toList();
+    List<ActionCard> order = Arrays.stream(orderArray).map(ActionCard::valueOf).toList();
 
     Set<ActionCard> upgraded = EnumSet.noneOf(ActionCard.class);
     if (upgradedArray != null) {
@@ -168,9 +170,11 @@ public final class ActionCardOrder {
    * Formats the action card strip for Discord embed display.
    *
    * <p>Example output:
+   *
    * <pre>
    * 🃏Cards(1)  🏗️Build(2)  🦁Animals(3)  🤝Association(4)  💼Sponsor(5)
    * </pre>
+   *
    * Upgraded cards are annotated with ★.
    */
   public String toDiscordString() {

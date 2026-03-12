@@ -27,14 +27,16 @@ import org.springframework.transaction.annotation.Transactional;
  * ordered arrays of card IDs (index 0 = top of deck).
  *
  * <h2>Ark Nova card flow</h2>
+ *
  * <pre>
  * Shuffled Deck → [top] → DISPLAY (6 face-up slots) → player HAND → PLAYED or PLACED
  *                       → HAND (draw from deck)                  → DISCARD
  * </pre>
  *
  * <h2>Display refill rule</h2>
- * When a card is taken from the display, remaining cards shift LEFT (toward slot 1), and a new
- * card is drawn from the deck to fill slot 6.
+ *
+ * When a card is taken from the display, remaining cards shift LEFT (toward slot 1), and a new card
+ * is drawn from the deck to fill slot 6.
  */
 @Service
 @RequiredArgsConstructor
@@ -56,8 +58,8 @@ public class DeckService {
    * deals the starting display (6 face-up cards), and creates PlayerCard rows for each player's
    * starting hand (empty at game start — players draw on their first CARDS action).
    *
-   * @param game        the game to initialise
-   * @param playerIds   ordered list of player Discord IDs (seat order)
+   * @param game the game to initialise
+   * @param playerIds ordered list of player Discord IDs (seat order)
    */
   @Transactional
   public void initializeDecks(Game game, List<String> playerIds) {
@@ -67,16 +69,22 @@ public class DeckService {
     List<String> animalIds = shuffledIds(CardType.ANIMAL);
     List<String> sponsorIds = shuffledIds(CardType.SPONSOR);
 
-    log.info("Game {}: initialising decks — {} animals, {} sponsors",
-        gameId, animalIds.size(), sponsorIds.size());
+    log.info(
+        "Game {}: initialising decks — {} animals, {} sponsors",
+        gameId,
+        animalIds.size(),
+        sponsorIds.size());
 
     // Load or create shared board state
-    SharedBoardState shared = sharedBoardRepo.findByGameId(gameId)
-        .orElseGet(() -> {
-          SharedBoardState s = new SharedBoardState();
-          s.setGameId(gameId);
-          return s;
-        });
+    SharedBoardState shared =
+        sharedBoardRepo
+            .findByGameId(gameId)
+            .orElseGet(
+                () -> {
+                  SharedBoardState s = new SharedBoardState();
+                  s.setGameId(gameId);
+                  return s;
+                });
 
     // Store shuffled deck order (index 0 = top of deck)
     shared.setAnimalDeck(animalIds.toArray(String[]::new));
@@ -124,16 +132,16 @@ public class DeckService {
   /**
    * Draw {@code count} cards from the top of the combined deck into the player's hand.
    *
-   * @param gameId     the game
-   * @param discordId  the player drawing
-   * @param count      number of cards to draw
+   * @param gameId the game
+   * @param discordId the player drawing
+   * @param count number of cards to draw
    * @return list of card IDs drawn (in draw order)
    */
   @Transactional
   public List<String> drawFromDeck(UUID gameId, String discordId, int count) {
     SharedBoardState shared = requireSharedBoard(gameId);
 
-    List<String> animals  = new ArrayList<>(List.of(shared.getAnimalDeck()));
+    List<String> animals = new ArrayList<>(List.of(shared.getAnimalDeck()));
     List<String> sponsors = new ArrayList<>(List.of(shared.getSponsorDeck()));
 
     // Interleave: draw from animals primarily, then sponsors
@@ -144,7 +152,8 @@ public class DeckService {
       } else if (!sponsors.isEmpty()) {
         drawn.add(sponsors.remove(0));
       } else {
-        log.warn("Game {}: deck exhausted after {} draws (requested {})", gameId, drawn.size(), count);
+        log.warn(
+            "Game {}: deck exhausted after {} draws (requested {})", gameId, drawn.size(), count);
         break;
       }
     }
@@ -155,8 +164,8 @@ public class DeckService {
     sharedBoardRepo.save(shared);
 
     // Create HAND PlayerCard rows
-    int handSize = playerCardRepo
-        .countByGameIdAndDiscordIdAndLocation(gameId, discordId, CardLocation.HAND);
+    int handSize =
+        playerCardRepo.countByGameIdAndDiscordIdAndLocation(gameId, discordId, CardLocation.HAND);
 
     for (int i = 0; i < drawn.size(); i++) {
       PlayerCard pc = new PlayerCard();
@@ -176,26 +185,27 @@ public class DeckService {
    * Take a face-up card from the display into the player's hand. Shifts remaining display cards
    * left and refills slot 6 from the deck.
    *
-   * @param gameId     the game
-   * @param discordId  the player taking the card
-   * @param cardId     the card ID to take (must currently be in DISPLAY)
+   * @param gameId the game
+   * @param discordId the player taking the card
+   * @param cardId the card ID to take (must currently be in DISPLAY)
    * @throws IllegalArgumentException if the card is not in the display
    */
   @Transactional
   public void takeFromDisplay(UUID gameId, String discordId, String cardId) {
     // Find the display entry for this card
-    List<PlayerCard> display = playerCardRepo
-        .findByGameIdAndLocationOrderBySortOrderAsc(gameId, CardLocation.DISPLAY);
+    List<PlayerCard> display =
+        playerCardRepo.findByGameIdAndLocationOrderBySortOrderAsc(gameId, CardLocation.DISPLAY);
 
-    PlayerCard target = display.stream()
-        .filter(pc -> pc.getCard().getId().equals(cardId))
-        .findFirst()
-        .orElseThrow(() -> new IllegalArgumentException(
-            "Card " + cardId + " is not in the display"));
+    PlayerCard target =
+        display.stream()
+            .filter(pc -> pc.getCard().getId().equals(cardId))
+            .findFirst()
+            .orElseThrow(
+                () -> new IllegalArgumentException("Card " + cardId + " is not in the display"));
 
     // Move card to player's hand
-    int handSize = playerCardRepo
-        .countByGameIdAndDiscordIdAndLocation(gameId, discordId, CardLocation.HAND);
+    int handSize =
+        playerCardRepo.countByGameIdAndDiscordIdAndLocation(gameId, discordId, CardLocation.HAND);
     target.setDiscordId(discordId);
     target.setLocation(CardLocation.HAND);
     target.setSortOrder(handSize);
@@ -218,26 +228,27 @@ public class DeckService {
   /**
    * Discard cards from the player's hand (used for strength-1 CARDS action: draw 2, keep 1).
    *
-   * @param gameId    the game
+   * @param gameId the game
    * @param discordId the player discarding
-   * @param cardIds   IDs of the cards to discard
+   * @param cardIds IDs of the cards to discard
    */
   @Transactional
   public void discardFromHand(UUID gameId, String discordId, List<String> cardIds) {
     if (cardIds.isEmpty()) return;
 
-    List<PlayerCard> hand = playerCardRepo
-        .findByGameIdAndDiscordIdAndLocationOrderBySortOrderAsc(
+    List<PlayerCard> hand =
+        playerCardRepo.findByGameIdAndDiscordIdAndLocationOrderBySortOrderAsc(
             gameId, discordId, CardLocation.HAND);
 
     for (String cardId : cardIds) {
       hand.stream()
           .filter(pc -> pc.getCard().getId().equals(cardId))
           .findFirst()
-          .ifPresent(pc -> {
-            pc.setLocation(CardLocation.DISCARD);
-            playerCardRepo.save(pc);
-          });
+          .ifPresent(
+              pc -> {
+                pc.setLocation(CardLocation.DISCARD);
+                playerCardRepo.save(pc);
+              });
     }
   }
 
@@ -246,40 +257,40 @@ public class DeckService {
   /**
    * Move an animal card from the player's hand to PLACED status (on the zoo board).
    *
-   * @param gameId       the game
-   * @param discordId    the player placing the animal
-   * @param cardId       the animal card ID (must be in player's HAND)
-   * @param enclosureId  the enclosure reference (e.g. "E1")
+   * @param gameId the game
+   * @param discordId the player placing the animal
+   * @param cardId the animal card ID (must be in player's HAND)
+   * @param enclosureId the enclosure reference (e.g. "E1")
    */
   @Transactional
   public void placeAnimal(UUID gameId, String discordId, String cardId, String enclosureId) {
-    PlayerCard card = playerCardRepo
-        .findByGameIdAndDiscordIdAndLocationOrderBySortOrderAsc(
-            gameId, discordId, CardLocation.HAND)
-        .stream()
-        .filter(pc -> pc.getCard().getId().equals(cardId))
-        .findFirst()
-        .orElseThrow(() -> new IllegalArgumentException(
-            "Card " + cardId + " is not in your hand"));
+    PlayerCard card =
+        playerCardRepo
+            .findByGameIdAndDiscordIdAndLocationOrderBySortOrderAsc(
+                gameId, discordId, CardLocation.HAND)
+            .stream()
+            .filter(pc -> pc.getCard().getId().equals(cardId))
+            .findFirst()
+            .orElseThrow(
+                () -> new IllegalArgumentException("Card " + cardId + " is not in your hand"));
 
     card.setLocation(CardLocation.PLACED);
     card.setEnclosureRef(enclosureId);
     playerCardRepo.save(card);
   }
 
-  /**
-   * Move a sponsor card from the player's hand to PLAYED (effect resolved, stays in play area).
-   */
+  /** Move a sponsor card from the player's hand to PLAYED (effect resolved, stays in play area). */
   @Transactional
   public void playSponsor(UUID gameId, String discordId, String cardId) {
-    PlayerCard card = playerCardRepo
-        .findByGameIdAndDiscordIdAndLocationOrderBySortOrderAsc(
-            gameId, discordId, CardLocation.HAND)
-        .stream()
-        .filter(pc -> pc.getCard().getId().equals(cardId))
-        .findFirst()
-        .orElseThrow(() -> new IllegalArgumentException(
-            "Card " + cardId + " is not in your hand"));
+    PlayerCard card =
+        playerCardRepo
+            .findByGameIdAndDiscordIdAndLocationOrderBySortOrderAsc(
+                gameId, discordId, CardLocation.HAND)
+            .stream()
+            .filter(pc -> pc.getCard().getId().equals(cardId))
+            .findFirst()
+            .orElseThrow(
+                () -> new IllegalArgumentException("Card " + cardId + " is not in your hand"));
 
     card.setLocation(CardLocation.PLAYED);
     playerCardRepo.save(card);
@@ -295,8 +306,7 @@ public class DeckService {
 
   /** Returns cards currently in the face-up display, ordered by slot. */
   public List<PlayerCard> getDisplay(UUID gameId) {
-    return playerCardRepo.findByGameIdAndLocationOrderBySortOrderAsc(
-        gameId, CardLocation.DISPLAY);
+    return playerCardRepo.findByGameIdAndLocationOrderBySortOrderAsc(gameId, CardLocation.DISPLAY);
   }
 
   /** Returns how many cards remain in the combined deck. */
@@ -311,7 +321,7 @@ public class DeckService {
     if (currentDisplaySize >= DISPLAY_SIZE) return;
 
     SharedBoardState shared = requireSharedBoard(gameId);
-    List<String> animals  = new ArrayList<>(List.of(shared.getAnimalDeck()));
+    List<String> animals = new ArrayList<>(List.of(shared.getAnimalDeck()));
     List<String> sponsors = new ArrayList<>(List.of(shared.getSponsorDeck()));
 
     int needed = DISPLAY_SIZE - currentDisplaySize;
@@ -343,17 +353,18 @@ public class DeckService {
   }
 
   private List<String> shuffledIds(CardType type) {
-    List<String> ids = cardDefRepo.findByCardTypeAndSource(type, "BASE")
-        .stream()
-        .map(CardDefinition::getId)
-        .collect(java.util.stream.Collectors.toCollection(ArrayList::new));
+    List<String> ids =
+        cardDefRepo.findByCardTypeAndSource(type, "BASE").stream()
+            .map(CardDefinition::getId)
+            .collect(java.util.stream.Collectors.toCollection(ArrayList::new));
     Collections.shuffle(ids);
     return ids;
   }
 
   private SharedBoardState requireSharedBoard(UUID gameId) {
-    return sharedBoardRepo.findByGameId(gameId)
-        .orElseThrow(() -> new IllegalStateException(
-            "No shared board state found for game " + gameId));
+    return sharedBoardRepo
+        .findByGameId(gameId)
+        .orElseThrow(
+            () -> new IllegalStateException("No shared board state found for game " + gameId));
   }
 }

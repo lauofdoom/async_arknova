@@ -17,11 +17,12 @@ import org.springframework.stereotype.Component;
 /**
  * /arknova discard — complete a pending hand discard after a CARDS draw action.
  *
- * <p>When a CARDS action at a strength that requires a hand discard (e.g. S1, S3, S5 unupgraded)
- * is executed, the engine defers the discard so the player can see their drawn cards first.
- * This command resolves the pending discard and advances the turn.
+ * <p>When a CARDS action at a strength that requires a hand discard (e.g. S1, S3, S5 unupgraded) is
+ * executed, the engine defers the discard so the player can see their drawn cards first. This
+ * command resolves the pending discard and advances the turn.
  *
  * <p>Options:
+ *
  * <ul>
  *   <li>{@code card_ids} — comma-separated card IDs from the player's hand to discard (required)
  * </ul>
@@ -41,10 +42,12 @@ public class DiscardCommand implements ArkNovaCommand {
 
   @Override
   public SubcommandData getSubcommandData() {
-    return new SubcommandData("discard",
-        "Complete a pending hand discard after drawing cards")
-        .addOption(OptionType.STRING, "card_ids",
-            "Comma-separated card IDs to discard from your hand", true);
+    return new SubcommandData("discard", "Complete a pending hand discard after drawing cards")
+        .addOption(
+            OptionType.STRING,
+            "card_ids",
+            "Comma-separated card IDs to discard from your hand",
+            true);
   }
 
   @Override
@@ -54,23 +57,24 @@ public class DiscardCommand implements ArkNovaCommand {
 
   @Override
   public void handle(SlashCommandInteractionEvent event) {
-    CommandHelper.runSafely(event, () -> {
-      Optional<Game> maybeGame = commandHelper.getActiveGame(event);
-      if (maybeGame.isEmpty()) return;
-      Game game = maybeGame.get();
+    CommandHelper.runSafely(
+        event,
+        () -> {
+          Optional<Game> maybeGame = commandHelper.getActiveGame(event);
+          if (maybeGame.isEmpty()) return;
+          Game game = maybeGame.get();
 
-      String discordId = event.getUser().getId();
+          String discordId = event.getUser().getId();
 
-      OptionMapping cardIdsOpt = event.getOption("card_ids");
-      List<String> cardIds = cardIdsOpt != null
-          ? CommandHelper.splitCsv(cardIdsOpt.getAsString())
-          : List.of();
+          OptionMapping cardIdsOpt = event.getOption("card_ids");
+          List<String> cardIds =
+              cardIdsOpt != null ? CommandHelper.splitCsv(cardIdsOpt.getAsString()) : List.of();
 
-      ActionResult result = gameEngine.executeDiscard(game.getId(), discordId, cardIds);
+          ActionResult result = gameEngine.executeDiscard(game.getId(), discordId, cardIds);
 
-      Game updatedGame = gameService.findByThreadId(event.getChannel().getId()).orElse(game);
-      List<PlayerState> players = gameService.getPlayersInOrder(game.getId());
-      commandHelper.sendActionResult(event, result, updatedGame, players);
-    });
+          Game updatedGame = gameService.findByThreadId(event.getChannel().getId()).orElse(game);
+          List<PlayerState> players = gameService.getPlayersInOrder(game.getId());
+          commandHelper.sendActionResult(event, result, updatedGame, players);
+        });
   }
 }

@@ -67,52 +67,84 @@ class CardsActionHandlerTest {
   @Nested
   @DisplayName("drawConfig() — unupgraded")
   class DrawConfigBase {
-    @Test @DisplayName("S1: draw 1, discard 1 from hand")
-    void s1() { assertThat(drawConfig(1, false)).containsExactly(1, 1); }
+    @Test
+    @DisplayName("S1: draw 1, discard 1 from hand")
+    void s1() {
+      assertThat(drawConfig(1, false)).containsExactly(1, 1);
+    }
 
-    @Test @DisplayName("S2: draw 1, no discard")
-    void s2() { assertThat(drawConfig(2, false)).containsExactly(1, 0); }
+    @Test
+    @DisplayName("S2: draw 1, no discard")
+    void s2() {
+      assertThat(drawConfig(2, false)).containsExactly(1, 0);
+    }
 
-    @Test @DisplayName("S3: draw 2, discard 1 from hand")
-    void s3() { assertThat(drawConfig(3, false)).containsExactly(2, 1); }
+    @Test
+    @DisplayName("S3: draw 2, discard 1 from hand")
+    void s3() {
+      assertThat(drawConfig(3, false)).containsExactly(2, 1);
+    }
 
-    @Test @DisplayName("S4: draw 2, no discard")
-    void s4() { assertThat(drawConfig(4, false)).containsExactly(2, 0); }
+    @Test
+    @DisplayName("S4: draw 2, no discard")
+    void s4() {
+      assertThat(drawConfig(4, false)).containsExactly(2, 0);
+    }
 
-    @Test @DisplayName("S5: draw 3, discard 1 from hand")
-    void s5() { assertThat(drawConfig(5, false)).containsExactly(3, 1); }
+    @Test
+    @DisplayName("S5: draw 3, discard 1 from hand")
+    void s5() {
+      assertThat(drawConfig(5, false)).containsExactly(3, 1);
+    }
   }
 
   @Nested
   @DisplayName("drawConfig() — upgraded")
   class DrawConfigUpgraded {
-    @Test @DisplayName("S1: draw 1, no discard")
-    void s1() { assertThat(drawConfig(1, true)).containsExactly(1, 0); }
+    @Test
+    @DisplayName("S1: draw 1, no discard")
+    void s1() {
+      assertThat(drawConfig(1, true)).containsExactly(1, 0);
+    }
 
-    @Test @DisplayName("S2: draw 2, discard 1 from hand")
-    void s2() { assertThat(drawConfig(2, true)).containsExactly(2, 1); }
+    @Test
+    @DisplayName("S2: draw 2, discard 1 from hand")
+    void s2() {
+      assertThat(drawConfig(2, true)).containsExactly(2, 1);
+    }
 
-    @Test @DisplayName("S3: draw 2, no discard")
-    void s3() { assertThat(drawConfig(3, true)).containsExactly(2, 0); }
+    @Test
+    @DisplayName("S3: draw 2, no discard")
+    void s3() {
+      assertThat(drawConfig(3, true)).containsExactly(2, 0);
+    }
 
-    @Test @DisplayName("S4: draw 3, discard 1 from hand")
-    void s4() { assertThat(drawConfig(4, true)).containsExactly(3, 1); }
+    @Test
+    @DisplayName("S4: draw 3, discard 1 from hand")
+    void s4() {
+      assertThat(drawConfig(4, true)).containsExactly(3, 1);
+    }
 
-    @Test @DisplayName("S5: draw 4, discard 1 from hand")
-    void s5() { assertThat(drawConfig(5, true)).containsExactly(4, 1); }
+    @Test
+    @DisplayName("S5: draw 4, discard 1 from hand")
+    void s5() {
+      assertThat(drawConfig(5, true)).containsExactly(4, 1);
+    }
   }
 
   @Nested
   @DisplayName("snapAvailable()")
   class SnapAvailableTest {
-    @Test @DisplayName("unupgraded: snap only at S5")
+    @Test
+    @DisplayName("unupgraded: snap only at S5")
     void baseSnap() {
       assertThat(snapAvailable(1, false)).isFalse();
       assertThat(snapAvailable(4, false)).isFalse();
       assertThat(snapAvailable(5, false)).isTrue();
     }
 
-    @Test @DisplayName("upgraded: snap at S3, S4, S5")
+    @Test
+    @DisplayName("upgraded: snap at S3, S4, S5")
     void upgradedSnap() {
       assertThat(snapAvailable(1, true)).isFalse();
       assertThat(snapAvailable(2, true)).isFalse();
@@ -190,8 +222,9 @@ class CardsActionHandlerTest {
     @DisplayName("display takes rejected on un-upgraded card")
     void displayRequiresUpgrade() {
       // CARDS at S1 un-upgraded
-      ActionResult result = handler.execute(
-          req(Map.of("display_card_ids", List.of("card_lion"))), player, sharedBoard);
+      ActionResult result =
+          handler.execute(
+              req(Map.of("display_card_ids", List.of("card_lion"))), player, sharedBoard);
 
       assertThat(result.success()).isFalse();
       assertThat(result.errorMessage()).containsIgnoringCase("upgraded");
@@ -200,12 +233,14 @@ class CardsActionHandlerTest {
     @Test
     @DisplayName("fails when taking more display cards than drawCount allows")
     void tooManyDisplayCards() {
-      setStrengthUpgraded(player, ActionCard.CARDS, 1); // S1 upgraded: draw=1, so max 1 display take
+      setStrengthUpgraded(
+          player, ActionCard.CARDS, 1); // S1 upgraded: draw=1, so max 1 display take
 
       player.setReputation(5);
 
-      ActionResult result = handler.execute(
-          req(Map.of("display_card_ids", List.of("c1", "c2"))), player, sharedBoard);
+      ActionResult result =
+          handler.execute(
+              req(Map.of("display_card_ids", List.of("c1", "c2"))), player, sharedBoard);
 
       assertThat(result.success()).isFalse();
       assertThat(result.errorMessage()).contains("at most 1");
@@ -218,12 +253,19 @@ class CardsActionHandlerTest {
       player.setReputation(2); // slot 5 requires rep ≥ 4
 
       PlayerCard pc = displayCard("card_lion", 5); // sortOrder = 4
-      when(deckService.getDisplay(gameId)).thenReturn(List.of(
-          displayCard("c1", 1), displayCard("c2", 2), displayCard("c3", 3),
-          displayCard("c4", 4), pc, displayCard("c6", 6)));
+      when(deckService.getDisplay(gameId))
+          .thenReturn(
+              List.of(
+                  displayCard("c1", 1),
+                  displayCard("c2", 2),
+                  displayCard("c3", 3),
+                  displayCard("c4", 4),
+                  pc,
+                  displayCard("c6", 6)));
 
-      ActionResult result = handler.execute(
-          req(Map.of("display_card_ids", List.of("card_lion"))), player, sharedBoard);
+      ActionResult result =
+          handler.execute(
+              req(Map.of("display_card_ids", List.of("card_lion"))), player, sharedBoard);
 
       assertThat(result.success()).isFalse();
       assertThat(result.errorMessage()).containsIgnoringCase("reputation");
@@ -250,8 +292,8 @@ class CardsActionHandlerTest {
       setStrength(player, ActionCard.CARDS, 2); // S2 unupgraded: draw 1, no discard
       when(deckService.drawFromDeck(gameId, "player1", 1)).thenReturn(List.of("c1"));
 
-      ActionResult result = handler.execute(
-          req(Map.of("discard_ids", List.of("c1"))), player, sharedBoard);
+      ActionResult result =
+          handler.execute(req(Map.of("discard_ids", List.of("c1"))), player, sharedBoard);
 
       assertThat(result.success()).isFalse();
       assertThat(result.errorMessage()).containsIgnoringCase("no discard required");
@@ -318,8 +360,9 @@ class CardsActionHandlerTest {
       when(deckService.getDisplay(gameId)).thenReturn(List.of(pc));
       when(deckService.getHand(gameId, "player1")).thenReturn(List.of(makeHandCard("card_lion")));
 
-      ActionResult result = handler.execute(
-          req(Map.of("display_card_ids", List.of("card_lion"))), player, sharedBoard);
+      ActionResult result =
+          handler.execute(
+              req(Map.of("display_card_ids", List.of("card_lion"))), player, sharedBoard);
 
       assertThat(result.success()).isTrue();
       verify(deckService).takeFromDisplay(gameId, "player1", "card_lion");
@@ -338,9 +381,9 @@ class CardsActionHandlerTest {
       when(deckService.drawFromDeck(gameId, "player1", 1)).thenReturn(List.of("deck_card"));
       when(deckService.getHand(gameId, "player1")).thenReturn(List.of());
 
-      ActionResult result = handler.execute(
-          req(Map.of("display_card_ids", List.of("display_card"))),
-          player, sharedBoard);
+      ActionResult result =
+          handler.execute(
+              req(Map.of("display_card_ids", List.of("display_card"))), player, sharedBoard);
 
       assertThat(result.success()).isTrue();
       verify(deckService).takeFromDisplay(gameId, "player1", "display_card");

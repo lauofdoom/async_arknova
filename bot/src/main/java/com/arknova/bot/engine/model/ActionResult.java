@@ -11,7 +11,6 @@ import java.util.Map;
 public record ActionResult(
     boolean success,
     String errorMessage,
-
     ActionCard cardUsed,
     int strengthUsed,
 
@@ -19,26 +18,26 @@ public record ActionResult(
     String summary,
 
     /**
-     * State deltas — what changed. Used for the action log {@code result} JSONB column.
-     * Keys e.g. "money_delta", "appeal_delta", "cards_drawn", "enclosure_built".
+     * State deltas — what changed. Used for the action log {@code result} JSONB column. Keys e.g.
+     * "money_delta", "appeal_delta", "cards_drawn", "enclosure_built".
      */
     Map<String, Object> deltas,
 
     /**
-     * Cards drawn into the player's hand this action (shown privately to the player).
-     * Empty for actions that don't involve drawing.
+     * Cards drawn into the player's hand this action (shown privately to the player). Empty for
+     * actions that don't involve drawing.
      */
     List<String> drawnCardIds,
 
     /**
-     * True if the game has entered Final Scoring phase as a result of this action.
-     * The notification service uses this to announce the end-game trigger.
+     * True if the game has entered Final Scoring phase as a result of this action. The notification
+     * service uses this to announce the end-game trigger.
      */
     boolean finalScoringTriggered,
 
     /**
-     * True if this action involved a card with no effect_code and requires the player
-     * to manually confirm the effect outcome.
+     * True if this action involved a card with no effect_code and requires the player to manually
+     * confirm the effect outcome.
      */
     boolean requiresManualResolution,
 
@@ -52,15 +51,19 @@ public record ActionResult(
   }
 
   /** Build a minimal success result. */
-  public static ActionResult success(ActionCard card, int strength, String summary,
-      Map<String, Object> deltas) {
+  public static ActionResult success(
+      ActionCard card, int strength, String summary, Map<String, Object> deltas) {
     return new ActionResult(
         true, null, card, strength, summary, deltas, List.of(), false, false, null);
   }
 
   /** Build a success result with drawn cards (for CARDS action). */
-  public static ActionResult successWithCards(ActionCard card, int strength, String summary,
-      Map<String, Object> deltas, List<String> drawnCardIds) {
+  public static ActionResult successWithCards(
+      ActionCard card,
+      int strength,
+      String summary,
+      Map<String, Object> deltas,
+      List<String> drawnCardIds) {
     return new ActionResult(
         true, null, card, strength, summary, deltas, drawnCardIds, false, false, null);
   }

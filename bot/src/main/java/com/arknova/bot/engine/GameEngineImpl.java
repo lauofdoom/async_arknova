@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
  * win condition checking, turn advancement, and persistence.
  *
  * <h2>Action execution sequence</h2>
+ *
  * <ol>
  *   <li>Load game and validate it is ACTIVE
  *   <li>Verify it is the requesting player's turn
@@ -63,14 +64,15 @@ public class GameEngineImpl implements GameEngine {
       WinConditionChecker winChecker,
       DeckService deckService,
       List<ActionHandler> handlerList) {
-    this.gameRepo         = gameRepo;
-    this.playerStateRepo  = playerStateRepo;
-    this.sharedBoardRepo  = sharedBoardRepo;
-    this.actionLogRepo    = actionLogRepo;
-    this.winChecker       = winChecker;
-    this.deckService      = deckService;
-    this.handlers         = handlerList.stream()
-        .collect(Collectors.toMap(ActionHandler::getActionCard, Function.identity()));
+    this.gameRepo = gameRepo;
+    this.playerStateRepo = playerStateRepo;
+    this.sharedBoardRepo = sharedBoardRepo;
+    this.actionLogRepo = actionLogRepo;
+    this.winChecker = winChecker;
+    this.deckService = deckService;
+    this.handlers =
+        handlerList.stream()
+            .collect(Collectors.toMap(ActionHandler::getActionCard, Function.identity()));
     log.info("GameEngine initialised with handlers: {}", handlers.keySet());
   }
 
@@ -79,41 +81,39 @@ public class GameEngineImpl implements GameEngine {
   @Override
   @Transactional
   public ActionResult executeAction(ActionRequest request) {
-    UUID gameId     = request.gameId();
+    UUID gameId = request.gameId();
     String discordId = request.discordId();
-    ActionCard card  = request.actionCard();
+    ActionCard card = request.actionCard();
 
     // 1. Load and validate game
-    Game game = gameRepo.findById(gameId)
-        .orElse(null);
+    Game game = gameRepo.findById(gameId).orElse(null);
     if (game == null) {
       return ActionResult.failure("Game not found.");
     }
     if (!game.isActive() && game.getStatus() != GameStatus.FINAL_SCORING) {
-      return ActionResult.failure("This game is not currently active (status: " + game.getStatus() + ").");
+      return ActionResult.failure(
+          "This game is not currently active (status: " + game.getStatus() + ").");
     }
 
     // 2. Load player
-    PlayerState player = playerStateRepo.findByGameIdAndDiscordId(gameId, discordId)
-        .orElse(null);
+    PlayerState player = playerStateRepo.findByGameIdAndDiscordId(gameId, discordId).orElse(null);
     if (player == null) {
       return ActionResult.failure("You are not a participant in this game.");
     }
 
     // 3. Validate it's this player's turn
     if (!isPlayerTurn(game, player)) {
-      PlayerState current = playerStateRepo
-          .findByGameIdAndSeatIndex(gameId, game.getCurrentSeat())
-          .orElse(null);
+      PlayerState current =
+          playerStateRepo.findByGameIdAndSeatIndex(gameId, game.getCurrentSeat()).orElse(null);
       String whose = current != null ? current.getDiscordName() : "another player";
       return ActionResult.failure("It's not your turn — waiting for " + whose + ".");
     }
 
     // 4. Load shared board
-    SharedBoardState sharedBoard = sharedBoardRepo.findByGameId(gameId)
-        .orElse(null);
+    SharedBoardState sharedBoard = sharedBoardRepo.findByGameId(gameId).orElse(null);
     if (sharedBoard == null) {
-      return ActionResult.failure("Shared board state not found — game may not have started properly.");
+      return ActionResult.failure(
+          "Shared board state not found — game may not have started properly.");
     }
 
     // 5. Dispatch to handler
@@ -124,7 +124,7 @@ public class GameEngineImpl implements GameEngine {
 
     // Capture strength and turn number BEFORE any mutations
     int strengthUsed = player.getStrengthOf(card);
-    int turnNumber   = game.getTurnNumber();
+    int turnNumber = game.getTurnNumber();
     ActionResult result = handler.execute(request, player, sharedBoard);
 
     if (!result.success()) {
@@ -180,10 +180,17 @@ public class GameEngineImpl implements GameEngine {
     // Rebuild result with finalScoringTriggered flag
     if (finalScoringTriggered) {
       return new ActionResult(
-          result.success(), result.errorMessage(), result.cardUsed(), result.strengthUsed(),
-          result.summary() + "\n\n🏁 **Final scoring round triggered!** All remaining players take one more turn.",
-          result.deltas(), result.drawnCardIds(), true,
-          result.requiresManualResolution(), result.manualResolutionCardId());
+          result.success(),
+          result.errorMessage(),
+          result.cardUsed(),
+          result.strengthUsed(),
+          result.summary()
+              + "\n\n🏁 **Final scoring round triggered!** All remaining players take one more turn.",
+          result.deltas(),
+          result.drawnCardIds(),
+          true,
+          result.requiresManualResolution(),
+          result.manualResolutionCardId());
     }
 
     return result;
@@ -200,7 +207,8 @@ public class GameEngineImpl implements GameEngine {
       return ActionResult.failure("Game not found.");
     }
     if (!game.isActive() && game.getStatus() != GameStatus.FINAL_SCORING) {
-      return ActionResult.failure("This game is not currently active (status: " + game.getStatus() + ").");
+      return ActionResult.failure(
+          "This game is not currently active (status: " + game.getStatus() + ").");
     }
 
     // 2. Load player, validate it's their turn
@@ -209,8 +217,8 @@ public class GameEngineImpl implements GameEngine {
       return ActionResult.failure("You are not a participant in this game.");
     }
     if (!isPlayerTurn(game, player)) {
-      PlayerState current = playerStateRepo
-          .findByGameIdAndSeatIndex(gameId, game.getCurrentSeat()).orElse(null);
+      PlayerState current =
+          playerStateRepo.findByGameIdAndSeatIndex(gameId, game.getCurrentSeat()).orElse(null);
       String whose = current != null ? current.getDiscordName() : "another player";
       return ActionResult.failure("It's not your turn — waiting for " + whose + ".");
     }
@@ -224,7 +232,11 @@ public class GameEngineImpl implements GameEngine {
     // 4. Validate correct number of cards provided
     if (cardIds.size() != pending) {
       return ActionResult.failure(
-          "You must discard exactly " + pending + " card(s) (you provided " + cardIds.size() + ").");
+          "You must discard exactly "
+              + pending
+              + " card(s) (you provided "
+              + cardIds.size()
+              + ").");
     }
 
     // 5. Apply the discard
@@ -249,11 +261,11 @@ public class GameEngineImpl implements GameEngine {
     playerStateRepo.save(player);
     gameRepo.save(game);
 
-    String summary = player.getDiscordName() + " discarded " + cardIds.size() + " card(s) from hand.";
+    String summary =
+        player.getDiscordName() + " discarded " + cardIds.size() + " card(s) from hand.";
     log.info("Game {}: {} DISCARD cards={}", gameId, discordId, cardIds);
 
-    return ActionResult.success(null, 0, summary,
-        Map.of("cards_discarded", cardIds.size()));
+    return ActionResult.success(null, 0, summary, Map.of("cards_discarded", cardIds.size()));
   }
 
   // ── undo ──────────────────────────────────────────────────────────────────
@@ -283,8 +295,8 @@ public class GameEngineImpl implements GameEngine {
     game.setTurnNumber(game.getTurnNumber() + 1);
   }
 
-  private void appendActionLog(ActionRequest request, ActionResult result, int strengthUsed,
-      int turnNumber) {
+  private void appendActionLog(
+      ActionRequest request, ActionResult result, int strengthUsed, int turnNumber) {
     try {
       ActionLogEntry entry = new ActionLogEntry();
       entry.setGameId(request.gameId());

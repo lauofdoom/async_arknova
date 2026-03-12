@@ -27,6 +27,7 @@ import org.springframework.stereotype.Component;
  * enclosures.
  *
  * <h2>Placement limits by strength</h2>
+ *
  * <pre>
  * ─────────────────────────────────────────────────────────
  *           │  S1  │  S2  │  S3  │  S4  │  S5
@@ -37,14 +38,16 @@ import org.springframework.stereotype.Component;
  * </pre>
  *
  * <h2>Card sources</h2>
+ *
  * <ul>
  *   <li><b>Standard</b>: all placements must come from the player's <em>hand</em>.
- *   <li><b>Upgraded</b>: each placement slot may come from the player's <em>hand</em>
- *       <em>or</em> from the shared display (within reputation range), with the display
- *       card's slot cost added on top of the printed cost.
+ *   <li><b>Upgraded</b>: each placement slot may come from the player's <em>hand</em> <em>or</em>
+ *       from the shared display (within reputation range), with the display card's slot cost added
+ *       on top of the printed cost.
  * </ul>
  *
  * <h2>Placement validation (per card)</h2>
+ *
  * <ul>
  *   <li>The card must be in the player's hand (or in the display if upgraded).
  *   <li>The card type must be ANIMAL.
@@ -56,11 +59,12 @@ import org.springframework.stereotype.Component;
  * </ul>
  *
  * <h2>Request parameters</h2>
+ *
  * <ul>
- *   <li>{@code "hand_card_ids"}    — ordered list of card IDs to take from hand (may be empty)
- *   <li>{@code "hand_enc_ids"}     — parallel enclosure IDs for hand cards
+ *   <li>{@code "hand_card_ids"} — ordered list of card IDs to take from hand (may be empty)
+ *   <li>{@code "hand_enc_ids"} — parallel enclosure IDs for hand cards
  *   <li>{@code "display_card_ids"} — card IDs to take from display (upgraded only; may be empty)
- *   <li>{@code "display_enc_ids"}  — parallel enclosure IDs for display cards
+ *   <li>{@code "display_enc_ids"} — parallel enclosure IDs for display cards
  * </ul>
  */
 @Component
@@ -80,33 +84,36 @@ public class AnimalsActionHandler implements ActionHandler {
   }
 
   @Override
-  public ActionResult execute(ActionRequest request, PlayerState player,
-      SharedBoardState sharedBoard) {
+  public ActionResult execute(
+      ActionRequest request, PlayerState player, SharedBoardState sharedBoard) {
 
-    int strength     = player.getStrengthOf(ActionCard.ANIMALS);
+    int strength = player.getStrengthOf(ActionCard.ANIMALS);
     boolean upgraded = player.getActionCardOrder().isUpgraded(ActionCard.ANIMALS);
     String discordId = request.discordId();
-    UUID gameId      = request.gameId();
+    UUID gameId = request.gameId();
 
     int maxTotal = maxAnimals(strength, upgraded);
 
     // ── Strength 1 un-upgraded: no placements ────────────────────────────────
     if (maxTotal == 0) {
-      return ActionResult.success(ActionCard.ANIMALS, strength,
+      return ActionResult.success(
+          ActionCard.ANIMALS,
+          strength,
           request.discordName() + " used the Animals action at strength 1 — no animals placed.",
           Map.of("cards_placed", 0));
     }
 
-    List<String> handCardIds    = request.paramList("hand_card_ids");
-    List<String> handEncIds     = request.paramList("hand_enc_ids");
+    List<String> handCardIds = request.paramList("hand_card_ids");
+    List<String> handEncIds = request.paramList("hand_enc_ids");
     List<String> displayCardIds = request.paramList("display_card_ids");
-    List<String> displayEncIds  = request.paramList("display_enc_ids");
+    List<String> displayEncIds = request.paramList("display_enc_ids");
 
     if (handCardIds.size() != handEncIds.size()) {
       return ActionResult.failure("hand_card_ids and hand_enc_ids must have the same length.");
     }
     if (displayCardIds.size() != displayEncIds.size()) {
-      return ActionResult.failure("display_card_ids and display_enc_ids must have the same length.");
+      return ActionResult.failure(
+          "display_card_ids and display_enc_ids must have the same length.");
     }
     if (!displayCardIds.isEmpty() && !upgraded) {
       return ActionResult.failure(
@@ -120,53 +127,67 @@ public class AnimalsActionHandler implements ActionHandler {
     }
     if (totalRequested > maxTotal) {
       return ActionResult.failure(
-          "At strength " + strength + (upgraded ? " (upgraded)" : "")
-          + " you can place at most " + maxTotal + " animal(s) per action (requested "
-          + totalRequested + ").");
+          "At strength "
+              + strength
+              + (upgraded ? " (upgraded)" : "")
+              + " you can place at most "
+              + maxTotal
+              + " animal(s) per action (requested "
+              + totalRequested
+              + ").");
     }
 
     // ── Gather cards from hand ───────────────────────────────────────────────
-    List<PlayerCard> hand = handCardIds.isEmpty() ? List.of()
-        : playerCardRepo.findByGameIdAndDiscordIdAndLocationOrderBySortOrderAsc(
-            gameId, discordId, CardLocation.HAND);
+    List<PlayerCard> hand =
+        handCardIds.isEmpty()
+            ? List.of()
+            : playerCardRepo.findByGameIdAndDiscordIdAndLocationOrderBySortOrderAsc(
+                gameId, discordId, CardLocation.HAND);
 
     // ── Gather cards from display ────────────────────────────────────────────
-    List<PlayerCard> display = displayCardIds.isEmpty() ? List.of()
-        : deckService.getDisplay(gameId);
+    List<PlayerCard> display =
+        displayCardIds.isEmpty() ? List.of() : deckService.getDisplay(gameId);
 
     // ── Build and validate all placements (fail-fast before any mutation) ────
     List<PlacementPlan> plans = new ArrayList<>();
 
     for (int i = 0; i < handCardIds.size(); i++) {
       String cardId = handCardIds.get(i);
-      PlayerCard pc = hand.stream()
-          .filter(c -> c.getCard().getId().equals(cardId))
-          .findFirst().orElse(null);
+      PlayerCard pc =
+          hand.stream().filter(c -> c.getCard().getId().equals(cardId)).findFirst().orElse(null);
       if (pc == null) {
         return ActionResult.failure("Card " + cardId + " is not in your hand.");
       }
-      ActionResult err = validatePlacement(pc.getCard(), handEncIds.get(i), player, plans, pc.getCard().getBaseCost());
+      ActionResult err =
+          validatePlacement(
+              pc.getCard(), handEncIds.get(i), player, plans, pc.getCard().getBaseCost());
       if (err != null) return err;
-      plans.add(new PlacementPlan(cardId, handEncIds.get(i), pc.getCard(),
-          pc.getCard().getBaseCost(), false));
+      plans.add(
+          new PlacementPlan(
+              cardId, handEncIds.get(i), pc.getCard(), pc.getCard().getBaseCost(), false));
     }
 
     for (int i = 0; i < displayCardIds.size(); i++) {
       String cardId = displayCardIds.get(i);
-      PlayerCard pc = display.stream()
-          .filter(c -> c.getCard().getId().equals(cardId))
-          .findFirst().orElse(null);
+      PlayerCard pc =
+          display.stream().filter(c -> c.getCard().getId().equals(cardId)).findFirst().orElse(null);
       if (pc == null) {
         return ActionResult.failure("Card " + cardId + " is not in the display.");
       }
       // Reputation check: slot index (0-based sortOrder) must be within rep range
       int slot = pc.getSortOrder(); // 0 = cheapest slot
-      int requiredRep = slot * 2;   // slot 0→0, slot 1→2, slot 2→4, slot 3→6, slot 4→8, slot 5→10
+      int requiredRep = slot * 2; // slot 0→0, slot 1→2, slot 2→4, slot 3→6, slot 4→8, slot 5→10
       if (player.getReputation() < requiredRep) {
         return ActionResult.failure(
-            "Taking " + pc.getCard().getName() + " from display slot " + (slot + 1)
-            + " requires reputation " + requiredRep
-            + " (you have " + player.getReputation() + ").");
+            "Taking "
+                + pc.getCard().getName()
+                + " from display slot "
+                + (slot + 1)
+                + " requires reputation "
+                + requiredRep
+                + " (you have "
+                + player.getReputation()
+                + ").");
       }
       int cost = pc.getCard().getBaseCost() + slot; // display cards cost base + slot premium
       ActionResult err = validatePlacement(pc.getCard(), displayEncIds.get(i), player, plans, cost);
@@ -206,30 +227,54 @@ public class AnimalsActionHandler implements ActionHandler {
       }
       addAnimalToEnclosure(player, plan.enclosureId(), plan.cardId());
 
-      boolean needsManual = plan.cardDef().requiresManualResolution()
-          && plan.cardDef().getAbilityText() != null;
+      boolean needsManual =
+          plan.cardDef().requiresManualResolution() && plan.cardDef().getAbilityText() != null;
       if (needsManual) {
         anyManualResolution = true;
         manualCardId = plan.cardId();
       }
 
       if (i > 0) summary.append(" and ");
-      summary.append("**").append(plan.cardDef().getName()).append("**")
-          .append(" in ").append(plan.enclosureId())
-          .append(" for ").append(plan.cost()).append("💰");
+      summary
+          .append("**")
+          .append(plan.cardDef().getName())
+          .append("**")
+          .append(" in ")
+          .append(plan.enclosureId())
+          .append(" for ")
+          .append(plan.cost())
+          .append("💰");
       if (plan.fromDisplay()) summary.append(" (display)");
     }
     summary.append(".");
     if (totalAppeal > 0) summary.append(" +").append(totalAppeal).append(" appeal.");
 
-    log.info("Game {}: {} placed {} animal(s) for {} money total",
-        gameId, discordId, plans.size(), totalCost);
+    log.info(
+        "Game {}: {} placed {} animal(s) for {} money total",
+        gameId,
+        discordId,
+        plans.size(),
+        totalCost);
 
     return new ActionResult(
-        true, null, ActionCard.ANIMALS, strength, summary.toString(),
-        Map.of("money_spent", totalCost, "appeal_gained", totalAppeal,
-               "conservation_gained", totalConservation, "cards_placed", plans.size()),
-        List.of(), false, anyManualResolution, manualCardId);
+        true,
+        null,
+        ActionCard.ANIMALS,
+        strength,
+        summary.toString(),
+        Map.of(
+            "money_spent",
+            totalCost,
+            "appeal_gained",
+            totalAppeal,
+            "conservation_gained",
+            totalConservation,
+            "cards_placed",
+            plans.size()),
+        List.of(),
+        false,
+        anyManualResolution,
+        manualCardId);
   }
 
   // ── Static helpers ────────────────────────────────────────────────────────────
@@ -246,16 +291,16 @@ public class AnimalsActionHandler implements ActionHandler {
   static int maxAnimals(int strength, boolean upgraded) {
     if (upgraded) {
       return switch (strength) {
-        case 1, 2    -> 1;
-        case 3, 4    -> 2;
-        case 5       -> 3;
-        default      -> 0;
+        case 1, 2 -> 1;
+        case 3, 4 -> 2;
+        case 5 -> 3;
+        default -> 0;
       };
     }
     return switch (strength) {
       case 2, 3, 4 -> 1;
-      case 5       -> 2;
-      default      -> 0;
+      case 5 -> 2;
+      default -> 0;
     };
   }
 
@@ -266,8 +311,12 @@ public class AnimalsActionHandler implements ActionHandler {
    *
    * @param cost pre-computed cost (may include slot premium for display cards)
    */
-  private ActionResult validatePlacement(CardDefinition cardDef, String enclosureId,
-      PlayerState player, List<PlacementPlan> pending, int cost) {
+  private ActionResult validatePlacement(
+      CardDefinition cardDef,
+      String enclosureId,
+      PlayerState player,
+      List<PlacementPlan> pending,
+      int cost) {
 
     if (cardDef.getCardType() != CardDefinition.CardType.ANIMAL) {
       return ActionResult.failure(cardDef.getName() + " is not an animal card.");
@@ -282,32 +331,52 @@ public class AnimalsActionHandler implements ActionHandler {
     int minSize = cardDef.getMinEnclosureSize() != null ? cardDef.getMinEnclosureSize() : 1;
     if (enclosure.size() < minSize) {
       return ActionResult.failure(
-          cardDef.getName() + " requires an enclosure of size ≥ " + minSize
-          + " (enclosure " + enclosureId + " is size " + enclosure.size() + ").");
+          cardDef.getName()
+              + " requires an enclosure of size ≥ "
+              + minSize
+              + " (enclosure "
+              + enclosureId
+              + " is size "
+              + enclosure.size()
+              + ").");
     }
 
     // Capacity: count animals already committed in this action to the same enclosure
-    int pendingInSameEnclosure = (int) pending.stream()
-        .filter(p -> p.enclosureId().equals(enclosureId)).count();
+    int pendingInSameEnclosure =
+        (int) pending.stream().filter(p -> p.enclosureId().equals(enclosureId)).count();
     int occupancy = enclosure.animalCardIds().size() + pendingInSameEnclosure;
     if (occupancy >= enclosure.size()) {
       return ActionResult.failure(
-          "Enclosure " + enclosureId + " is full (" + enclosure.animalCardIds().size()
-          + "/" + enclosure.size() + ").");
+          "Enclosure "
+              + enclosureId
+              + " is full ("
+              + enclosure.animalCardIds().size()
+              + "/"
+              + enclosure.size()
+              + ").");
     }
 
     for (String req : cardDef.getRequirementList()) {
       if (!req.equals("PARTNER_ZOO") && !enclosure.tags().contains(req)) {
         return ActionResult.failure(
-            cardDef.getName() + " requires a " + req + " enclosure, "
-            + "but enclosure " + enclosureId + " does not have that terrain tag.");
+            cardDef.getName()
+                + " requires a "
+                + req
+                + " enclosure, "
+                + "but enclosure "
+                + enclosureId
+                + " does not have that terrain tag.");
       }
     }
 
     if (player.getMoney() < cost) {
       return ActionResult.failure(
-          cardDef.getName() + " costs " + cost + " money, but you only have "
-          + player.getMoney() + ".");
+          cardDef.getName()
+              + " costs "
+              + cost
+              + " money, but you only have "
+              + player.getMoney()
+              + ".");
     }
 
     return null; // valid
@@ -318,14 +387,14 @@ public class AnimalsActionHandler implements ActionHandler {
   @SuppressWarnings("unchecked")
   private Enclosure findEnclosure(PlayerState player, String enclosureId) {
     try {
-      Map<String, Object> board = objectMapper.readValue(
-          player.getBoardState(), new TypeReference<>() {});
+      Map<String, Object> board =
+          objectMapper.readValue(player.getBoardState(), new TypeReference<>() {});
       List<Map<String, Object>> enclosures =
           (List<Map<String, Object>>) board.getOrDefault("enclosures", List.of());
       for (Map<String, Object> enc : enclosures) {
         if (enclosureId.equals(enc.get("id"))) {
           int size = ((Number) enc.getOrDefault("size", 0)).intValue();
-          List<String> tags      = (List<String>) enc.getOrDefault("tags", List.of());
+          List<String> tags = (List<String>) enc.getOrDefault("tags", List.of());
           List<String> animalIds = (List<String>) enc.getOrDefault("animalCardIds", List.of());
           return new Enclosure(enclosureId, size, tags, animalIds);
         }
@@ -339,14 +408,14 @@ public class AnimalsActionHandler implements ActionHandler {
   @SuppressWarnings("unchecked")
   private void addAnimalToEnclosure(PlayerState player, String enclosureId, String cardId) {
     try {
-      Map<String, Object> board = objectMapper.readValue(
-          player.getBoardState(), new TypeReference<>() {});
+      Map<String, Object> board =
+          objectMapper.readValue(player.getBoardState(), new TypeReference<>() {});
       List<Map<String, Object>> enclosures =
           (List<Map<String, Object>>) board.getOrDefault("enclosures", List.of());
       for (Map<String, Object> enc : enclosures) {
         if (enclosureId.equals(enc.get("id"))) {
-          List<String> animalIds = new ArrayList<>(
-              (List<String>) enc.getOrDefault("animalCardIds", List.of()));
+          List<String> animalIds =
+              new ArrayList<>((List<String>) enc.getOrDefault("animalCardIds", List.of()));
           animalIds.add(cardId);
           enc.put("animalCardIds", animalIds);
           break;
@@ -361,8 +430,8 @@ public class AnimalsActionHandler implements ActionHandler {
   @SuppressWarnings("unchecked")
   private void updateIcons(PlayerState player, List<String> newTags) {
     try {
-      Map<String, Object> icons = objectMapper.readValue(
-          player.getIcons(), new TypeReference<>() {});
+      Map<String, Object> icons =
+          objectMapper.readValue(player.getIcons(), new TypeReference<>() {});
       for (String tag : newTags) {
         int current = ((Number) icons.getOrDefault(tag, 0)).intValue();
         icons.put(tag, current + 1);
@@ -377,6 +446,6 @@ public class AnimalsActionHandler implements ActionHandler {
   record Enclosure(String id, int size, List<String> tags, List<String> animalCardIds) {}
 
   /** Fully-validated, ready-to-apply placement. */
-  record PlacementPlan(String cardId, String enclosureId, CardDefinition cardDef,
-      int cost, boolean fromDisplay) {}
+  record PlacementPlan(
+      String cardId, String enclosureId, CardDefinition cardDef, int cost, boolean fromDisplay) {}
 }

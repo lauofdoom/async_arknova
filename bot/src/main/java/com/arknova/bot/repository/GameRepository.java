@@ -20,6 +20,7 @@ public interface GameRepository extends JpaRepository<Game, UUID> {
 
   List<Game> findByStatus(GameStatus status);
 
-  @Query("SELECT g FROM Game g WHERE g.status NOT IN ('ENDED', 'ABANDONED') ORDER BY g.createdAt DESC")
+  @Query(
+      "SELECT g FROM Game g WHERE g.status NOT IN ('ENDED', 'ABANDONED') ORDER BY g.createdAt DESC")
   List<Game> findAllActive();
 }

@@ -106,9 +106,11 @@ class AssociationActionHandlerTest {
     @DisplayName("unupgraded: fails when more than 1 sub-action is submitted")
     void unupgradedOnlyOneTask() {
       setStrength(3);
-      ActionResult r = handler.execute(
-          req(Map.of("sub_actions", List.of("RETURN_WORKERS", "RETURN_WORKERS"))),
-          player, sharedBoard);
+      ActionResult r =
+          handler.execute(
+              req(Map.of("sub_actions", List.of("RETURN_WORKERS", "RETURN_WORKERS"))),
+              player,
+              sharedBoard);
       assertThat(r.success()).isFalse();
       assertThat(r.errorMessage()).containsIgnoringCase("1 task");
     }
@@ -117,9 +119,11 @@ class AssociationActionHandlerTest {
     @DisplayName("upgraded: fails when duplicate task types are submitted")
     void upgradedNoDuplicates() {
       setStrengthUpgraded(5);
-      ActionResult r = handler.execute(
-          req(Map.of("sub_actions", List.of("RETURN_WORKERS", "RETURN_WORKERS"))),
-          player, sharedBoard);
+      ActionResult r =
+          handler.execute(
+              req(Map.of("sub_actions", List.of("RETURN_WORKERS", "RETURN_WORKERS"))),
+              player,
+              sharedBoard);
       assertThat(r.success()).isFalse();
       assertThat(r.errorMessage()).containsIgnoringCase("duplicate");
     }
@@ -133,10 +137,14 @@ class AssociationActionHandlerTest {
       player.setMoney(20);
       // Must stub BEFORE execute so the conservation project passes card-type validation
       when(cardDefRepo.findById("proj1")).thenReturn(Optional.of(conservationCard("proj1", 2)));
-      ActionResult r = handler.execute(
-          req(Map.of("sub_actions", List.of("PARTNER_ZOO", "CONSERVATION_PROJECT"),
-                     "project_ids", List.of("proj1"))),
-          player, sharedBoard);
+      ActionResult r =
+          handler.execute(
+              req(
+                  Map.of(
+                      "sub_actions", List.of("PARTNER_ZOO", "CONSERVATION_PROJECT"),
+                      "project_ids", List.of("proj1"))),
+              player,
+              sharedBoard);
       // PARTNER_ZOO value=1, CONSERVATION_PROJECT value=1 → total=2 > X=1
       assertThat(r.success()).isFalse();
       assertThat(r.errorMessage()).containsIgnoringCase("value");
@@ -146,10 +154,11 @@ class AssociationActionHandlerTest {
     @DisplayName("fails when donation amount is not a multiple of 3")
     void donationNotMultipleOf3() {
       setStrengthUpgraded(3);
-      ActionResult r = handler.execute(
-          req(Map.of("sub_actions", List.of("RETURN_WORKERS"),
-                     "donation_amount", 4)),
-          player, sharedBoard);
+      ActionResult r =
+          handler.execute(
+              req(Map.of("sub_actions", List.of("RETURN_WORKERS"), "donation_amount", 4)),
+              player,
+              sharedBoard);
       assertThat(r.success()).isFalse();
       assertThat(r.errorMessage()).containsIgnoringCase("multiple of 3");
     }
@@ -158,10 +167,11 @@ class AssociationActionHandlerTest {
     @DisplayName("fails when donation is specified on unupgraded card")
     void donationRequiresUpgrade() {
       setStrength(3);
-      ActionResult r = handler.execute(
-          req(Map.of("sub_actions", List.of("RETURN_WORKERS"),
-                     "donation_amount", 3)),
-          player, sharedBoard);
+      ActionResult r =
+          handler.execute(
+              req(Map.of("sub_actions", List.of("RETURN_WORKERS"), "donation_amount", 3)),
+              player,
+              sharedBoard);
       assertThat(r.success()).isFalse();
       assertThat(r.errorMessage()).containsIgnoringCase("upgraded");
     }
@@ -171,9 +181,8 @@ class AssociationActionHandlerTest {
     void insufficientMoneyPartnerZoo() {
       setStrength(2);
       player.setMoney(1); // partner zoo slot 1 costs 2
-      ActionResult r = handler.execute(
-          req(Map.of("sub_actions", List.of("PARTNER_ZOO"))),
-          player, sharedBoard);
+      ActionResult r =
+          handler.execute(req(Map.of("sub_actions", List.of("PARTNER_ZOO"))), player, sharedBoard);
       assertThat(r.success()).isFalse();
       assertThat(r.errorMessage()).containsIgnoringCase("costs");
     }
@@ -183,9 +192,8 @@ class AssociationActionHandlerTest {
     void noWorkersAvailable() {
       setStrength(2);
       player.setAssocWorkersAvailable(0);
-      ActionResult r = handler.execute(
-          req(Map.of("sub_actions", List.of("PARTNER_ZOO"))),
-          player, sharedBoard);
+      ActionResult r =
+          handler.execute(req(Map.of("sub_actions", List.of("PARTNER_ZOO"))), player, sharedBoard);
       assertThat(r.success()).isFalse();
       assertThat(r.errorMessage()).containsIgnoringCase("worker");
     }
@@ -197,10 +205,9 @@ class AssociationActionHandlerTest {
       // Simulate 3 partner zoos already claimed
       player.setConservationSlots(
           "{\"partnerZoos\":[\"PARTNER_ZOO_1\",\"PARTNER_ZOO_2\",\"PARTNER_ZOO_3\"],"
-          + "\"universities\":[],\"projects\":[]}");
-      ActionResult r = handler.execute(
-          req(Map.of("sub_actions", List.of("PARTNER_ZOO"))),
-          player, sharedBoard);
+              + "\"universities\":[],\"projects\":[]}");
+      ActionResult r =
+          handler.execute(req(Map.of("sub_actions", List.of("PARTNER_ZOO"))), player, sharedBoard);
       assertThat(r.success()).isFalse();
       assertThat(r.errorMessage()).containsIgnoringCase("maximum");
     }
@@ -212,10 +219,9 @@ class AssociationActionHandlerTest {
       // Simulate both universities already claimed
       player.setConservationSlots(
           "{\"partnerZoos\":[],"
-          + "\"universities\":[\"UNIVERSITY_1\",\"UNIVERSITY_2\"],\"projects\":[]}");
-      ActionResult r = handler.execute(
-          req(Map.of("sub_actions", List.of("UNIVERSITY"))),
-          player, sharedBoard);
+              + "\"universities\":[\"UNIVERSITY_1\",\"UNIVERSITY_2\"],\"projects\":[]}");
+      ActionResult r =
+          handler.execute(req(Map.of("sub_actions", List.of("UNIVERSITY"))), player, sharedBoard);
       assertThat(r.success()).isFalse();
       assertThat(r.errorMessage()).containsIgnoringCase("maximum");
     }
@@ -224,10 +230,14 @@ class AssociationActionHandlerTest {
     @DisplayName("fails when CONSERVATION_PROJECT project_id is missing")
     void missingProjectId() {
       setStrength(2);
-      ActionResult r = handler.execute(
-          req(Map.of("sub_actions", List.of("CONSERVATION_PROJECT"),
-                     "project_ids", List.of())),
-          player, sharedBoard);
+      ActionResult r =
+          handler.execute(
+              req(
+                  Map.of(
+                      "sub_actions", List.of("CONSERVATION_PROJECT"),
+                      "project_ids", List.of())),
+              player,
+              sharedBoard);
       assertThat(r.success()).isFalse();
       assertThat(r.errorMessage()).containsIgnoringCase("project card ID");
     }
@@ -241,10 +251,14 @@ class AssociationActionHandlerTest {
       animalCard.setCardType(CardDefinition.CardType.ANIMAL);
       when(cardDefRepo.findById("anim1")).thenReturn(Optional.of(animalCard));
 
-      ActionResult r = handler.execute(
-          req(Map.of("sub_actions", List.of("CONSERVATION_PROJECT"),
-                     "project_ids", List.of("anim1"))),
-          player, sharedBoard);
+      ActionResult r =
+          handler.execute(
+              req(
+                  Map.of(
+                      "sub_actions", List.of("CONSERVATION_PROJECT"),
+                      "project_ids", List.of("anim1"))),
+              player,
+              sharedBoard);
       assertThat(r.success()).isFalse();
       assertThat(r.errorMessage()).containsIgnoringCase("not a valid conservation");
     }
@@ -253,9 +267,8 @@ class AssociationActionHandlerTest {
     @DisplayName("fails when unknown sub_action type is provided")
     void unknownSubAction() {
       setStrength(3);
-      ActionResult r = handler.execute(
-          req(Map.of("sub_actions", List.of("DANCE"))),
-          player, sharedBoard);
+      ActionResult r =
+          handler.execute(req(Map.of("sub_actions", List.of("DANCE"))), player, sharedBoard);
       assertThat(r.success()).isFalse();
       assertThat(r.errorMessage()).containsIgnoringCase("Unknown sub-action");
     }
@@ -273,9 +286,9 @@ class AssociationActionHandlerTest {
       setStrength(2); // X=2 ≥ value 1
       player.setAssocWorkersAvailable(1); // only 1 of 3 available
 
-      ActionResult r = handler.execute(
-          req(Map.of("sub_actions", List.of("RETURN_WORKERS"))),
-          player, sharedBoard);
+      ActionResult r =
+          handler.execute(
+              req(Map.of("sub_actions", List.of("RETURN_WORKERS"))), player, sharedBoard);
 
       assertThat(r.success()).isTrue();
       assertThat(player.getAssocWorkersAvailable()).isEqualTo(3); // fully restored
@@ -288,12 +301,11 @@ class AssociationActionHandlerTest {
     void partnerZooSlot1() {
       setStrength(2);
 
-      ActionResult r = handler.execute(
-          req(Map.of("sub_actions", List.of("PARTNER_ZOO"))),
-          player, sharedBoard);
+      ActionResult r =
+          handler.execute(req(Map.of("sub_actions", List.of("PARTNER_ZOO"))), player, sharedBoard);
 
       assertThat(r.success()).isTrue();
-      assertThat(player.getMoney()).isEqualTo(18);       // 20 - 2
+      assertThat(player.getMoney()).isEqualTo(18); // 20 - 2
       assertThat(player.getAssocWorkersAvailable()).isEqualTo(2); // 3 - 1
       assertThat((Integer) r.deltas().get("money_spent")).isEqualTo(2);
       assertThat((Integer) r.deltas().get("total_task_value")).isEqualTo(1);
@@ -306,9 +318,8 @@ class AssociationActionHandlerTest {
       player.setConservationSlots(
           "{\"partnerZoos\":[\"PARTNER_ZOO_1\"],\"universities\":[],\"projects\":[]}");
 
-      ActionResult r = handler.execute(
-          req(Map.of("sub_actions", List.of("PARTNER_ZOO"))),
-          player, sharedBoard);
+      ActionResult r =
+          handler.execute(req(Map.of("sub_actions", List.of("PARTNER_ZOO"))), player, sharedBoard);
 
       assertThat(r.success()).isTrue();
       assertThat(player.getMoney()).isEqualTo(17); // 20 - 3
@@ -320,9 +331,8 @@ class AssociationActionHandlerTest {
     void universitySlot1() {
       setStrength(2);
 
-      ActionResult r = handler.execute(
-          req(Map.of("sub_actions", List.of("UNIVERSITY"))),
-          player, sharedBoard);
+      ActionResult r =
+          handler.execute(req(Map.of("sub_actions", List.of("UNIVERSITY"))), player, sharedBoard);
 
       assertThat(r.success()).isTrue();
       assertThat(player.getMoney()).isEqualTo(18);
@@ -340,10 +350,14 @@ class AssociationActionHandlerTest {
       sharedBoard.setConservationBoard(
           "{\"projects\":{\"proj1\":{\"status\":\"available\",\"slots\":[\"player2\",null]}}}");
 
-      ActionResult r = handler.execute(
-          req(Map.of("sub_actions", List.of("CONSERVATION_PROJECT"),
-                     "project_ids", List.of("proj1"))),
-          player, sharedBoard);
+      ActionResult r =
+          handler.execute(
+              req(
+                  Map.of(
+                      "sub_actions", List.of("CONSERVATION_PROJECT"),
+                      "project_ids", List.of("proj1"))),
+              player,
+              sharedBoard);
 
       assertThat(r.success()).isTrue();
       assertThat(player.getConservation()).isEqualTo(2); // proj has 2 CP
@@ -359,10 +373,14 @@ class AssociationActionHandlerTest {
       when(cardDefRepo.findById("proj1")).thenReturn(Optional.of(proj));
       when(cardDefRepo.getReferenceById("proj1")).thenReturn(proj);
 
-      ActionResult r = handler.execute(
-          req(Map.of("sub_actions", List.of("CONSERVATION_PROJECT"),
-                     "project_ids", List.of("proj1"))),
-          player, sharedBoard);
+      ActionResult r =
+          handler.execute(
+              req(
+                  Map.of(
+                      "sub_actions", List.of("CONSERVATION_PROJECT"),
+                      "project_ids", List.of("proj1"))),
+              player,
+              sharedBoard);
 
       assertThat(r.success()).isTrue();
       assertThat(player.getConservation()).isEqualTo(0); // project not yet complete
@@ -378,12 +396,14 @@ class AssociationActionHandlerTest {
       // Total = 3 ≤ X=4 ✓
       // Costs: partner zoo 2💰 + university 2💰 = 4💰 total
 
-      ActionResult r = handler.execute(
-          req(Map.of("sub_actions", List.of("PARTNER_ZOO", "UNIVERSITY", "RETURN_WORKERS"))),
-          player, sharedBoard);
+      ActionResult r =
+          handler.execute(
+              req(Map.of("sub_actions", List.of("PARTNER_ZOO", "UNIVERSITY", "RETURN_WORKERS"))),
+              player,
+              sharedBoard);
 
       assertThat(r.success()).isTrue();
-      assertThat(player.getMoney()).isEqualTo(16);        // 20 - 4
+      assertThat(player.getMoney()).isEqualTo(16); // 20 - 4
       assertThat(player.getAssocWorkersAvailable()).isEqualTo(3); // returned by RETURN_WORKERS
       assertThat((Integer) r.deltas().get("total_task_value")).isEqualTo(3);
     }
@@ -393,14 +413,15 @@ class AssociationActionHandlerTest {
     void upgradedDonation() {
       setStrengthUpgraded(3);
       // 1 task + donation of 6 → 2 CP
-      ActionResult r = handler.execute(
-          req(Map.of("sub_actions", List.of("RETURN_WORKERS"),
-                     "donation_amount", 6)),
-          player, sharedBoard);
+      ActionResult r =
+          handler.execute(
+              req(Map.of("sub_actions", List.of("RETURN_WORKERS"), "donation_amount", 6)),
+              player,
+              sharedBoard);
 
       assertThat(r.success()).isTrue();
-      assertThat(player.getMoney()).isEqualTo(14);        // 20 - 6
-      assertThat(player.getConservation()).isEqualTo(2);  // 6 / 3 = 2 CP
+      assertThat(player.getMoney()).isEqualTo(14); // 20 - 6
+      assertThat(player.getConservation()).isEqualTo(2); // 6 / 3 = 2 CP
       assertThat((Integer) r.deltas().get("conservation_gained")).isEqualTo(2);
     }
 
@@ -408,9 +429,9 @@ class AssociationActionHandlerTest {
     @DisplayName("task type names are case-insensitive")
     void caseInsensitiveTaskNames() {
       setStrength(2);
-      ActionResult r = handler.execute(
-          req(Map.of("sub_actions", List.of("return_workers"))),
-          player, sharedBoard);
+      ActionResult r =
+          handler.execute(
+              req(Map.of("sub_actions", List.of("return_workers"))), player, sharedBoard);
       assertThat(r.success()).isTrue();
     }
   }

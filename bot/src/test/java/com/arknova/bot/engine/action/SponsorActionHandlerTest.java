@@ -183,8 +183,8 @@ class SponsorActionHandlerTest {
     @DisplayName("fails when display_card_ids provided on unupgraded card")
     void displayRequiresUpgrade() {
       setStrength(3);
-      ActionResult r = handler.execute(
-          req(Map.of("display_card_ids", List.of("s1"))), player, sharedBoard);
+      ActionResult r =
+          handler.execute(req(Map.of("display_card_ids", List.of("s1"))), player, sharedBoard);
       assertThat(r.success()).isFalse();
       assertThat(r.errorMessage()).containsIgnoringCase("upgraded");
     }
@@ -196,10 +196,10 @@ class SponsorActionHandlerTest {
       PlayerCard pc = handSponsor("s1", 3); // level 3 > 2
 
       when(playerCardRepo.findByGameIdAndDiscordIdAndLocationOrderBySortOrderAsc(
-          gameId, "player1", CardLocation.HAND)).thenReturn(List.of(pc));
+              gameId, "player1", CardLocation.HAND))
+          .thenReturn(List.of(pc));
 
-      ActionResult r = handler.execute(
-          req(Map.of("card_ids", List.of("s1"))), player, sharedBoard);
+      ActionResult r = handler.execute(req(Map.of("card_ids", List.of("s1"))), player, sharedBoard);
 
       assertThat(r.success()).isFalse();
       assertThat(r.errorMessage()).containsIgnoringCase("level 3");
@@ -213,10 +213,10 @@ class SponsorActionHandlerTest {
       PlayerCard pc = handSponsor("s1", 4); // level 4 > 3
 
       when(playerCardRepo.findByGameIdAndDiscordIdAndLocationOrderBySortOrderAsc(
-          gameId, "player1", CardLocation.HAND)).thenReturn(List.of(pc));
+              gameId, "player1", CardLocation.HAND))
+          .thenReturn(List.of(pc));
 
-      ActionResult r = handler.execute(
-          req(Map.of("card_ids", List.of("s1"))), player, sharedBoard);
+      ActionResult r = handler.execute(req(Map.of("card_ids", List.of("s1"))), player, sharedBoard);
 
       assertThat(r.success()).isFalse();
       assertThat(r.errorMessage()).containsIgnoringCase("maximum level");
@@ -227,10 +227,11 @@ class SponsorActionHandlerTest {
     void cardNotInHand() {
       setStrength(3);
       when(playerCardRepo.findByGameIdAndDiscordIdAndLocationOrderBySortOrderAsc(
-          gameId, "player1", CardLocation.HAND)).thenReturn(List.of());
+              gameId, "player1", CardLocation.HAND))
+          .thenReturn(List.of());
 
-      ActionResult r = handler.execute(
-          req(Map.of("card_ids", List.of("s_missing"))), player, sharedBoard);
+      ActionResult r =
+          handler.execute(req(Map.of("card_ids", List.of("s_missing"))), player, sharedBoard);
 
       assertThat(r.success()).isFalse();
       assertThat(r.errorMessage()).containsIgnoringCase("not in your hand");
@@ -244,10 +245,10 @@ class SponsorActionHandlerTest {
       PlayerCard pc = handSponsor("s1", 3); // costs 3 money
 
       when(playerCardRepo.findByGameIdAndDiscordIdAndLocationOrderBySortOrderAsc(
-          gameId, "player1", CardLocation.HAND)).thenReturn(List.of(pc));
+              gameId, "player1", CardLocation.HAND))
+          .thenReturn(List.of(pc));
 
-      ActionResult r = handler.execute(
-          req(Map.of("card_ids", List.of("s1"))), player, sharedBoard);
+      ActionResult r = handler.execute(req(Map.of("card_ids", List.of("s1"))), player, sharedBoard);
 
       assertThat(r.success()).isFalse();
       assertThat(r.errorMessage()).containsIgnoringCase("costs");
@@ -262,8 +263,9 @@ class SponsorActionHandlerTest {
       // Display is empty — card "s_missing" not found
       when(deckService.getDisplay(gameId)).thenReturn(List.of());
 
-      ActionResult r = handler.execute(
-          req(Map.of("display_card_ids", List.of("s_missing"))), player, sharedBoard);
+      ActionResult r =
+          handler.execute(
+              req(Map.of("display_card_ids", List.of("s_missing"))), player, sharedBoard);
 
       assertThat(r.success()).isFalse();
       assertThat(r.errorMessage()).containsIgnoringCase("not in the display");
@@ -278,8 +280,8 @@ class SponsorActionHandlerTest {
 
       when(deckService.getDisplay(gameId)).thenReturn(List.of(pc));
 
-      ActionResult r = handler.execute(
-          req(Map.of("display_card_ids", List.of("s1"))), player, sharedBoard);
+      ActionResult r =
+          handler.execute(req(Map.of("display_card_ids", List.of("s1"))), player, sharedBoard);
 
       assertThat(r.success()).isFalse();
       assertThat(r.errorMessage()).containsIgnoringCase("reputation");
@@ -291,10 +293,11 @@ class SponsorActionHandlerTest {
       setStrength(3);
       PlayerCard pc = handSponsor("s1", 2);
       when(playerCardRepo.findByGameIdAndDiscordIdAndLocationOrderBySortOrderAsc(
-          gameId, "player1", CardLocation.HAND)).thenReturn(List.of(pc));
+              gameId, "player1", CardLocation.HAND))
+          .thenReturn(List.of(pc));
 
-      ActionResult r = handler.execute(
-          req(Map.of("card_ids", List.of("s1", "s1"))), player, sharedBoard);
+      ActionResult r =
+          handler.execute(req(Map.of("card_ids", List.of("s1", "s1"))), player, sharedBoard);
 
       assertThat(r.success()).isFalse();
       assertThat(r.errorMessage()).containsIgnoringCase("more than once");
@@ -314,10 +317,10 @@ class SponsorActionHandlerTest {
       PlayerCard pc = handSponsor("s1", 3); // level = X = max
 
       when(playerCardRepo.findByGameIdAndDiscordIdAndLocationOrderBySortOrderAsc(
-          gameId, "player1", CardLocation.HAND)).thenReturn(List.of(pc));
+              gameId, "player1", CardLocation.HAND))
+          .thenReturn(List.of(pc));
 
-      ActionResult r = handler.execute(
-          req(Map.of("card_ids", List.of("s1"))), player, sharedBoard);
+      ActionResult r = handler.execute(req(Map.of("card_ids", List.of("s1"))), player, sharedBoard);
 
       assertThat(r.success()).isTrue();
       assertThat(player.getMoney()).isEqualTo(17); // 20 - 3
@@ -333,10 +336,11 @@ class SponsorActionHandlerTest {
       PlayerCard s2 = handSponsor("s2", 1);
 
       when(playerCardRepo.findByGameIdAndDiscordIdAndLocationOrderBySortOrderAsc(
-          gameId, "player1", CardLocation.HAND)).thenReturn(List.of(s1, s2));
+              gameId, "player1", CardLocation.HAND))
+          .thenReturn(List.of(s1, s2));
 
-      ActionResult r = handler.execute(
-          req(Map.of("card_ids", List.of("s1", "s2"))), player, sharedBoard);
+      ActionResult r =
+          handler.execute(req(Map.of("card_ids", List.of("s1", "s2"))), player, sharedBoard);
 
       assertThat(r.success()).isTrue();
       assertThat(player.getMoney()).isEqualTo(17); // 20 - (2+1)
@@ -362,10 +366,10 @@ class SponsorActionHandlerTest {
       pc.setLocation(CardLocation.HAND);
 
       when(playerCardRepo.findByGameIdAndDiscordIdAndLocationOrderBySortOrderAsc(
-          gameId, "player1", CardLocation.HAND)).thenReturn(List.of(pc));
+              gameId, "player1", CardLocation.HAND))
+          .thenReturn(List.of(pc));
 
-      ActionResult r = handler.execute(
-          req(Map.of("card_ids", List.of("s1"))), player, sharedBoard);
+      ActionResult r = handler.execute(req(Map.of("card_ids", List.of("s1"))), player, sharedBoard);
 
       assertThat(r.success()).isTrue();
       assertThat(player.getAppeal()).isEqualTo(3);
@@ -383,8 +387,8 @@ class SponsorActionHandlerTest {
 
       when(deckService.getDisplay(gameId)).thenReturn(List.of(pc));
 
-      ActionResult r = handler.execute(
-          req(Map.of("display_card_ids", List.of("ds1"))), player, sharedBoard);
+      ActionResult r =
+          handler.execute(req(Map.of("display_card_ids", List.of("ds1"))), player, sharedBoard);
 
       assertThat(r.success()).isTrue();
       assertThat(player.getMoney()).isEqualTo(16); // 20 - (3+1) = 16
@@ -399,10 +403,10 @@ class SponsorActionHandlerTest {
       PlayerCard pc = handSponsor("s1", 1);
 
       when(playerCardRepo.findByGameIdAndDiscordIdAndLocationOrderBySortOrderAsc(
-          gameId, "player1", CardLocation.HAND)).thenReturn(List.of(pc));
+              gameId, "player1", CardLocation.HAND))
+          .thenReturn(List.of(pc));
 
-      ActionResult r = handler.execute(
-          req(Map.of("card_ids", List.of("s1"))), player, sharedBoard);
+      ActionResult r = handler.execute(req(Map.of("card_ids", List.of("s1"))), player, sharedBoard);
 
       assertThat(r.success()).isTrue();
       assertThat(r.summary()).containsIgnoringCase("Sponsor s1");

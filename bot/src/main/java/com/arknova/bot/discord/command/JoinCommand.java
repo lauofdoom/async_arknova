@@ -8,9 +8,7 @@ import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEve
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import org.springframework.stereotype.Component;
 
-/**
- * /arknova join — join the game in the current channel.
- */
+/** /arknova join — join the game in the current channel. */
 @Component
 @RequiredArgsConstructor
 public class JoinCommand implements ArkNovaCommand {
@@ -29,22 +27,26 @@ public class JoinCommand implements ArkNovaCommand {
 
   @Override
   public void handle(SlashCommandInteractionEvent event) {
-    CommandHelper.runSafely(event, () -> {
-      String channelId = event.getChannel().getId();
-      String discordId = event.getUser().getId();
-      String name      = event.getMember() != null
-          ? event.getMember().getEffectiveName()
-          : event.getUser().getName();
+    CommandHelper.runSafely(
+        event,
+        () -> {
+          String channelId = event.getChannel().getId();
+          String discordId = event.getUser().getId();
+          String name =
+              event.getMember() != null
+                  ? event.getMember().getEffectiveName()
+                  : event.getUser().getName();
 
-      PlayerState player = gameService.joinGame(channelId, discordId, name);
+          PlayerState player = gameService.joinGame(channelId, discordId, name);
 
-      EmbedBuilder embed = new EmbedBuilder()
-          .setColor(CommandHelper.COLOR_SUCCESS)
-          .setTitle("Joined!")
-          .setDescription(name + " has joined the game.")
-          .addField("Seat", String.valueOf(player.getSeatIndex() + 1), true);
+          EmbedBuilder embed =
+              new EmbedBuilder()
+                  .setColor(CommandHelper.COLOR_SUCCESS)
+                  .setTitle("Joined!")
+                  .setDescription(name + " has joined the game.")
+                  .addField("Seat", String.valueOf(player.getSeatIndex() + 1), true);
 
-      event.getHook().sendMessageEmbeds(embed.build()).queue();
-    });
+          event.getHook().sendMessageEmbeds(embed.build()).queue();
+        });
   }
 }

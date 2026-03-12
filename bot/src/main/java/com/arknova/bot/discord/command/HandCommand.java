@@ -15,8 +15,8 @@ import org.springframework.stereotype.Component;
 /**
  * /arknova hand — privately shows the invoking player's current hand.
  *
- * <p>Response is always ephemeral. Lists card names, IDs (for use in other commands), costs,
- * and key stats.
+ * <p>Response is always ephemeral. Lists card names, IDs (for use in other commands), costs, and
+ * key stats.
  */
 @Component
 @RequiredArgsConstructor
@@ -43,20 +43,24 @@ public class HandCommand implements ArkNovaCommand {
 
   @Override
   public void handle(SlashCommandInteractionEvent event) {
-    CommandHelper.runSafely(event, () -> {
-      Optional<Game> maybeGame = commandHelper.getGame(event);
-      if (maybeGame.isEmpty()) return;
-      Game game = maybeGame.get();
+    CommandHelper.runSafely(
+        event,
+        () -> {
+          Optional<Game> maybeGame = commandHelper.getGame(event);
+          if (maybeGame.isEmpty()) return;
+          Game game = maybeGame.get();
 
-      String discordId = event.getUser().getId();
-      List<PlayerCard> hand = deckService.getHand(game.getId(), discordId);
+          String discordId = event.getUser().getId();
+          List<PlayerCard> hand = deckService.getHand(game.getId(), discordId);
 
-      EmbedBuilder embed = new EmbedBuilder()
-          .setColor(CommandHelper.COLOR_INFO)
-          .setTitle("Your Hand (" + hand.size() + " card" + (hand.size() == 1 ? "" : "s") + ")")
-          .setDescription(CommandHelper.formatCardList(hand, false));
+          EmbedBuilder embed =
+              new EmbedBuilder()
+                  .setColor(CommandHelper.COLOR_INFO)
+                  .setTitle(
+                      "Your Hand (" + hand.size() + " card" + (hand.size() == 1 ? "" : "s") + ")")
+                  .setDescription(CommandHelper.formatCardList(hand, false));
 
-      event.getHook().sendMessageEmbeds(embed.build()).queue();
-    });
+          event.getHook().sendMessageEmbeds(embed.build()).queue();
+        });
   }
 }

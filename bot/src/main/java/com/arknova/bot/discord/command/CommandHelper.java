@@ -28,10 +28,10 @@ public class CommandHelper {
 
   private static final Logger log = LoggerFactory.getLogger(CommandHelper.class);
 
-  static final Color COLOR_SUCCESS  = new Color(0x2ECC71);
-  static final Color COLOR_FAILURE  = new Color(0xE74C3C);
-  static final Color COLOR_INFO     = new Color(0x3498DB);
-  static final Color COLOR_NEUTRAL  = new Color(0x95A5A6);
+  static final Color COLOR_SUCCESS = new Color(0x2ECC71);
+  static final Color COLOR_FAILURE = new Color(0xE74C3C);
+  static final Color COLOR_INFO = new Color(0x3498DB);
+  static final Color COLOR_NEUTRAL = new Color(0x95A5A6);
 
   private final GameService gameService;
 
@@ -45,23 +45,33 @@ public class CommandHelper {
     String channelId = event.getChannel().getId();
     Optional<Game> game = gameService.findByThreadId(channelId);
     if (game.isEmpty()) {
-      event.getHook()
-          .sendMessage("No Ark Nova game found in this channel. Use `/arknova create` to start one.")
-          .setEphemeral(true).queue();
+      event
+          .getHook()
+          .sendMessage(
+              "No Ark Nova game found in this channel. Use `/arknova create` to start one.")
+          .setEphemeral(true)
+          .queue();
     }
     return game;
   }
 
   /** Returns the game only if ACTIVE; sends ephemeral error otherwise. */
   public Optional<Game> getActiveGame(SlashCommandInteractionEvent event) {
-    return getGame(event).filter(game -> {
-      if (!game.isActive() && game.getStatus() != Game.GameStatus.FINAL_SCORING) {
-        String status = game.isSetup() ? "still in setup — use `/arknova start`" : "already ended";
-        event.getHook().sendMessage("This game is " + status + ".").setEphemeral(true).queue();
-        return false;
-      }
-      return true;
-    });
+    return getGame(event)
+        .filter(
+            game -> {
+              if (!game.isActive() && game.getStatus() != Game.GameStatus.FINAL_SCORING) {
+                String status =
+                    game.isSetup() ? "still in setup — use `/arknova start`" : "already ended";
+                event
+                    .getHook()
+                    .sendMessage("This game is " + status + ".")
+                    .setEphemeral(true)
+                    .queue();
+                return false;
+              }
+              return true;
+            });
   }
 
   // ── Comma-split helpers ──────────────────────────────────────────────────
@@ -70,22 +80,28 @@ public class CommandHelper {
   public static List<String> splitCsv(String value) {
     if (value == null || value.isBlank()) return List.of();
     return Arrays.stream(value.split(","))
-        .map(String::trim).filter(s -> !s.isEmpty()).collect(Collectors.toList());
+        .map(String::trim)
+        .filter(s -> !s.isEmpty())
+        .collect(Collectors.toList());
   }
 
   // ── Result formatting ─────────────────────────────────────────────────────
 
   /**
-   * Formats and sends an {@link ActionResult} as a Discord embed. Shows the result summary,
-   * any resource changes, and the next player's name.
+   * Formats and sends an {@link ActionResult} as a Discord embed. Shows the result summary, any
+   * resource changes, and the next player's name.
    */
-  public void sendActionResult(SlashCommandInteractionEvent event, ActionResult result,
-      Game game, List<PlayerState> allPlayers) {
+  public void sendActionResult(
+      SlashCommandInteractionEvent event,
+      ActionResult result,
+      Game game,
+      List<PlayerState> allPlayers) {
 
     EmbedBuilder embed = new EmbedBuilder();
 
     if (!result.success()) {
-      embed.setColor(COLOR_FAILURE)
+      embed
+          .setColor(COLOR_FAILURE)
           .setTitle("❌ Action failed")
           .setDescription(result.errorMessage());
       event.getHook().sendMessageEmbeds(embed.build()).setEphemeral(true).queue();
@@ -94,18 +110,19 @@ public class CommandHelper {
 
     embed.setColor(result.requiresManualResolution() ? COLOR_NEUTRAL : COLOR_SUCCESS);
 
-    String title = result.cardUsed() != null
-        ? "**" + result.cardUsed().displayName() + "** (strength " + result.strengthUsed() + ")"
-        : "Action";
+    String title =
+        result.cardUsed() != null
+            ? "**" + result.cardUsed().displayName() + "** (strength " + result.strengthUsed() + ")"
+            : "Action";
     embed.setTitle(title);
     embed.setDescription(result.summary());
 
     // Resource deltas
-    addDeltaField(embed, "💰 Spent",   result.deltas(), "money_spent");
-    addDeltaField(embed, "💰 Gained",  result.deltas(), "money_gained");
-    addDeltaField(embed, "🌿 CP",      result.deltas(), "conservation_gained");
-    addDeltaField(embed, "⭐ Appeal",   result.deltas(), "appeal_gained");
-    addDeltaField(embed, "🏆 Rep",     result.deltas(), "reputation_gained");
+    addDeltaField(embed, "💰 Spent", result.deltas(), "money_spent");
+    addDeltaField(embed, "💰 Gained", result.deltas(), "money_gained");
+    addDeltaField(embed, "🌿 CP", result.deltas(), "conservation_gained");
+    addDeltaField(embed, "⭐ Appeal", result.deltas(), "appeal_gained");
+    addDeltaField(embed, "🏆 Rep", result.deltas(), "reputation_gained");
 
     if (result.requiresManualResolution()) {
       embed.addField("⚠️ Manual", "This card's ability requires manual resolution.", false);
@@ -113,9 +130,13 @@ public class CommandHelper {
 
     // Next turn footer
     int nextSeat = game.getCurrentSeat();
-    allPlayers.stream().filter(p -> p.getSeatIndex() == nextSeat).findFirst()
-        .ifPresent(next -> embed.setFooter("Turn " + game.getTurnNumber()
-            + " · Next: " + next.getDiscordName()));
+    allPlayers.stream()
+        .filter(p -> p.getSeatIndex() == nextSeat)
+        .findFirst()
+        .ifPresent(
+            next ->
+                embed.setFooter(
+                    "Turn " + game.getTurnNumber() + " · Next: " + next.getDiscordName()));
 
     event.getHook().sendMessageEmbeds(embed.build()).queue();
   }
@@ -127,9 +148,11 @@ public class CommandHelper {
 
   /** Sends a simple ephemeral success message. */
   public static void replySuccess(SlashCommandInteractionEvent event, String message) {
-    event.getHook().sendMessageEmbeds(
-        new EmbedBuilder().setColor(COLOR_SUCCESS).setDescription("✅ " + message).build()
-    ).queue();
+    event
+        .getHook()
+        .sendMessageEmbeds(
+            new EmbedBuilder().setColor(COLOR_SUCCESS).setDescription("✅ " + message).build())
+        .queue();
   }
 
   /**
@@ -153,13 +176,14 @@ public class CommandHelper {
    * Formats a list of {@link PlayerCard}s into a compact embed-safe string. Each card is one line.
    *
    * <p>Format per card:
+   *
    * <ul>
    *   <li>Animal: {@code **Name** · `id` · Cost: N · Size ≥ M · TAG1, TAG2 · Appeal: +A}
    *   <li>Sponsor: {@code **Name** · `id` · Level: N · [Rep: +R]}
    * </ul>
    *
-   * @param cards      ordered list of player cards (hand or display)
-   * @param showSlot   if true, prefix each line with "Slot N: " (for display cards)
+   * @param cards ordered list of player cards (hand or display)
+   * @param showSlot if true, prefix each line with "Slot N: " (for display cards)
    */
   public static String formatCardList(List<PlayerCard> cards, boolean showSlot) {
     if (cards.isEmpty()) return "_empty_";
@@ -197,8 +221,8 @@ public class CommandHelper {
 
   // ── Internal ─────────────────────────────────────────────────────────────
 
-  private static void addDeltaField(EmbedBuilder embed, String label,
-      java.util.Map<String, Object> deltas, String key) {
+  private static void addDeltaField(
+      EmbedBuilder embed, String label, java.util.Map<String, Object> deltas, String key) {
     Object val = deltas.get(key);
     if (val instanceof Number n && n.intValue() > 0) {
       embed.addField(label, String.valueOf(n.intValue()), true);

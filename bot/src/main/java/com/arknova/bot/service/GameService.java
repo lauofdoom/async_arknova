@@ -19,8 +19,8 @@ import org.springframework.transaction.annotation.Transactional;
  * Orchestrates game lifecycle operations: creation, joining, starting, and retrieving game state.
  *
  * <p>This service is the primary entry point for all Discord command handlers. Game engine logic
- * (action validation, state mutation, win condition) lives in the engine layer and will be wired
- * in as Phase 1 progresses.
+ * (action validation, state mutation, win condition) lives in the engine layer and will be wired in
+ * as Phase 1 progresses.
  */
 @Service
 @RequiredArgsConstructor
@@ -37,13 +37,13 @@ public class GameService {
   // ── Game Creation ──────────────────────────────────────────────────────────
 
   /**
-   * Creates a new game associated with a Discord thread. The creating player is automatically
-   * added as the first player (seat 0).
+   * Creates a new game associated with a Discord thread. The creating player is automatically added
+   * as the first player (seat 0).
    *
-   * @param guildId    Discord guild ID
-   * @param threadId   Discord thread ID created for this game
+   * @param guildId Discord guild ID
+   * @param threadId Discord thread ID created for this game
    * @param creatorDiscordId Discord ID of the player who ran /arknova create
-   * @param creatorName     Display name of the creator
+   * @param creatorName Display name of the creator
    * @return the newly created Game
    * @throws IllegalStateException if a game already exists for this thread
    */
@@ -100,8 +100,8 @@ public class GameService {
   /**
    * Starts the game. Validates minimum player count and transitions status to ACTIVE.
    *
-   * @throws IllegalStateException if called by a non-participant, game is not in SETUP, or
-   *                               there are fewer than MIN_PLAYERS players
+   * @throws IllegalStateException if called by a non-participant, game is not in SETUP, or there
+   *     are fewer than MIN_PLAYERS players
    */
   @Transactional
   public Game startGame(String threadId, String requestingDiscordId) {
@@ -135,9 +135,9 @@ public class GameService {
   }
 
   /**
-   * Sets initial resources for each player at game start. Starting money follows the official
-   * rule: the player in seat {@code n} begins with {@code 25 + n} money (compensating for
-   * acting later in turn order).
+   * Sets initial resources for each player at game start. Starting money follows the official rule:
+   * the player in seat {@code n} begins with {@code 25 + n} money (compensating for acting later in
+   * turn order).
    */
   @Transactional
   public void initializePlayerStates(List<PlayerState> players) {

@@ -1,16 +1,15 @@
 package com.arknova.bot.discord.command;
 
+import java.awt.*;
+import java.time.Instant;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import org.springframework.stereotype.Component;
 
-import java.awt.*;
-import java.time.Instant;
-
 /**
- * /arknova ping — health check command. Verifies the bot is online and
- * confirms end-to-end Discord interaction is working.
+ * /arknova ping — health check command. Verifies the bot is online and confirms end-to-end Discord
+ * interaction is working.
  */
 @Component
 public class PingCommand implements ArkNovaCommand {
