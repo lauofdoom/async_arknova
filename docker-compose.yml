@@ -10,7 +10,11 @@ services:
     environment:
       DISCORD_TOKEN: ${DISCORD_TOKEN}
       DISCORD_CLIENT_ID: ${DISCORD_CLIENT_ID}
-      DATABASE_URL: postgresql://${DB_USER}:${DB_PASS}@db:5432/${DB_NAME}
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-arknova}
+      DB_USER: ${DB_USER:-arknova}
+      DB_PASS: ${DB_PASS}
       REDIS_URL: ${REDIS_URL:-redis://redis:6379}
       IMAGE_STORAGE_PATH: /app/images
       SERVER_PORT: ${SERVER_PORT:-8080}

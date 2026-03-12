@@ -3,7 +3,9 @@ spring:
     name: arknova-bot
 
   datasource:
-    url: jdbc:${DATABASE_URL}
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:arknova}
+    username: ${DB_USER:arknova}
+    password: ${DB_PASS}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10
