@@ -250,7 +250,7 @@ class SponsorActionHandlerTest {
           req(Map.of("card_ids", List.of("s1"))), player, sharedBoard);
 
       assertThat(r.success()).isFalse();
-      assertThat(r.errorMessage()).containsIgnoringCase("money");
+      assertThat(r.errorMessage()).containsIgnoringCase("costs");
     }
 
     @Test

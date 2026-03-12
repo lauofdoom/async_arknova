@@ -145,7 +145,7 @@ public class AnimalsActionHandler implements ActionHandler {
       if (pc == null) {
         return ActionResult.failure("Card " + cardId + " is not in your hand.");
       }
-      ActionResult err = validatePlacement(pc.getCard(), handEncIds.get(i), player, plans, 0);
+      ActionResult err = validatePlacement(pc.getCard(), handEncIds.get(i), player, plans, pc.getCard().getBaseCost());
       if (err != null) return err;
       plans.add(new PlacementPlan(cardId, handEncIds.get(i), pc.getCard(),
           pc.getCard().getBaseCost(), false));
@@ -244,13 +244,19 @@ public class AnimalsActionHandler implements ActionHandler {
    * </pre>
    */
   static int maxAnimals(int strength, boolean upgraded) {
-    int base = switch (strength) {
-      case 1       -> 0;
+    if (upgraded) {
+      return switch (strength) {
+        case 1, 2    -> 1;
+        case 3, 4    -> 2;
+        case 5       -> 3;
+        default      -> 0;
+      };
+    }
+    return switch (strength) {
       case 2, 3, 4 -> 1;
       case 5       -> 2;
       default      -> 0;
     };
-    return upgraded ? base + 1 : base;
   }
 
   // ── Validation helper ────────────────────────────────────────────────────────

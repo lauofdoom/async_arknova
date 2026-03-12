@@ -175,7 +175,7 @@ class AssociationActionHandlerTest {
           req(Map.of("sub_actions", List.of("PARTNER_ZOO"))),
           player, sharedBoard);
       assertThat(r.success()).isFalse();
-      assertThat(r.errorMessage()).containsIgnoringCase("money");
+      assertThat(r.errorMessage()).containsIgnoringCase("costs");
     }
 
     @Test

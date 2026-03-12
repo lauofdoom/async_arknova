@@ -334,7 +334,7 @@ class AnimalsActionHandlerTest {
           player, sharedBoard);
 
       assertThat(result.success()).isFalse();
-      assertThat(result.errorMessage()).containsIgnoringCase("money");
+      assertThat(result.errorMessage()).containsIgnoringCase("costs");
     }
 
     @Test

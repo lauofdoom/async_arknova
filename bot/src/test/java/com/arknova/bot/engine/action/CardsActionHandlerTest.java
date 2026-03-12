@@ -202,9 +202,6 @@ class CardsActionHandlerTest {
     void tooManyDisplayCards() {
       setStrengthUpgraded(player, ActionCard.CARDS, 1); // S1 upgraded: draw=1, so max 1 display take
 
-      PlayerCard pc1 = displayCard("c1", 1);
-      PlayerCard pc2 = displayCard("c2", 2);
-      when(deckService.getDisplay(gameId)).thenReturn(List.of(pc1, pc2));
       player.setReputation(5);
 
       ActionResult result = handler.execute(
@@ -252,7 +249,6 @@ class CardsActionHandlerTest {
     void unexpectedDiscard() {
       setStrength(player, ActionCard.CARDS, 2); // S2 unupgraded: draw 1, no discard
       when(deckService.drawFromDeck(gameId, "player1", 1)).thenReturn(List.of("c1"));
-      when(deckService.getHand(gameId, "player1")).thenReturn(List.of(makeHandCard("c1")));
 
       ActionResult result = handler.execute(
           req(Map.of("discard_ids", List.of("c1"))), player, sharedBoard);
