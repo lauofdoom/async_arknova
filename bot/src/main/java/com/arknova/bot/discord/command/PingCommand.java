@@ -2,8 +2,7 @@ package com.arknova.bot.discord.command;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.interactions.commands.build.CommandData;
-import net.dv8tion.jda.api.interactions.commands.build.Commands;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.springframework.stereotype.Component;
 
@@ -23,10 +22,8 @@ public class PingCommand implements ArkNovaCommand {
   }
 
   @Override
-  public CommandData getCommandData() {
-    // This is registered as a top-level command for simplicity at this stage.
-    // When all commands are added they will be grouped under /arknova as subcommands.
-    return Commands.slash("arknova-ping", "Check if Ark Nova bot is online");
+  public SubcommandData getSubcommandData() {
+    return new SubcommandData("ping", "Check if Ark Nova bot is online");
   }
 
   @Override

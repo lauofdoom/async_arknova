@@ -40,6 +40,20 @@ public record ActionRequest(
      *   <li>{@code "row"} — grid row
      *   <li>{@code "col"} — grid column
      *   <li>{@code "tags"} — optional terrain tags (e.g. ["WATER"])
+     *   <li>{@code "upgrade_action"} — if present at strength 4+, upgrade named action card
+     * </ul>
+     *
+     * <p>ASSOCIATION action:
+     * <ul>
+     *   <li>{@code "sub_actions"}  — ordered list of 1–3 strings:
+     *       PARTNER_ZOO | UNIVERSITY | CONSERVATION_PROJECT | RETURN_WORKERS
+     *   <li>{@code "project_ids"}  — one conservation project card ID per
+     *       CONSERVATION_PROJECT entry (in order)
+     * </ul>
+     *
+     * <p>SPONSOR action:
+     * <ul>
+     *   <li>{@code "card_ids"} — ordered list of sponsor card IDs from hand to play
      * </ul>
      */
     Map<String, Object> params,

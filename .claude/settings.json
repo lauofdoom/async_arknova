@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:api.github.com)",
+      "Bash(curl -s https://raw.githubusercontent.com/ssimeonoff/ssimeonoff.github.io/master/ark-nova.html)",
+      "Bash(python3 -c \":*)",
+      "Bash(*)"
+    ]
+  }
+}

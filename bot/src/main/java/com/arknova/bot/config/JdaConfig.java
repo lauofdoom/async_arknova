@@ -46,6 +46,14 @@ public class JdaConfig {
             .awaitReady();
 
     log.info("JDA ready. Connected as: {}", jda.getSelfUser().getAsTag());
+
+    // Register slash commands with Discord (guild-global update)
+    jda.updateCommands()
+        .addCommands(slashCommandListener.getAllCommandData())
+        .queue(
+            cmds -> log.info("Registered {} slash command(s) with Discord", cmds.size()),
+            err  -> log.error("Failed to register slash commands", err));
+
     return jda;
   }
 

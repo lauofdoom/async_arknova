@@ -50,7 +50,6 @@ class BuildActionHandlerTest {
     player.setDiscordName("Alice");
     player.setMoney(25);
     player.setBoardState(BOARD_EMPTY);
-    // Default order: BUILD is at strength 2 by default
   }
 
   private ActionRequest req(Map<String, Object> params) {
@@ -74,18 +73,20 @@ class BuildActionHandlerTest {
   }
 
   // ── maxSizeForStrength() ──────────────────────────────────────────────────────
+  // Per card: maximum size of a SINGLE building = X (strength). Upgrade unlocks
+  // multi-build (total ≤ X), not a larger individual building.
 
   @Nested
   @DisplayName("maxSizeForStrength()")
   class MaxSize {
 
-    @Test @DisplayName("strength 1: max 2")         void s1()  { assertThat(maxSizeForStrength(1, false)).isEqualTo(2); }
-    @Test @DisplayName("strength 2: max 3")         void s2()  { assertThat(maxSizeForStrength(2, false)).isEqualTo(3); }
-    @Test @DisplayName("strength 3: max 4")         void s3()  { assertThat(maxSizeForStrength(3, false)).isEqualTo(4); }
-    @Test @DisplayName("strength 4: max 5")         void s4()  { assertThat(maxSizeForStrength(4, false)).isEqualTo(5); }
-    @Test @DisplayName("strength 5: max 6")         void s5()  { assertThat(maxSizeForStrength(5, false)).isEqualTo(6); }
-    @Test @DisplayName("strength 5 upgraded: max 7") void s5u() { assertThat(maxSizeForStrength(5, true)).isEqualTo(7); }
-    @Test @DisplayName("strength 1 upgraded: max 3") void s1u() { assertThat(maxSizeForStrength(1, true)).isEqualTo(3); }
+    @Test @DisplayName("strength 1: max 1") void s1()  { assertThat(maxSizeForStrength(1, false)).isEqualTo(1); }
+    @Test @DisplayName("strength 2: max 2") void s2()  { assertThat(maxSizeForStrength(2, false)).isEqualTo(2); }
+    @Test @DisplayName("strength 3: max 3") void s3()  { assertThat(maxSizeForStrength(3, false)).isEqualTo(3); }
+    @Test @DisplayName("strength 4: max 4") void s4()  { assertThat(maxSizeForStrength(4, false)).isEqualTo(4); }
+    @Test @DisplayName("strength 5: max 5") void s5()  { assertThat(maxSizeForStrength(5, false)).isEqualTo(5); }
+    @Test @DisplayName("strength 5 upgraded: still max 5 per building") void s5u() { assertThat(maxSizeForStrength(5, true)).isEqualTo(5); }
+    @Test @DisplayName("strength 1 upgraded: still max 1 per building") void s1u() { assertThat(maxSizeForStrength(1, true)).isEqualTo(1); }
   }
 
   // ── Validation ────────────────────────────────────────────────────────────────
@@ -107,7 +108,7 @@ class BuildActionHandlerTest {
     @DisplayName("fails when row is missing")
     void missingRow() {
       ActionResult result = handler.execute(
-          req(Map.of("size", 2, "col", 0)), player, sharedBoard);
+          req(Map.of("size", 1, "col", 0)), player, sharedBoard);
       assertThat(result.success()).isFalse();
       assertThat(result.errorMessage()).containsIgnoringCase("location");
     }
@@ -116,26 +117,26 @@ class BuildActionHandlerTest {
     @DisplayName("fails when col is missing")
     void missingCol() {
       ActionResult result = handler.execute(
-          req(Map.of("size", 2, "row", 0)), player, sharedBoard);
+          req(Map.of("size", 1, "row", 0)), player, sharedBoard);
       assertThat(result.success()).isFalse();
       assertThat(result.errorMessage()).containsIgnoringCase("location");
     }
 
     @Test
-    @DisplayName("fails when enclosure size exceeds strength limit")
+    @DisplayName("fails when enclosure size exceeds strength X")
     void sizeTooLargeForStrength() {
-      setBuildStrength(1); // max size 2
+      setBuildStrength(1); // X=1, max size 1
       ActionResult result = handler.execute(
-          req(Map.of("size", 3, "row", 0, "col", 0)), player, sharedBoard);
+          req(Map.of("size", 2, "row", 0, "col", 0)), player, sharedBoard);
       assertThat(result.success()).isFalse();
-      assertThat(result.errorMessage()).contains("up to size 2");
+      assertThat(result.errorMessage()).contains("maximum enclosure size is 1");
     }
 
     @Test
     @DisplayName("fails when player cannot afford the enclosure")
     void insufficientMoney() {
-      player.setMoney(2); // size-2 costs 3
-      setBuildStrength(1);
+      setBuildStrength(2); // size-2 costs 2×2 = 4
+      player.setMoney(3);
       ActionResult result = handler.execute(
           req(Map.of("size", 2, "row", 0, "col", 0)), player, sharedBoard);
       assertThat(result.success()).isFalse();
@@ -145,12 +146,25 @@ class BuildActionHandlerTest {
     @Test
     @DisplayName("fails when building at an occupied grid location")
     void gridCollision() {
-      player.setBoardState(BOARD_E1_AT_0_0); // already has enclosure at (0,0)
+      player.setBoardState(BOARD_E1_AT_0_0);
       setBuildStrength(2);
       ActionResult result = handler.execute(
           req(Map.of("size", 2, "row", 0, "col", 0)), player, sharedBoard);
       assertThat(result.success()).isFalse();
       assertThat(result.errorMessage()).contains("already has a structure");
+    }
+
+    @Test
+    @DisplayName("multi-build rejected on un-upgraded card")
+    void multiBuildRequiresUpgrade() {
+      setBuildStrength(3);
+      ActionResult result = handler.execute(
+          req(Map.of("buildings", List.of(
+              Map.of("size", 1, "row", 0, "col", 0, "tags", List.of()),
+              Map.of("size", 1, "row", 1, "col", 0, "tags", List.of())))),
+          player, sharedBoard);
+      assertThat(result.success()).isFalse();
+      assertThat(result.errorMessage()).containsIgnoringCase("upgraded");
     }
 
     @Test
@@ -176,7 +190,6 @@ class BuildActionHandlerTest {
     @Test
     @DisplayName("upgrade sub-action fails when target card is already upgraded")
     void upgradeAlreadyDone() {
-      // Set BUILD at strength 4, CARDS already upgraded
       List<ActionCard> cards = new ArrayList<>(ActionCardOrder.DEFAULT_ORDER);
       cards.remove(ActionCard.BUILD);
       cards.add(3, ActionCard.BUILD); // strength 4
@@ -207,74 +220,94 @@ class BuildActionHandlerTest {
   class HappyPaths {
 
     @Test
-    @DisplayName("strength 1: builds size-2 enclosure, deducts 3 money")
-    void strength1BuildSize2() {
+    @DisplayName("strength 1: builds size-1 enclosure, costs 2 money (1 × 2)")
+    void strength1BuildSize1() {
       setBuildStrength(1);
       player.setMoney(10);
 
       ActionResult result = handler.execute(
-          req(Map.of("size", 2, "row", 0, "col", 0)), player, sharedBoard);
+          req(Map.of("size", 1, "row", 0, "col", 0)), player, sharedBoard);
 
       assertThat(result.success()).isTrue();
-      assertThat(player.getMoney()).isEqualTo(7); // 10 - (2*2 - 1) = 10 - 3
+      assertThat(player.getMoney()).isEqualTo(8); // 10 - (1×2)
       assertThat(result.summary()).contains("E1");
       assertThat((String) result.deltas().get("enclosure_id")).isEqualTo("E1");
     }
 
     @Test
-    @DisplayName("size-5 enclosure costs 9 money base")
+    @DisplayName("size-5 enclosure costs 10 money (5 × 2)")
     void size5Cost() {
-      setBuildStrength(4); // max size 5
+      setBuildStrength(5);
       player.setMoney(20);
 
       ActionResult result = handler.execute(
           req(Map.of("size", 5, "row", 0, "col", 0)), player, sharedBoard);
 
       assertThat(result.success()).isTrue();
-      assertThat(player.getMoney()).isEqualTo(11); // 20 - (5*2 - 1)
+      assertThat(player.getMoney()).isEqualTo(10); // 20 - (5×2)
     }
 
     @Test
     @DisplayName("terrain tags add 2 money each to the base cost")
     void terrainTagsCost() {
-      setBuildStrength(2);
+      setBuildStrength(3);
       player.setMoney(20);
-      // size-3 base = 5; + WATER (2) + ROCK (2) = 9 total
+      // size-3 base = 6; + WATER (2) + ROCK (2) = 10 total
 
       ActionResult result = handler.execute(
           req(Map.of("size", 3, "row", 0, "col", 0, "tags", List.of("WATER", "ROCK"))),
           player, sharedBoard);
 
       assertThat(result.success()).isTrue();
-      assertThat(player.getMoney()).isEqualTo(11); // 20 - 9
+      assertThat(player.getMoney()).isEqualTo(10); // 20 - 10
     }
 
     @Test
     @DisplayName("unknown terrain tags are silently ignored")
     void unknownTagsIgnored() {
-      setBuildStrength(2);
+      setBuildStrength(3);
       player.setMoney(20);
 
       ActionResult result = handler.execute(
           req(Map.of("size", 3, "row", 0, "col", 0, "tags", List.of("MAGIC", "WATER"))),
           player, sharedBoard);
 
-      // Only WATER should apply (+2), MAGIC ignored → cost = 5 + 2 = 7
+      // Only WATER applies (+2), MAGIC ignored → cost = 6 + 2 = 8
       assertThat(result.success()).isTrue();
-      assertThat(player.getMoney()).isEqualTo(13); // 20 - 7
+      assertThat(player.getMoney()).isEqualTo(12); // 20 - 8
     }
 
     @Test
-    @DisplayName("upgraded BUILD at strength 5 allows size-7 enclosure")
-    void upgradedAllowsSize7() {
+    @DisplayName("upgraded BUILD at strength 5: multi-build with total size ≤ 5")
+    void upgradedMultiBuild() {
       setBuildStrengthUpgraded(5);
+      player.setMoney(30);
+      // Two buildings: size 3 + size 2 = total 5 ≤ X=5. Cost = (3+2)×2 = 10.
+
+      ActionResult result = handler.execute(
+          req(Map.of("buildings", List.of(
+              Map.of("size", 3, "row", 0, "col", 0, "tags", List.of()),
+              Map.of("size", 2, "row", 1, "col", 0, "tags", List.of())))),
+          player, sharedBoard);
+
+      assertThat(result.success()).isTrue();
+      assertThat(player.getMoney()).isEqualTo(20); // 30 - 10
+    }
+
+    @Test
+    @DisplayName("upgraded BUILD: multi-build fails when total size exceeds X")
+    void upgradedMultiBuildTotalExceedsX() {
+      setBuildStrengthUpgraded(3); // X=3
       player.setMoney(30);
 
       ActionResult result = handler.execute(
-          req(Map.of("size", 7, "row", 0, "col", 0)), player, sharedBoard);
+          req(Map.of("buildings", List.of(
+              Map.of("size", 2, "row", 0, "col", 0, "tags", List.of()),
+              Map.of("size", 2, "row", 1, "col", 0, "tags", List.of())))), // total=4 > X=3
+          player, sharedBoard);
 
-      assertThat(result.success()).isTrue();
-      assertThat(player.getMoney()).isEqualTo(17); // 30 - (7*2 - 1)
+      assertThat(result.success()).isFalse();
+      assertThat(result.errorMessage()).containsIgnoringCase("total");
     }
 
     @Test
@@ -308,7 +341,7 @@ class BuildActionHandlerTest {
     @Test
     @DisplayName("second enclosure gets sequential ID (E2)")
     void sequentialEnclosureIds() {
-      player.setBoardState(BOARD_E1_AT_0_0); // already has E1
+      player.setBoardState(BOARD_E1_AT_0_0);
       setBuildStrength(2);
       player.setMoney(20);
 

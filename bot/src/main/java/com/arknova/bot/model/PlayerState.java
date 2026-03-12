@@ -141,6 +141,13 @@ public class PlayerState {
   @Column(name = "icons", columnDefinition = "jsonb", nullable = false)
   private String icons = "{}";
 
+  /**
+   * Number of cards the player must still discard to complete their CARDS action. Non-zero means
+   * this player's turn is not yet complete.
+   */
+  @Column(name = "pending_discard_count", nullable = false)
+  private int pendingDiscardCount = 0;
+
   /** Set to true once this player has taken their final scoring turn. */
   @Column(name = "final_scoring_done", nullable = false)
   private boolean finalScoringDone = false;

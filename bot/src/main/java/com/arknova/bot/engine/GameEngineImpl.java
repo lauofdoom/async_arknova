@@ -12,12 +12,12 @@ import com.arknova.bot.repository.ActionLogRepository;
 import com.arknova.bot.repository.GameRepository;
 import com.arknova.bot.repository.PlayerStateRepository;
 import com.arknova.bot.repository.SharedBoardStateRepository;
+import com.arknova.bot.service.DeckService;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -41,7 +41,6 @@ import org.springframework.transaction.annotation.Transactional;
  * </ol>
  */
 @Service
-@RequiredArgsConstructor
 public class GameEngineImpl implements GameEngine {
 
   private static final Logger log = LoggerFactory.getLogger(GameEngineImpl.class);
@@ -51,6 +50,7 @@ public class GameEngineImpl implements GameEngine {
   private final SharedBoardStateRepository sharedBoardRepo;
   private final ActionLogRepository actionLogRepo;
   private final WinConditionChecker winChecker;
+  private final DeckService deckService;
 
   /** All five action card handlers, indexed by the card they handle. */
   private final Map<ActionCard, ActionHandler> handlers;
@@ -61,12 +61,14 @@ public class GameEngineImpl implements GameEngine {
       SharedBoardStateRepository sharedBoardRepo,
       ActionLogRepository actionLogRepo,
       WinConditionChecker winChecker,
+      DeckService deckService,
       List<ActionHandler> handlerList) {
     this.gameRepo         = gameRepo;
     this.playerStateRepo  = playerStateRepo;
     this.sharedBoardRepo  = sharedBoardRepo;
     this.actionLogRepo    = actionLogRepo;
     this.winChecker       = winChecker;
+    this.deckService      = deckService;
     this.handlers         = handlerList.stream()
         .collect(Collectors.toMap(ActionHandler::getActionCard, Function.identity()));
     log.info("GameEngine initialised with handlers: {}", handlers.keySet());
@@ -120,8 +122,9 @@ public class GameEngineImpl implements GameEngine {
       return ActionResult.failure("Action card " + card + " is not yet implemented.");
     }
 
-    // Capture strength BEFORE rotating (rotation happens after success)
+    // Capture strength and turn number BEFORE any mutations
     int strengthUsed = player.getStrengthOf(card);
+    int turnNumber   = game.getTurnNumber();
     ActionResult result = handler.execute(request, player, sharedBoard);
 
     if (!result.success()) {
@@ -147,7 +150,16 @@ public class GameEngineImpl implements GameEngine {
       player.setFinalScoringDone(true);
     }
 
-    // 8. Advance turn
+    // 8. Advance turn — skip if the player still needs to complete a pending discard
+    if (player.getPendingDiscardCount() > 0) {
+      // Persist state but hold the turn — the discard command will advance it
+      playerStateRepo.save(player);
+      sharedBoardRepo.save(sharedBoard);
+      gameRepo.save(game);
+      appendActionLog(request, result, strengthUsed, turnNumber);
+      return result;
+    }
+
     advanceTurn(game);
 
     // Check if final scoring round is complete (all players done)
@@ -163,7 +175,7 @@ public class GameEngineImpl implements GameEngine {
     playerStateRepo.save(player);
     sharedBoardRepo.save(sharedBoard);
     gameRepo.save(game);
-    appendActionLog(request, result, strengthUsed);
+    appendActionLog(request, result, strengthUsed, turnNumber);
 
     // Rebuild result with finalScoringTriggered flag
     if (finalScoringTriggered) {
@@ -175,6 +187,73 @@ public class GameEngineImpl implements GameEngine {
     }
 
     return result;
+  }
+
+  // ── executeDiscard ─────────────────────────────────────────────────────────
+
+  @Override
+  @Transactional
+  public ActionResult executeDiscard(UUID gameId, String discordId, List<String> cardIds) {
+    // 1. Load and validate game is active
+    Game game = gameRepo.findById(gameId).orElse(null);
+    if (game == null) {
+      return ActionResult.failure("Game not found.");
+    }
+    if (!game.isActive() && game.getStatus() != GameStatus.FINAL_SCORING) {
+      return ActionResult.failure("This game is not currently active (status: " + game.getStatus() + ").");
+    }
+
+    // 2. Load player, validate it's their turn
+    PlayerState player = playerStateRepo.findByGameIdAndDiscordId(gameId, discordId).orElse(null);
+    if (player == null) {
+      return ActionResult.failure("You are not a participant in this game.");
+    }
+    if (!isPlayerTurn(game, player)) {
+      PlayerState current = playerStateRepo
+          .findByGameIdAndSeatIndex(gameId, game.getCurrentSeat()).orElse(null);
+      String whose = current != null ? current.getDiscordName() : "another player";
+      return ActionResult.failure("It's not your turn — waiting for " + whose + ".");
+    }
+
+    // 3. Validate player has a pending discard
+    int pending = player.getPendingDiscardCount();
+    if (pending == 0) {
+      return ActionResult.failure("You have no pending discard. Use an action card first.");
+    }
+
+    // 4. Validate correct number of cards provided
+    if (cardIds.size() != pending) {
+      return ActionResult.failure(
+          "You must discard exactly " + pending + " card(s) (you provided " + cardIds.size() + ").");
+    }
+
+    // 5. Apply the discard
+    deckService.discardFromHand(gameId, discordId, cardIds);
+
+    // 6. Clear pending discard
+    player.setPendingDiscardCount(0);
+
+    // 7. Advance turn
+    advanceTurn(game);
+
+    // Check if final scoring round is complete
+    if (game.getStatus() == GameStatus.FINAL_SCORING) {
+      List<PlayerState> allPlayers = playerStateRepo.findByGameIdOrderBySeatIndexAsc(gameId);
+      if (winChecker.isFinalScoringComplete(allPlayers)) {
+        game.setStatus(GameStatus.ENDED);
+        log.info("Game {} ENDED", gameId);
+      }
+    }
+
+    // 8. Persist
+    playerStateRepo.save(player);
+    gameRepo.save(game);
+
+    String summary = player.getDiscordName() + " discarded " + cardIds.size() + " card(s) from hand.";
+    log.info("Game {}: {} DISCARD cards={}", gameId, discordId, cardIds);
+
+    return ActionResult.success(null, 0, summary,
+        Map.of("cards_discarded", cardIds.size()));
   }
 
   // ── undo ──────────────────────────────────────────────────────────────────
@@ -204,11 +283,12 @@ public class GameEngineImpl implements GameEngine {
     game.setTurnNumber(game.getTurnNumber() + 1);
   }
 
-  private void appendActionLog(ActionRequest request, ActionResult result, int strengthUsed) {
+  private void appendActionLog(ActionRequest request, ActionResult result, int strengthUsed,
+      int turnNumber) {
     try {
       ActionLogEntry entry = new ActionLogEntry();
       entry.setGameId(request.gameId());
-      entry.setTurnNumber(result.strengthUsed()); // reuse strength field temporarily
+      entry.setTurnNumber(turnNumber);
       entry.setDiscordId(request.discordId());
       entry.setDiscordName(request.discordName());
       entry.setActionType("USE_ACTION_CARD");

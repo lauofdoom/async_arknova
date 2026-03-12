@@ -127,8 +127,26 @@ public class GameService {
     game.setTurnNumber(1);
     game = gameRepo.save(game);
 
+    List<PlayerState> players = playerStateRepo.findByGameIdOrderBySeatIndexAsc(game.getId());
+    initializePlayerStates(players);
+
     log.info("Game {} started with {} players", game.getId(), playerCount);
     return game;
+  }
+
+  /**
+   * Sets initial resources for each player at game start. Starting money follows the official
+   * rule: the player in seat {@code n} begins with {@code 25 + n} money (compensating for
+   * acting later in turn order).
+   */
+  @Transactional
+  public void initializePlayerStates(List<PlayerState> players) {
+    for (PlayerState player : players) {
+      player.setMoney(25 + player.getSeatIndex());
+      // All other starting values (assocWorkers, boardState, conservationSlots,
+      // actionCardOrder) are already set to correct defaults by the entity.
+      playerStateRepo.save(player);
+    }
   }
 
   // ── Queries ────────────────────────────────────────────────────────────────

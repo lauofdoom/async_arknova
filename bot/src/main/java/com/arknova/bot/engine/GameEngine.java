@@ -4,6 +4,8 @@ import com.arknova.bot.engine.model.ActionRequest;
 import com.arknova.bot.engine.model.ActionResult;
 import com.arknova.bot.model.Game;
 import com.arknova.bot.model.PlayerState;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Core game rules engine. Validates and applies player actions to game state.
@@ -34,6 +36,17 @@ public interface GameEngine {
   ActionResult executeAction(ActionRequest request);
 
   /**
+   * Complete a pending hand discard after a CARDS draw action. Called via the
+   * {@code /arknova discard} command. Validates and applies the discard, then advances the turn.
+   *
+   * @param gameId     the game to act within
+   * @param discordId  the player completing the discard
+   * @param cardIds    card IDs from the player's hand to discard
+   * @return result describing the outcome
+   */
+  ActionResult executeDiscard(UUID gameId, String discordId, List<String> cardIds);
+
+  /**
    * Undo the last action taken by the specified player, if eligible.
    *
    * <p>Undo is only allowed if:
@@ -46,7 +59,7 @@ public interface GameEngine {
    * @param discordId  the player requesting the undo
    * @return result describing the undo outcome
    */
-  ActionResult undo(java.util.UUID gameId, String discordId);
+  ActionResult undo(UUID gameId, String discordId);
 
   /**
    * Validate whether it is currently this player's turn in the given game.

@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.build.CommandData;
+import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -34,9 +35,16 @@ public class SlashCommandListener extends ListenerAdapter {
         commandsBySubcommand.keySet());
   }
 
-  /** Called by JdaConfig after JDA is built to register commands with Discord. */
+  /**
+   * Builds the single {@code /arknova} parent command with all subcommands attached.
+   * Called by JdaConfig to register commands with Discord.
+   */
   public List<CommandData> getAllCommandData() {
-    return commandsBySubcommand.values().stream().map(ArkNovaCommand::getCommandData).toList();
+    var parent = Commands.slash("arknova", "Ark Nova async game commands");
+    commandsBySubcommand.values().stream()
+        .map(ArkNovaCommand::getSubcommandData)
+        .forEach(parent::addSubcommands);
+    return List.of(parent);
   }
 
   @Override
