@@ -9,7 +9,7 @@ services:
       DEBUG_LOGGING: "true"
       SPRING_PROFILES_ACTIVE: dev
     ports:
-      - "8080:8080"   # expose bot API directly for local testing
+      - "8992:8992"   # expose bot API directly for local testing
       - "5005:5005"   # JVM remote debug port
     volumes:
       # Mount source for hot-reload (requires spring-boot-devtools)
