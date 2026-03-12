@@ -3,7 +3,6 @@ package com.arknova.bot.discord.command;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
-import net.dv8tion.jda.api.interactions.components.buttons.Button;
 import org.springframework.stereotype.Component;
 
 import java.awt.*;
@@ -44,10 +43,6 @@ public class PingCommand implements ArkNovaCommand {
             .setColor(Color.GREEN)
             .setTimestamp(Instant.now());
 
-    event
-        .getHook()
-        .sendMessageEmbeds(embed.build())
-        .addActionRow(Button.secondary("arknova:ping:ack", "Acknowledge"))
-        .queue();
+    event.getHook().sendMessageEmbeds(embed.build()).queue();
   }
 }
