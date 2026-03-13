@@ -45,10 +45,7 @@ scripts/dist/
 
 # Environment — NEVER commit secrets
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*
 
 # Docker
 .docker/
