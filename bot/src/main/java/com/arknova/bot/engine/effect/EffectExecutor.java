@@ -27,6 +27,8 @@ import org.springframework.stereotype.Service;
  *   <li>{@code "GAIN"} — unconditionally add {@code amount} to the named resource.
  *   <li>{@code "CONDITIONAL_GAIN"} with condition {@code "MIN_ICON"} — apply the gain only when
  *       the player has at least {@code condition.count} icons of type {@code condition.icon}.
+ *   <li>{@code "GAIN_PER_ICON"} — add {@code amount × iconCount} to the named resource, capped
+ *       at {@code max} if {@code max > 0}.
  * </ul>
  *
  * <p>Supported resources: {@code MONEY}, {@code APPEAL}, {@code CONSERVATION},
@@ -82,6 +84,18 @@ public class EffectExecutor {
           }
         }
 
+        case "GAIN_PER_ICON" -> {
+          String icon = effect.icon();
+          if (icon == null) {
+            log.warn("EffectExecutor: card {} GAIN_PER_ICON missing icon — skipping", cardDef.getId());
+          } else {
+            int iconCount = iconCounts.getOrDefault(icon, 0);
+            int total = iconCount * effect.amount();
+            if (effect.max() > 0) total = Math.min(total, effect.max());
+            if (total > 0) applyGain(cardDef.getId(), effect.resource(), total, player, deltas);
+          }
+        }
+
         default ->
             log.warn(
                 "EffectExecutor: card {} has unsupported effect type '{}' — skipping",
@@ -120,14 +134,16 @@ public class EffectExecutor {
         String type = node.path("type").asText(null);
         String resource = node.path("resource").asText(null);
         int amount = node.path("amount").asInt(0);
+        String icon = node.path("icon").isMissingNode() ? null : node.path("icon").asText(null);
+        int max = node.path("max").asInt(0);
 
         CardEffectCondition condition = null;
         JsonNode condNode = node.path("condition");
         if (!condNode.isMissingNode() && !condNode.isNull()) {
           String condType = condNode.path("type").asText(null);
-          String icon = condNode.path("icon").asText(null);
+          String condIcon = condNode.path("icon").asText(null);
           int count = condNode.path("count").asInt(0);
-          condition = new CardEffectCondition(condType, icon, count);
+          condition = new CardEffectCondition(condType, condIcon, count);
         }
 
         if (trigger == null || type == null) {
@@ -137,7 +153,7 @@ public class EffectExecutor {
           continue;
         }
 
-        effects.add(new CardEffect(trigger, type, resource, amount, condition));
+        effects.add(new CardEffect(trigger, type, resource, amount, icon, max, condition));
       }
       return effects;
 
