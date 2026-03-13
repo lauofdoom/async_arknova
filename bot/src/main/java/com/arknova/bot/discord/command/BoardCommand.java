@@ -1,5 +1,6 @@
 package com.arknova.bot.discord.command;
 
+import com.arknova.bot.discord.DiscordChannelService;
 import com.arknova.bot.model.Game;
 import com.arknova.bot.model.PlayerState;
 import com.arknova.bot.renderer.ZooBoardRenderer;
@@ -8,14 +9,16 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.util.Optional;
 import javax.imageio.ImageIO;
-import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.api.JDA;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 /**
@@ -24,10 +27,10 @@ import org.springframework.stereotype.Component;
  * <p>Defaults to the invoking player's board. Optionally accepts a Discord user mention to view
  * another player's board (useful for spectating or checking opponents' layouts).
  *
- * <p>Response is ephemeral — the board image is only shown to the requesting player.
+ * <p>Response is ephemeral — the board image is only shown to the requesting player. If viewing
+ * your own board, it is also posted to your private channel for persistent reference.
  */
 @Component
-@RequiredArgsConstructor
 public class BoardCommand implements ArkNovaCommand {
 
   private static final Logger log = LoggerFactory.getLogger(BoardCommand.class);
@@ -35,6 +38,21 @@ public class BoardCommand implements ArkNovaCommand {
   private final GameService gameService;
   private final ZooBoardRenderer renderer;
   private final CommandHelper commandHelper;
+  private final DiscordChannelService channelService;
+  private final JDA jda;
+
+  public BoardCommand(
+      GameService gameService,
+      ZooBoardRenderer renderer,
+      CommandHelper commandHelper,
+      DiscordChannelService channelService,
+      @Lazy JDA jda) {
+    this.gameService = gameService;
+    this.renderer = renderer;
+    this.commandHelper = commandHelper;
+    this.channelService = channelService;
+    this.jda = jda;
+  }
 
   @Override
   public String getSubcommandName() {
@@ -89,6 +107,18 @@ public class BoardCommand implements ArkNovaCommand {
               .sendMessage(player.getDiscordName() + "'s zoo board:")
               .addFiles(FileUpload.fromData(pngBytes, filename))
               .queue();
+
+          // Also post to private channel when viewing own board
+          boolean viewingOwn = targetDiscordId.equals(event.getUser().getId());
+          if (viewingOwn && player.getPrivateChannelId() != null) {
+            TextChannel privateChannel = jda.getTextChannelById(player.getPrivateChannelId());
+            if (privateChannel != null) {
+              privateChannel
+                  .sendMessage(player.getDiscordName() + "'s zoo board:")
+                  .addFiles(FileUpload.fromData(pngBytes, filename))
+                  .queue(null, err -> {});
+            }
+          }
         });
   }
 

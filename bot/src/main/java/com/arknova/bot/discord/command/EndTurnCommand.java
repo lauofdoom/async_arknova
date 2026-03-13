@@ -1,5 +1,6 @@
 package com.arknova.bot.discord.command;
 
+import com.arknova.bot.discord.DiscordChannelService;
 import com.arknova.bot.discord.DiscordLogger;
 import com.arknova.bot.model.Game;
 import com.arknova.bot.model.PlayerState;
@@ -17,7 +18,7 @@ import org.springframework.stereotype.Component;
  *
  * <p>Only the player whose seat matches {@code game.getCurrentSeat()} may call this. On success,
  * the game advances to the next seat (and increments the turn number when the seat wraps back to
- * 0).
+ * 0). The ended player's board is auto-posted to the #board channel.
  */
 @Component
 @RequiredArgsConstructor
@@ -26,6 +27,7 @@ public class EndTurnCommand implements ArkNovaCommand {
   private final GameService gameService;
   private final CommandHelper commandHelper;
   private final DiscordLogger discordLogger;
+  private final DiscordChannelService channelService;
 
   @Override
   public String getSubcommandName() {
@@ -81,6 +83,14 @@ public class EndTurnCommand implements ArkNovaCommand {
 
           event.getHook().sendMessageEmbeds(embed.build()).queue();
           discordLogger.logTurnEnded(updatedGame, endedPlayer, nextPlayer);
+
+          // Auto-post board image to #board channel asynchronously
+          final Game gameRef = updatedGame;
+          final PlayerState endedRef = endedPlayer;
+          new Thread(
+                  () -> channelService.postBoardUpdate(gameRef, endedRef),
+                  "board-update-" + updatedGame.getId())
+              .start();
         });
   }
 }

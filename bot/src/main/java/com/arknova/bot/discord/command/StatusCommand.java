@@ -6,19 +6,27 @@ import com.arknova.bot.service.DeckService;
 import com.arknova.bot.service.GameService;
 import java.util.List;
 import java.util.Optional;
-import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 /** /arknova status — shows current game state: turn, player resources, and action card strips. */
 @Component
-@RequiredArgsConstructor
 public class StatusCommand implements ArkNovaCommand {
 
   private final GameService gameService;
   private final DeckService deckService;
+  private final JDA jda;
+
+  public StatusCommand(GameService gameService, DeckService deckService, @Lazy JDA jda) {
+    this.gameService = gameService;
+    this.deckService = deckService;
+    this.jda = jda;
+  }
 
   @Override
   public String getSubcommandName() {
@@ -97,6 +105,20 @@ public class StatusCommand implements ArkNovaCommand {
           }
 
           event.getHook().sendMessageEmbeds(embed.build()).queue();
+
+          // Also post to the calling player's private channel
+          String callerId = event.getUser().getId();
+          players.stream()
+              .filter(p -> p.getDiscordId().equals(callerId))
+              .findFirst()
+              .ifPresent(caller -> {
+                if (caller.getPrivateChannelId() != null) {
+                  TextChannel privateChannel = jda.getTextChannelById(caller.getPrivateChannelId());
+                  if (privateChannel != null) {
+                    privateChannel.sendMessageEmbeds(embed.build()).queue(null, err -> {});
+                  }
+                }
+              });
         });
   }
 
