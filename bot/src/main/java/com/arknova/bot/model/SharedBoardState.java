@@ -68,13 +68,12 @@ public class SharedBoardState {
   private String conservationBoard = "{\"projects\":{}}";
 
   /**
-   * Break tokens awarded to players. Used for tiebreaking.
-   *
-   * <pre>{ "player1_discord_id": 2, "player2_discord_id": 1 }</pre>
+   * Shared break track position. All players share one break track; advancing it (via the CARDS
+   * BREAK action or certain animal card effects) increments this counter for the whole game. Used
+   * for X token final scoring: each player's xTokens × sharedBreakTrack = bonus VP.
    */
-  @JdbcTypeCode(SqlTypes.JSON)
-  @Column(name = "break_tokens", columnDefinition = "jsonb", nullable = false)
-  private String breakTokens = "{}";
+  @Column(name = "break_track", nullable = false)
+  private int breakTrack = 0;
 
   @Column(name = "updated_at", nullable = false)
   private Instant updatedAt = Instant.now();

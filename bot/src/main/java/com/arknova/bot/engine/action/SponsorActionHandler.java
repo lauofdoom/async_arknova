@@ -208,7 +208,7 @@ public class SponsorActionHandler implements ActionHandler {
       deckService.playSponsor(gameId, discordId, p.cardId());
 
       if (p.cardDef().isAutomated()) {
-        Map<String, Integer> fx = effectExecutor.execute(p.cardDef(), player);
+        Map<String, Integer> fx = effectExecutor.execute(p.cardDef(), player, sharedBoard);
         fx.forEach((res, amt) -> totalFxDeltas.merge(res, amt, Integer::sum));
       } else if (p.cardDef().requiresManualResolution() && p.cardDef().getAbilityText() != null) {
         anyManual = true;

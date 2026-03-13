@@ -240,7 +240,7 @@ public class AnimalsActionHandler implements ActionHandler {
       addAnimalToEnclosure(player, plan.enclosureId(), plan.cardId());
 
       if (plan.cardDef().isAutomated()) {
-        Map<String, Integer> fx = effectExecutor.execute(plan.cardDef(), player);
+        Map<String, Integer> fx = effectExecutor.execute(plan.cardDef(), player, sharedBoard);
         fx.forEach((res, amt) -> totalFxDeltas.merge(res, amt, Integer::sum));
       } else if (plan.cardDef().requiresManualResolution()
           && plan.cardDef().getAbilityText() != null) {

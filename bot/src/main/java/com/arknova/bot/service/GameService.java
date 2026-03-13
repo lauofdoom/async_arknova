@@ -4,8 +4,10 @@ import com.arknova.bot.engine.WinConditionChecker;
 import com.arknova.bot.model.Game;
 import com.arknova.bot.model.Game.GameStatus;
 import com.arknova.bot.model.PlayerState;
+import com.arknova.bot.model.SharedBoardState;
 import com.arknova.bot.repository.GameRepository;
 import com.arknova.bot.repository.PlayerStateRepository;
+import com.arknova.bot.repository.SharedBoardStateRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Instant;
@@ -39,6 +41,7 @@ public class GameService {
 
   private final GameRepository gameRepo;
   private final PlayerStateRepository playerStateRepo;
+  private final SharedBoardStateRepository sharedBoardRepo;
   private final ObjectMapper objectMapper;
   private final WinConditionChecker winChecker;
 
@@ -486,8 +489,15 @@ public class GameService {
         player.setReputation(setValue != null ? setValue : Math.max(0, cur + deltaValue));
       }
       case "break" -> {
-        int cur = player.getBreakTrack();
-        player.setBreakTrack(setValue != null ? setValue : Math.max(0, cur + deltaValue));
+        // Break track is shared — update SharedBoardState, not PlayerState.
+        SharedBoardState sharedBoard =
+            sharedBoardRepo
+                .findByGameId(gameId)
+                .orElseThrow(() -> new IllegalStateException("Shared board not found for game."));
+        int cur = sharedBoard.getBreakTrack();
+        sharedBoard.setBreakTrack(setValue != null ? setValue : Math.max(0, cur + deltaValue));
+        sharedBoardRepo.save(sharedBoard);
+        // Return player unchanged — caller reads break track from shared board.
       }
       case "xtokens" -> {
         int cur = player.getXTokens();
@@ -506,6 +516,13 @@ public class GameService {
         setValue,
         deltaValue);
     return player;
+  }
+
+  /** Returns the current shared break track position for a game. */
+  public int getSharedBreakTrack(UUID gameId) {
+    return sharedBoardRepo.findByGameId(gameId)
+        .map(SharedBoardState::getBreakTrack)
+        .orElse(0);
   }
 
   // ── Internal ───────────────────────────────────────────────────────────────
