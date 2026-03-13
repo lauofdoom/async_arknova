@@ -27,10 +27,13 @@ import org.springframework.stereotype.Service;
  *   <li>{@code "GAIN"} — unconditionally add {@code amount} to the named resource.
  *   <li>{@code "CONDITIONAL_GAIN"} with condition {@code "MIN_ICON"} — apply the gain only when
  *       the player has at least {@code condition.count} icons of type {@code condition.icon}.
+ *   <li>{@code "GAIN_PER_ICON"} with condition {@code "ICON"} — multiply {@code amount} by the
+ *       player's count of {@code condition.icon}. Optional {@code condition.max} caps the count
+ *       (0 = no cap).
  * </ul>
  *
  * <p>Supported resources: {@code MONEY}, {@code APPEAL}, {@code CONSERVATION},
- * {@code REPUTATION}, {@code X_TOKENS}.
+ * {@code REPUTATION}, {@code X_TOKENS}, {@code BREAK_TRACK}.
  */
 @Service
 @RequiredArgsConstructor
@@ -82,6 +85,27 @@ public class EffectExecutor {
           }
         }
 
+        case "GAIN_PER_ICON" -> {
+          CardEffectCondition cond = effect.condition();
+          if (cond == null || cond.icon() == null) {
+            log.warn(
+                "EffectExecutor: card {} GAIN_PER_ICON missing condition.icon — skipping",
+                cardDef.getId());
+            break;
+          }
+          int iconCount = iconCounts.getOrDefault(cond.icon(), 0);
+          int effectiveCount =
+              (cond.max() > 0) ? Math.min(iconCount, cond.max()) : iconCount;
+          if (effectiveCount > 0) {
+            applyGain(
+                cardDef.getId(),
+                effect.resource(),
+                effect.amount() * effectiveCount,
+                player,
+                deltas);
+          }
+        }
+
         default ->
             log.warn(
                 "EffectExecutor: card {} has unsupported effect type '{}' — skipping",
@@ -127,7 +151,8 @@ public class EffectExecutor {
           String condType = condNode.path("type").asText(null);
           String icon = condNode.path("icon").asText(null);
           int count = condNode.path("count").asInt(0);
-          condition = new CardEffectCondition(condType, icon, count);
+          int max = condNode.path("max").asInt(0);
+          condition = new CardEffectCondition(condType, icon, count, max);
         }
 
         if (trigger == null || type == null) {
@@ -244,6 +269,10 @@ public class EffectExecutor {
       case "X_TOKENS" -> {
         player.setXTokens(player.getXTokens() + amount);
         deltas.merge("x_tokens", amount, Integer::sum);
+      }
+      case "BREAK_TRACK" -> {
+        player.setBreakTrack(player.getBreakTrack() + amount);
+        deltas.merge("break_track", amount, Integer::sum);
       }
       default ->
           log.warn(

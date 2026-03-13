@@ -276,6 +276,7 @@ public class AnimalsActionHandler implements ActionHandler {
     int fxConservation = totalFxDeltas.getOrDefault("conservation", 0);
     int fxReputation = totalFxDeltas.getOrDefault("reputation", 0);
     int fxXTokens = totalFxDeltas.getOrDefault("x_tokens", 0);
+    int fxBreakTrack = totalFxDeltas.getOrDefault("break_track", 0);
     if (fxMoney > 0) summary.append(" Gained ").append(fxMoney).append(" money from card effect.");
     if (fxAppeal > 0)
       summary.append(" Gained ").append(fxAppeal).append(" appeal from card effect.");
@@ -285,6 +286,8 @@ public class AnimalsActionHandler implements ActionHandler {
       summary.append(" Gained ").append(fxReputation).append(" reputation from card effect.");
     if (fxXTokens > 0)
       summary.append(" Gained ").append(fxXTokens).append(" x_tokens from card effect.");
+    if (fxBreakTrack > 0)
+      summary.append(" Break track advanced ").append(fxBreakTrack).append(" from card effect.");
     if (anyManualResolution) summary.append(" ⚠️ Manual effect resolution required.");
 
     log.info(
