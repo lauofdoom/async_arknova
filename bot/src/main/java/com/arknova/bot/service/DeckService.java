@@ -308,14 +308,22 @@ public class DeckService {
   // ── Queries ────────────────────────────────────────────────────────────────
 
   /** Returns cards currently in the player's hand, ordered. */
+  @Transactional(readOnly = true)
   public List<PlayerCard> getHand(UUID gameId, String discordId) {
-    return playerCardRepo.findByGameIdAndDiscordIdAndLocationOrderBySortOrderAsc(
-        gameId, discordId, CardLocation.HAND);
+    List<PlayerCard> cards =
+        playerCardRepo.findByGameIdAndDiscordIdAndLocationOrderBySortOrderAsc(
+            gameId, discordId, CardLocation.HAND);
+    cards.forEach(pc -> pc.getCard().getName()); // force-initialize lazy card reference
+    return cards;
   }
 
   /** Returns cards currently in the face-up display, ordered by slot. */
+  @Transactional(readOnly = true)
   public List<PlayerCard> getDisplay(UUID gameId) {
-    return playerCardRepo.findByGameIdAndLocationOrderBySortOrderAsc(gameId, CardLocation.DISPLAY);
+    List<PlayerCard> cards =
+        playerCardRepo.findByGameIdAndLocationOrderBySortOrderAsc(gameId, CardLocation.DISPLAY);
+    cards.forEach(pc -> pc.getCard().getName()); // force-initialize lazy card reference
+    return cards;
   }
 
   /** Returns how many cards remain in the combined deck. */

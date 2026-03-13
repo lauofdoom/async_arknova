@@ -61,11 +61,11 @@ public class AssociationActionHandler implements ActionHandler {
 
   private static final Logger log = LoggerFactory.getLogger(AssociationActionHandler.class);
 
-  /** Money cost for each successive partner zoo slot (0-indexed). */
-  private static final int[] PARTNER_ZOO_COSTS = {2, 3, 4};
+  /** Task value required for the Partner Zoo task (strength must be ≥ this). */
+  private static final int PARTNER_ZOO_VALUE = 3;
 
-  /** Money cost for each successive university slot (0-indexed). */
-  private static final int[] UNIVERSITY_COSTS = {2, 3};
+  /** Task value required for the University task (strength must be ≥ this). */
+  private static final int UNIVERSITY_VALUE = 4;
 
   /** Number of worker slots per conservation project (Phase 1 simplification). */
   private static final int PROJECT_SLOTS = 2;
@@ -125,10 +125,9 @@ public class AssociationActionHandler implements ActionHandler {
           "Donation amount must be a multiple of " + DONATION_RATE + " money.");
     }
 
-    // ── Pre-validate: compute total task value and check money/workers ─────────
+    // ── Pre-validate: compute total task value and check workers ──────────────
     ConservationSlots conservationSlots = readConservationSlots(player);
     int totalValue = 0;
-    int pendingMoney = donationAmount; // donation counts against money but not against X
     int pendingWorkers = 0;
     int pendingPartnerZoos = 0;
     int pendingUniversities = 0;
@@ -139,53 +138,25 @@ public class AssociationActionHandler implements ActionHandler {
       switch (type) {
         case "PARTNER_ZOO" -> {
           int slot = conservationSlots.partnerZooCount() + pendingPartnerZoos;
-          if (slot >= PARTNER_ZOO_COSTS.length) {
-            return ActionResult.failure(
-                "You already have the maximum " + PARTNER_ZOO_COSTS.length + " partner zoos.");
-          }
-          int taskValue = slot + 1; // slot 0 → value 1, slot 1 → value 2, etc.
-          int cost = PARTNER_ZOO_COSTS[slot];
-          if (player.getMoney() - pendingMoney < cost) {
-            return ActionResult.failure(
-                "Partner zoo #"
-                    + (slot + 1)
-                    + " costs "
-                    + cost
-                    + "💰 (you have "
-                    + (player.getMoney() - pendingMoney)
-                    + " remaining).");
+          if (slot >= 4) {
+            return ActionResult.failure("You already have the maximum 4 partner zoos.");
           }
           if (player.getAssocWorkersAvailable() - pendingWorkers < 1) {
             return ActionResult.failure("You have no available association workers.");
           }
-          totalValue += taskValue;
-          pendingMoney += cost;
+          totalValue += PARTNER_ZOO_VALUE;
           pendingWorkers++;
           pendingPartnerZoos++;
         }
         case "UNIVERSITY" -> {
           int slot = conservationSlots.universityCount() + pendingUniversities;
-          if (slot >= UNIVERSITY_COSTS.length) {
-            return ActionResult.failure(
-                "You already have the maximum " + UNIVERSITY_COSTS.length + " universities.");
-          }
-          int taskValue = slot + 1;
-          int cost = UNIVERSITY_COSTS[slot];
-          if (player.getMoney() - pendingMoney < cost) {
-            return ActionResult.failure(
-                "University #"
-                    + (slot + 1)
-                    + " costs "
-                    + cost
-                    + "💰 (you have "
-                    + (player.getMoney() - pendingMoney)
-                    + " remaining).");
+          if (slot >= 2) {
+            return ActionResult.failure("You already have the maximum 2 universities.");
           }
           if (player.getAssocWorkersAvailable() - pendingWorkers < 1) {
             return ActionResult.failure("You have no available association workers.");
           }
-          totalValue += taskValue;
-          pendingMoney += cost;
+          totalValue += UNIVERSITY_VALUE;
           pendingWorkers++;
           pendingUniversities++;
         }
@@ -228,7 +199,7 @@ public class AssociationActionHandler implements ActionHandler {
     }
 
     // Validate donation money
-    if (donationAmount > 0 && player.getMoney() - pendingMoney + donationAmount < 0) {
+    if (donationAmount > 0 && player.getMoney() < donationAmount) {
       return ActionResult.failure("Insufficient money for donation of " + donationAmount + "💰.");
     }
 
@@ -253,32 +224,22 @@ public class AssociationActionHandler implements ActionHandler {
       switch (type) {
         case "PARTNER_ZOO" -> {
           int slot = conservationSlots.partnerZooCount();
-          int cost = PARTNER_ZOO_COSTS[slot];
-          player.setMoney(player.getMoney() - cost);
           player.setAssocWorkersAvailable(player.getAssocWorkersAvailable() - 1);
-          totalMoneyCost += cost;
           conservationSlots = conservationSlots.withPartnerZoo("PARTNER_ZOO_" + (slot + 1));
           summary
               .append("\n  • Partner zoo #")
               .append(slot + 1)
-              .append(" claimed for ")
-              .append(cost)
-              .append("💰 — effect: manual resolution.");
+              .append(" claimed — effect: manual resolution.");
           anyManualResolution = true;
         }
         case "UNIVERSITY" -> {
           int slot = conservationSlots.universityCount();
-          int cost = UNIVERSITY_COSTS[slot];
-          player.setMoney(player.getMoney() - cost);
           player.setAssocWorkersAvailable(player.getAssocWorkersAvailable() - 1);
-          totalMoneyCost += cost;
           conservationSlots = conservationSlots.withUniversity("UNIVERSITY_" + (slot + 1));
           summary
               .append("\n  • University #")
               .append(slot + 1)
-              .append(" claimed for ")
-              .append(cost)
-              .append("💰 — effect: manual resolution.");
+              .append(" claimed — effect: manual resolution.");
           anyManualResolution = true;
         }
         case "CONSERVATION_PROJECT" -> {
