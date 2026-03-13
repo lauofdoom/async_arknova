@@ -30,6 +30,14 @@ public class Game {
   @Column(name = "thread_id", nullable = false, unique = true, length = 20)
   private String threadId;
 
+  /** Discord category created for this game on start. Null if channel setup not yet run. */
+  @Column(name = "category_id", length = 20)
+  private String categoryId;
+
+  /** Discord #board channel ID for this game. Null if channel setup not yet run. */
+  @Column(name = "board_channel_id", length = 20)
+  private String boardChannelId;
+
   @Column(name = "status", nullable = false, length = 20)
   @Enumerated(EnumType.STRING)
   private GameStatus status = GameStatus.SETUP;

@@ -214,10 +214,20 @@ public class CommandHelper {
         sb.append(" · ").append(String.join(", ", tags));
       }
       if (c.getAppealValue() > 0) sb.append(" · Appeal: +").append(c.getAppealValue());
+      if (c.getConservationValue() > 0) sb.append(" · CP: +").append(c.getConservationValue());
     } else if (c.getCardType() == CardDefinition.CardType.SPONSOR) {
       sb.append(" · Level: ").append(c.getBaseCost());
       if (c.getReputationValue() > 0) sb.append(" · Rep: +").append(c.getReputationValue());
       if (c.getAppealValue() > 0) sb.append(" · Appeal: +").append(c.getAppealValue());
+    } else if (c.getCardType() == CardDefinition.CardType.CONSERVATION) {
+      if (c.getConservationValue() > 0) sb.append(" · CP: +").append(c.getConservationValue());
+    }
+
+    // Append ability text on a new line, truncated to keep embed size manageable
+    if (c.getAbilityText() != null && !c.getAbilityText().isBlank()) {
+      String ability = c.getAbilityText().trim();
+      if (ability.length() > 160) ability = ability.substring(0, 157) + "…";
+      sb.append("\n  *").append(ability).append("*");
     }
     return sb.toString();
   }

@@ -1,5 +1,6 @@
 package com.arknova.bot.discord.command;
 
+import com.arknova.bot.discord.DiscordChannelService;
 import com.arknova.bot.discord.DiscordLogger;
 import com.arknova.bot.model.Game;
 import com.arknova.bot.model.PlayerState;
@@ -25,6 +26,7 @@ public class StartCommand implements ArkNovaCommand {
   private final GameService gameService;
   private final DeckService deckService;
   private final DiscordLogger discordLogger;
+  private final DiscordChannelService channelService;
 
   @Override
   public String getSubcommandName() {
@@ -79,6 +81,15 @@ public class StartCommand implements ArkNovaCommand {
 
           event.getHook().sendMessageEmbeds(embed.build()).queue();
           discordLogger.logGameStarted(game, players);
+
+          // Set up per-game Discord channels (board + player private channels) asynchronously
+          // after the reply is sent. Runs on a separate thread to not block the command response.
+          final Game startedGame = game;
+          final List<PlayerState> startedPlayers = players;
+          new Thread(
+                  () -> channelService.setupGameChannels(startedGame, startedPlayers),
+                  "channel-setup-" + game.getId())
+              .start();
         });
   }
 }

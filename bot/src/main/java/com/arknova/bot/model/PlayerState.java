@@ -73,6 +73,13 @@ public class PlayerState {
   @Column(name = "reputation", nullable = false)
   private int reputation = 0;
 
+  /**
+   * Number of cards the player has broken (placed on their break pile) during the game. Incremented
+   * each time a card is broken via the CARDS action. Used in X token final scoring.
+   */
+  @Column(name = "break_track", nullable = false)
+  private int breakTrack = 0;
+
   /** Total capacity from placed keeper cards. NOT the count of placed keepers. */
   @Column(name = "zoo_keepers_capacity", nullable = false)
   private int zooKeepersCapacity = 0;
@@ -144,6 +151,10 @@ public class PlayerState {
    */
   @Column(name = "pending_discard_count", nullable = false)
   private int pendingDiscardCount = 0;
+
+  /** Discord private channel ID for this player in this game. Null if channel setup not yet run. */
+  @Column(name = "private_channel_id", length = 20)
+  private String privateChannelId;
 
   /** Set to true once this player has taken their final scoring turn. */
   @Column(name = "final_scoring_done", nullable = false)
