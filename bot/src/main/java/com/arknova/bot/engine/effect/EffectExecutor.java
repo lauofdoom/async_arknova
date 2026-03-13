@@ -112,18 +112,6 @@ public class EffectExecutor {
           }
         }
 
-        case "GAIN_PER_ICON" -> {
-          String icon = effect.icon();
-          if (icon == null) {
-            log.warn("EffectExecutor: card {} GAIN_PER_ICON missing icon — skipping", cardDef.getId());
-          } else {
-            int iconCount = iconCounts.getOrDefault(icon, 0);
-            int total = iconCount * effect.amount();
-            if (effect.max() > 0) total = Math.min(total, effect.max());
-            if (total > 0) applyGain(cardDef.getId(), effect.resource(), total, player, deltas);
-          }
-        }
-
         default ->
             log.warn(
                 "EffectExecutor: card {} has unsupported effect type '{}' — skipping",
@@ -171,9 +159,8 @@ public class EffectExecutor {
           String condType = condNode.path("type").asText(null);
           String condIcon = condNode.path("icon").asText(null);
           int count = condNode.path("count").asInt(0);
-          int max = condNode.path("max").asInt(0);
-          condition = new CardEffectCondition(condType, icon, count, max);
-          condition = new CardEffectCondition(condType, condIcon, count);
+          int condMax = condNode.path("max").asInt(0);
+          condition = new CardEffectCondition(condType, condIcon, count, condMax);
         }
 
         if (trigger == null || type == null) {
