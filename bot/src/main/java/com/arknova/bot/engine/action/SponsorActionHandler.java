@@ -1,6 +1,7 @@
 package com.arknova.bot.engine.action;
 
 import com.arknova.bot.engine.ActionCard;
+import com.arknova.bot.engine.effect.EffectExecutor;
 import com.arknova.bot.engine.model.ActionRequest;
 import com.arknova.bot.engine.model.ActionResult;
 import com.arknova.bot.model.CardDefinition;
@@ -11,6 +12,7 @@ import com.arknova.bot.model.SharedBoardState;
 import com.arknova.bot.repository.PlayerCardRepository;
 import com.arknova.bot.service.DeckService;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -56,6 +58,7 @@ public class SponsorActionHandler implements ActionHandler {
 
   private final DeckService deckService;
   private final PlayerCardRepository playerCardRepo;
+  private final EffectExecutor effectExecutor;
 
   @Override
   public ActionCard getActionCard() {
@@ -179,18 +182,17 @@ public class SponsorActionHandler implements ActionHandler {
       plays.add(new SponsorPlay(cardId, pc.getCard(), cost, true));
     }
 
-    // ── Apply ─────────────────────────────────────────────────────────────────
+    // ── Apply state changes ───────────────────────────────────────────────────
     int totalCost = 0;
     int totalAppeal = 0;
     int totalConservation = 0;
     int totalReputation = 0;
+    // Accumulated deltas from automated card effects across all played cards
+    Map<String, Integer> totalFxDeltas = new HashMap<>();
     boolean anyManual = false;
     String firstManualId = null;
-    StringBuilder summary = new StringBuilder();
-    summary.append(request.discordName()).append(" played ");
 
-    for (int i = 0; i < plays.size(); i++) {
-      SponsorPlay p = plays.get(i);
+    for (SponsorPlay p : plays) {
       player.setMoney(player.getMoney() - p.cost());
       totalCost += p.cost();
       totalAppeal += p.cardDef().getAppealValue();
@@ -205,11 +207,20 @@ public class SponsorActionHandler implements ActionHandler {
       }
       deckService.playSponsor(gameId, discordId, p.cardId());
 
-      if (p.cardDef().requiresManualResolution() && p.cardDef().getAbilityText() != null) {
+      if (p.cardDef().isAutomated()) {
+        Map<String, Integer> fx = effectExecutor.execute(p.cardDef(), player);
+        fx.forEach((res, amt) -> totalFxDeltas.merge(res, amt, Integer::sum));
+      } else if (p.cardDef().requiresManualResolution() && p.cardDef().getAbilityText() != null) {
         anyManual = true;
         if (firstManualId == null) firstManualId = p.cardId();
       }
+    }
 
+    // ── Build summary message ─────────────────────────────────────────────────
+    StringBuilder summary = new StringBuilder();
+    summary.append(request.discordName()).append(" played ");
+    for (int i = 0; i < plays.size(); i++) {
+      SponsorPlay p = plays.get(i);
       if (i > 0) summary.append(" and ");
       summary
           .append("**")
@@ -228,6 +239,21 @@ public class SponsorActionHandler implements ActionHandler {
     if (totalConservation > 0)
       summary.append(" +").append(totalConservation).append(" conservation.");
     if (totalReputation > 0) summary.append(" +").append(totalReputation).append(" reputation.");
+    // Append automated effect gains
+    int fxMoney = totalFxDeltas.getOrDefault("money", 0);
+    int fxAppeal = totalFxDeltas.getOrDefault("appeal", 0);
+    int fxConservation = totalFxDeltas.getOrDefault("conservation", 0);
+    int fxReputation = totalFxDeltas.getOrDefault("reputation", 0);
+    int fxXTokens = totalFxDeltas.getOrDefault("x_tokens", 0);
+    if (fxMoney > 0) summary.append(" Gained ").append(fxMoney).append(" money from card effect.");
+    if (fxAppeal > 0)
+      summary.append(" Gained ").append(fxAppeal).append(" appeal from card effect.");
+    if (fxConservation > 0)
+      summary.append(" Gained ").append(fxConservation).append(" conservation from card effect.");
+    if (fxReputation > 0)
+      summary.append(" Gained ").append(fxReputation).append(" reputation from card effect.");
+    if (fxXTokens > 0)
+      summary.append(" Gained ").append(fxXTokens).append(" x_tokens from card effect.");
     if (anyManual) summary.append(" ⚠️ Manual effect resolution required.");
 
     log.info(
@@ -249,7 +275,10 @@ public class SponsorActionHandler implements ActionHandler {
             "appeal_gained", totalAppeal,
             "conservation_gained", totalConservation,
             "reputation_gained", totalReputation,
-            "cards_played", plays.size()),
+            "cards_played", plays.size(),
+            "fx_money_gained", fxMoney,
+            "fx_appeal_gained", fxAppeal,
+            "fx_conservation_gained", fxConservation),
         List.of(),
         false,
         anyManual,

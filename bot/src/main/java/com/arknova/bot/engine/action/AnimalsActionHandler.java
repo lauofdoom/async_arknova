@@ -1,6 +1,7 @@
 package com.arknova.bot.engine.action;
 
 import com.arknova.bot.engine.ActionCard;
+import com.arknova.bot.engine.effect.EffectExecutor;
 import com.arknova.bot.engine.model.ActionRequest;
 import com.arknova.bot.engine.model.ActionResult;
 import com.arknova.bot.model.CardDefinition;
@@ -14,6 +15,7 @@ import com.arknova.bot.service.DeckService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -77,6 +79,7 @@ public class AnimalsActionHandler implements ActionHandler {
   private final PlayerCardRepository playerCardRepo;
   private final CardDefinitionRepository cardDefRepo;
   private final ObjectMapper objectMapper;
+  private final EffectExecutor effectExecutor;
 
   @Override
   public ActionCard getActionCard() {
@@ -208,13 +211,12 @@ public class AnimalsActionHandler implements ActionHandler {
     int totalCost = 0;
     int totalAppeal = 0;
     int totalConservation = 0;
+    // Accumulated deltas from automated card effects across all placed cards
+    Map<String, Integer> totalFxDeltas = new HashMap<>();
     boolean anyManualResolution = false;
     String manualCardId = null;
-    StringBuilder summary = new StringBuilder();
-    summary.append(request.discordName()).append(" placed ");
 
-    for (int i = 0; i < plans.size(); i++) {
-      PlacementPlan plan = plans.get(i);
+    for (PlacementPlan plan : plans) {
       player.setMoney(player.getMoney() - plan.cost());
       totalCost += plan.cost();
 
@@ -225,6 +227,7 @@ public class AnimalsActionHandler implements ActionHandler {
       totalAppeal += appealGain;
       totalConservation += conservationGain;
 
+      // Update icon counts before executing effects so CONDITIONAL_GAIN sees the new icons
       updateIcons(player, plan.cardDef().getTagList());
 
       if (plan.fromDisplay()) {
@@ -236,13 +239,21 @@ public class AnimalsActionHandler implements ActionHandler {
       }
       addAnimalToEnclosure(player, plan.enclosureId(), plan.cardId());
 
-      boolean needsManual =
-          plan.cardDef().requiresManualResolution() && plan.cardDef().getAbilityText() != null;
-      if (needsManual) {
+      if (plan.cardDef().isAutomated()) {
+        Map<String, Integer> fx = effectExecutor.execute(plan.cardDef(), player);
+        fx.forEach((res, amt) -> totalFxDeltas.merge(res, amt, Integer::sum));
+      } else if (plan.cardDef().requiresManualResolution()
+          && plan.cardDef().getAbilityText() != null) {
         anyManualResolution = true;
         manualCardId = plan.cardId();
       }
+    }
 
+    // ── Build summary message ─────────────────────────────────────────────────
+    StringBuilder summary = new StringBuilder();
+    summary.append(request.discordName()).append(" placed ");
+    for (int i = 0; i < plans.size(); i++) {
+      PlacementPlan plan = plans.get(i);
       if (i > 0) summary.append(" and ");
       summary
           .append("**")
@@ -257,6 +268,24 @@ public class AnimalsActionHandler implements ActionHandler {
     }
     summary.append(".");
     if (totalAppeal > 0) summary.append(" +").append(totalAppeal).append(" appeal.");
+    if (totalConservation > 0)
+      summary.append(" +").append(totalConservation).append(" conservation.");
+    // Append automated effect gains
+    int fxMoney = totalFxDeltas.getOrDefault("money", 0);
+    int fxAppeal = totalFxDeltas.getOrDefault("appeal", 0);
+    int fxConservation = totalFxDeltas.getOrDefault("conservation", 0);
+    int fxReputation = totalFxDeltas.getOrDefault("reputation", 0);
+    int fxXTokens = totalFxDeltas.getOrDefault("x_tokens", 0);
+    if (fxMoney > 0) summary.append(" Gained ").append(fxMoney).append(" money from card effect.");
+    if (fxAppeal > 0)
+      summary.append(" Gained ").append(fxAppeal).append(" appeal from card effect.");
+    if (fxConservation > 0)
+      summary.append(" Gained ").append(fxConservation).append(" conservation from card effect.");
+    if (fxReputation > 0)
+      summary.append(" Gained ").append(fxReputation).append(" reputation from card effect.");
+    if (fxXTokens > 0)
+      summary.append(" Gained ").append(fxXTokens).append(" x_tokens from card effect.");
+    if (anyManualResolution) summary.append(" ⚠️ Manual effect resolution required.");
 
     log.info(
         "Game {}: {} placed {} animal(s) for {} money total",
@@ -279,7 +308,11 @@ public class AnimalsActionHandler implements ActionHandler {
             "conservation_gained",
             totalConservation,
             "cards_placed",
-            plans.size()),
+            plans.size(),
+            "fx_money_gained",
+            fxMoney,
+            "fx_appeal_gained",
+            fxAppeal),
         List.of(),
         false,
         anyManualResolution,
