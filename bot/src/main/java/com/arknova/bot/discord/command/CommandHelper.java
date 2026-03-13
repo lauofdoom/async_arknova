@@ -6,6 +6,7 @@ import com.arknova.bot.model.CardDefinition;
 import com.arknova.bot.model.Game;
 import com.arknova.bot.model.PlayerCard;
 import com.arknova.bot.model.PlayerState;
+import com.arknova.bot.repository.CardDefinitionRepository;
 import com.arknova.bot.service.GameService;
 import java.awt.Color;
 import java.util.Arrays;
@@ -36,6 +37,7 @@ public class CommandHelper {
 
   private final GameService gameService;
   private final DiscordLogger discordLogger;
+  private final CardDefinitionRepository cardDefRepo;
 
   // ── Game & player lookup ──────────────────────────────────────────────────
 
@@ -127,7 +129,14 @@ public class CommandHelper {
     addDeltaField(embed, "🏆 Rep", result.deltas(), "reputation_gained");
 
     if (result.requiresManualResolution()) {
-      embed.addField("⚠️ Manual", "This card's ability requires manual resolution.", false);
+      String abilityBody = "This card's ability requires manual resolution.";
+      if (result.manualResolutionCardId() != null) {
+        abilityBody = cardDefRepo.findById(result.manualResolutionCardId())
+            .map(CardDefinition::getAbilityText)
+            .filter(t -> t != null && !t.isBlank())
+            .orElse(abilityBody);
+      }
+      embed.addField("⚠️ Manual", abilityBody, false);
     }
 
     // Next turn footer
