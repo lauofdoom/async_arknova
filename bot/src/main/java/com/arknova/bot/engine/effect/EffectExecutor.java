@@ -2,6 +2,7 @@ package com.arknova.bot.engine.effect;
 
 import com.arknova.bot.model.CardDefinition;
 import com.arknova.bot.model.PlayerState;
+import com.arknova.bot.model.SharedBoardState;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,12 +28,15 @@ import org.springframework.stereotype.Service;
  *   <li>{@code "GAIN"} — unconditionally add {@code amount} to the named resource.
  *   <li>{@code "CONDITIONAL_GAIN"} with condition {@code "MIN_ICON"} — apply the gain only when
  *       the player has at least {@code condition.count} icons of type {@code condition.icon}.
+ *   <li>{@code "GAIN_PER_ICON"} with condition {@code "ICON"} — multiply {@code amount} by the
+ *       player's count of {@code condition.icon}. Optional {@code condition.max} caps the count
+ *       (0 = no cap).
  *   <li>{@code "GAIN_PER_ICON"} — add {@code amount × iconCount} to the named resource, capped
  *       at {@code max} if {@code max > 0}.
  * </ul>
  *
  * <p>Supported resources: {@code MONEY}, {@code APPEAL}, {@code CONSERVATION},
- * {@code REPUTATION}, {@code X_TOKENS}.
+ * {@code REPUTATION}, {@code X_TOKENS}, {@code BREAK_TRACK}.
  */
 @Service
 @RequiredArgsConstructor
@@ -49,10 +53,12 @@ public class EffectExecutor {
    * @param cardDef the card whose effects are to be applied; must satisfy {@link
    *     CardDefinition#isAutomated()}
    * @param player the player state to mutate
+   * @param sharedBoard the shared board state (required for BREAK_TRACK resource)
    * @return a map of resource-name → delta for every resource that changed (e.g. {@code "money" →
    *     3}); entries with a delta of 0 are omitted
    */
-  public Map<String, Integer> execute(CardDefinition cardDef, PlayerState player) {
+  public Map<String, Integer> execute(
+      CardDefinition cardDef, PlayerState player, SharedBoardState sharedBoard) {
     Map<String, Integer> deltas = new HashMap<>();
 
     List<CardEffect> effects = parseEffects(cardDef);
@@ -72,7 +78,8 @@ public class EffectExecutor {
       }
 
       switch (effect.type()) {
-        case "GAIN" -> applyGain(cardDef.getId(), effect.resource(), effect.amount(), player, deltas);
+        case "GAIN" ->
+            applyGain(cardDef.getId(), effect.resource(), effect.amount(), player, sharedBoard, deltas);
 
         case "CONDITIONAL_GAIN" -> {
           if (!evaluateCondition(cardDef.getId(), effect.condition(), iconCounts)) {
@@ -80,7 +87,28 @@ public class EffectExecutor {
                 "EffectExecutor: card {} CONDITIONAL_GAIN condition not met — skipping",
                 cardDef.getId());
           } else {
-            applyGain(cardDef.getId(), effect.resource(), effect.amount(), player, deltas);
+            applyGain(cardDef.getId(), effect.resource(), effect.amount(), player, sharedBoard, deltas);
+          }
+        }
+
+        case "GAIN_PER_ICON" -> {
+          CardEffectCondition cond = effect.condition();
+          if (cond == null || cond.icon() == null) {
+            log.warn(
+                "EffectExecutor: card {} GAIN_PER_ICON missing condition.icon — skipping",
+                cardDef.getId());
+            break;
+          }
+          int iconCount = iconCounts.getOrDefault(cond.icon(), 0);
+          int effectiveCount = (cond.max() > 0) ? Math.min(iconCount, cond.max()) : iconCount;
+          if (effectiveCount > 0) {
+            applyGain(
+                cardDef.getId(),
+                effect.resource(),
+                effect.amount() * effectiveCount,
+                player,
+                sharedBoard,
+                deltas);
           }
         }
 
@@ -143,6 +171,8 @@ public class EffectExecutor {
           String condType = condNode.path("type").asText(null);
           String condIcon = condNode.path("icon").asText(null);
           int count = condNode.path("count").asInt(0);
+          int max = condNode.path("max").asInt(0);
+          condition = new CardEffectCondition(condType, icon, count, max);
           condition = new CardEffectCondition(condType, condIcon, count);
         }
 
@@ -233,6 +263,7 @@ public class EffectExecutor {
       String resource,
       int amount,
       PlayerState player,
+      SharedBoardState sharedBoard,
       Map<String, Integer> deltas) {
 
     if (resource == null) {
@@ -260,6 +291,14 @@ public class EffectExecutor {
       case "X_TOKENS" -> {
         player.setXTokens(player.getXTokens() + amount);
         deltas.merge("x_tokens", amount, Integer::sum);
+      }
+      case "BREAK_TRACK" -> {
+        if (sharedBoard != null) {
+          sharedBoard.setBreakTrack(sharedBoard.getBreakTrack() + amount);
+          deltas.merge("break_track", amount, Integer::sum);
+        } else {
+          log.warn("EffectExecutor: card {} BREAK_TRACK effect but sharedBoard is null — skipping", cardId);
+        }
       }
       default ->
           log.warn(

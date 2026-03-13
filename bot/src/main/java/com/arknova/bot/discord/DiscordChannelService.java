@@ -3,9 +3,11 @@ package com.arknova.bot.discord;
 import com.arknova.bot.model.Game;
 import com.arknova.bot.model.PlayerCard;
 import com.arknova.bot.model.PlayerState;
+import com.arknova.bot.model.SharedBoardState;
 import com.arknova.bot.renderer.ZooBoardRenderer;
 import com.arknova.bot.repository.GameRepository;
 import com.arknova.bot.repository.PlayerStateRepository;
+import com.arknova.bot.repository.SharedBoardStateRepository;
 import com.arknova.bot.service.DeckService;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -57,6 +59,7 @@ public class DiscordChannelService {
   private final JDA jda;
   private final GameRepository gameRepo;
   private final PlayerStateRepository playerStateRepo;
+  private final SharedBoardStateRepository sharedBoardRepo;
   private final ZooBoardRenderer zooBoardRenderer;
   private final DeckService deckService;
 
@@ -64,11 +67,13 @@ public class DiscordChannelService {
       @Lazy JDA jda,
       GameRepository gameRepo,
       PlayerStateRepository playerStateRepo,
+      SharedBoardStateRepository sharedBoardRepo,
       ZooBoardRenderer zooBoardRenderer,
       DeckService deckService) {
     this.jda = jda;
     this.gameRepo = gameRepo;
     this.playerStateRepo = playerStateRepo;
+    this.sharedBoardRepo = sharedBoardRepo;
     this.zooBoardRenderer = zooBoardRenderer;
     this.deckService = deckService;
   }
@@ -254,7 +259,9 @@ public class DiscordChannelService {
       }
 
       // Resources embed
-      channel.sendMessageEmbeds(buildResourcesEmbed(player).build()).queue();
+      int sharedBreakTrack = sharedBoardRepo.findByGameId(game.getId())
+          .map(SharedBoardState::getBreakTrack).orElse(0);
+      channel.sendMessageEmbeds(buildResourcesEmbed(player, sharedBreakTrack).build()).queue();
 
       // Hand embed
       List<PlayerCard> hand = deckService.getHand(game.getId(), player.getDiscordId());
@@ -355,7 +362,7 @@ public class DiscordChannelService {
     }
   }
 
-  private static EmbedBuilder buildResourcesEmbed(PlayerState player) {
+  private static EmbedBuilder buildResourcesEmbed(PlayerState player, int sharedBreakTrack) {
     return new EmbedBuilder()
         .setColor(new java.awt.Color(0x9B59B6))
         .setTitle("Resources — " + player.getDiscordName())
@@ -363,7 +370,7 @@ public class DiscordChannelService {
         .addField("Appeal", String.valueOf(player.getAppeal()), true)
         .addField("Conservation", String.valueOf(player.getConservation()), true)
         .addField("Reputation", String.valueOf(player.getReputation()), true)
-        .addField("Break Track", String.valueOf(player.getBreakTrack()), true)
+        .addField("Break Track (shared)", String.valueOf(sharedBreakTrack), true)
         .addField("X Tokens", String.valueOf(player.getXTokens()), true)
         .addField("Workers", player.getAssocWorkersAvailable() + "/" + player.getAssocWorkers(), true);
   }

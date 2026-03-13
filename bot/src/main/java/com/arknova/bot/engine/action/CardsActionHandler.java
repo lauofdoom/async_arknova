@@ -130,10 +130,11 @@ public class CardsActionHandler implements ActionHandler {
     // ── BREAK ────────────────────────────────────────────────────────────────
     if ("BREAK".equalsIgnoreCase(action)) {
       player.setMoney(player.getMoney() + BREAK_VALUE);
-      player.setBreakTrack(player.getBreakTrack() + 1);
-      String summary = request.discordName() + " broke **Cards** → +" + BREAK_VALUE + "💰.";
-      log.info("Game {}: {} CARDS break +{} breakTrack={}", gameId, discordId, BREAK_VALUE,
-          player.getBreakTrack());
+      sharedBoard.setBreakTrack(sharedBoard.getBreakTrack() + 1);
+      String summary = request.discordName() + " broke **Cards** → +" + BREAK_VALUE
+          + "💰. Break track now at " + sharedBoard.getBreakTrack() + ".";
+      log.info("Game {}: {} CARDS break +{} sharedBreakTrack={}", gameId, discordId, BREAK_VALUE,
+          sharedBoard.getBreakTrack());
       return ActionResult.success(
           ActionCard.CARDS, strength, summary, Map.of("money_gained", BREAK_VALUE, "break", true));
     }

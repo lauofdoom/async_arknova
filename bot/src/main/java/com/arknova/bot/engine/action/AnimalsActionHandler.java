@@ -240,7 +240,7 @@ public class AnimalsActionHandler implements ActionHandler {
       addAnimalToEnclosure(player, plan.enclosureId(), plan.cardId());
 
       if (plan.cardDef().isAutomated()) {
-        Map<String, Integer> fx = effectExecutor.execute(plan.cardDef(), player);
+        Map<String, Integer> fx = effectExecutor.execute(plan.cardDef(), player, sharedBoard);
         fx.forEach((res, amt) -> totalFxDeltas.merge(res, amt, Integer::sum));
       } else if (plan.cardDef().requiresManualResolution()
           && plan.cardDef().getAbilityText() != null) {
@@ -276,6 +276,7 @@ public class AnimalsActionHandler implements ActionHandler {
     int fxConservation = totalFxDeltas.getOrDefault("conservation", 0);
     int fxReputation = totalFxDeltas.getOrDefault("reputation", 0);
     int fxXTokens = totalFxDeltas.getOrDefault("x_tokens", 0);
+    int fxBreakTrack = totalFxDeltas.getOrDefault("break_track", 0);
     if (fxMoney > 0) summary.append(" Gained ").append(fxMoney).append(" money from card effect.");
     if (fxAppeal > 0)
       summary.append(" Gained ").append(fxAppeal).append(" appeal from card effect.");
@@ -285,6 +286,8 @@ public class AnimalsActionHandler implements ActionHandler {
       summary.append(" Gained ").append(fxReputation).append(" reputation from card effect.");
     if (fxXTokens > 0)
       summary.append(" Gained ").append(fxXTokens).append(" x_tokens from card effect.");
+    if (fxBreakTrack > 0)
+      summary.append(" Break track advanced ").append(fxBreakTrack).append(" from card effect.");
     if (anyManualResolution) summary.append(" ⚠️ Manual effect resolution required.");
 
     log.info(
@@ -398,16 +401,57 @@ public class AnimalsActionHandler implements ActionHandler {
               + ").");
     }
 
+    // Two kinds of requirements:
+    //   WATER, ROCK  — the target enclosure must have been built with that terrain tag
+    //   Everything else (continent, animal-type icons) — icon count across the player's whole zoo
+    //                   (placed animals + partner zoos + universities etc.)
+    // PARTNER_ZOO is an alternative placement pathway, not a blocking check.
+    // Repeated entries raise the threshold, e.g. ["PREDATOR","PREDATOR"] → need ≥2 PREDATOR icons.
+    Map<String, Integer> requiredCounts = new java.util.LinkedHashMap<>();
     for (String req : cardDef.getRequirementList()) {
-      if (!req.equals("PARTNER_ZOO") && !enclosure.tags().contains(req)) {
-        return ActionResult.failure(
-            cardDef.getName()
-                + " requires a "
-                + req
-                + " enclosure, "
-                + "but enclosure "
-                + enclosureId
-                + " does not have that terrain tag.");
+      if (!req.equals("PARTNER_ZOO")) {
+        requiredCounts.merge(req, 1, Integer::sum);
+      }
+    }
+    for (Map.Entry<String, Integer> entry : requiredCounts.entrySet()) {
+      String req = entry.getKey();
+      int needed = entry.getValue();
+      if ("ANIMALS_II".equals(req)) {
+        if (!player.getActionCardOrder().isUpgraded(ActionCard.ANIMALS)) {
+          return ActionResult.failure(
+              cardDef.getName() + " requires the upgraded Animals (II) card.");
+        }
+      } else if ("WATER".equals(req) || "ROCK".equals(req)) {
+        // Terrain requirement: the enclosure must have been built adjacent to enough
+        // water/rock spaces (represented by the terrain tag on the enclosure itself).
+        long enclosureHas = enclosure.tags().stream().filter(req::equals).count();
+        if (enclosureHas < needed) {
+          return ActionResult.failure(
+              cardDef.getName()
+                  + " requires an enclosure with "
+                  + (needed > 1 ? needed + " " : "a ")
+                  + req
+                  + " terrain tag"
+                  + (needed > 1 ? "s" : "")
+                  + " (enclosure "
+                  + enclosureId
+                  + " does not have it).");
+        }
+      } else {
+        int have = getIconCount(player, req);
+        if (have < needed) {
+          return ActionResult.failure(
+              cardDef.getName()
+                  + " requires "
+                  + needed
+                  + " "
+                  + req
+                  + " icon"
+                  + (needed > 1 ? "s" : "")
+                  + " in your zoo (you have "
+                  + have
+                  + ").");
+        }
       }
     }
 
@@ -425,6 +469,17 @@ public class AnimalsActionHandler implements ActionHandler {
   }
 
   // ── Board JSON helpers ────────────────────────────────────────────────────────
+
+  private int getIconCount(PlayerState player, String iconType) {
+    try {
+      Map<String, Object> icons =
+          objectMapper.readValue(player.getIcons(), new TypeReference<>() {});
+      return ((Number) icons.getOrDefault(iconType, 0)).intValue();
+    } catch (Exception e) {
+      log.error("Failed to parse icons for player {}", player.getDiscordId(), e);
+      return 0;
+    }
+  }
 
   @SuppressWarnings("unchecked")
   private Enclosure findEnclosure(PlayerState player, String enclosureId) {

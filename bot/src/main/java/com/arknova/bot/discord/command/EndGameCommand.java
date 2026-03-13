@@ -7,8 +7,10 @@ import com.arknova.bot.model.CardDefinition;
 import com.arknova.bot.model.Game;
 import com.arknova.bot.model.PlayerCard.CardLocation;
 import com.arknova.bot.model.PlayerState;
+import com.arknova.bot.model.SharedBoardState;
 import com.arknova.bot.repository.CardDefinitionRepository;
 import com.arknova.bot.repository.PlayerCardRepository;
+import com.arknova.bot.repository.SharedBoardStateRepository;
 import com.arknova.bot.service.GameService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -52,6 +54,7 @@ public class EndGameCommand implements ArkNovaCommand {
   private final DiscordChannelService channelService;
   private final PlayerCardRepository playerCardRepository;
   private final CardDefinitionRepository cardDefinitionRepository;
+  private final SharedBoardStateRepository sharedBoardRepo;
   private final ObjectMapper objectMapper;
 
   @Override
@@ -77,6 +80,8 @@ public class EndGameCommand implements ArkNovaCommand {
 
           Game endedGame = gameService.endGame(channelId, discordId);
           List<PlayerState> players = gameService.getPlayersInOrder(endedGame.getId());
+          int sharedBreakTrack = sharedBoardRepo.findByGameId(endedGame.getId())
+              .map(SharedBoardState::getBreakTrack).orElse(0);
 
           EmbedBuilder embed =
               new EmbedBuilder()
@@ -94,7 +99,7 @@ public class EndGameCommand implements ArkNovaCommand {
             int conservationVp = player.getConservation();
             int partnerZooVp = countPartnerZoos(player) * ScoringTables.PARTNER_ZOO_VP;
             int universityVp = countUniversities(player) * ScoringTables.UNIVERSITY_VP;
-            int xTokenVp = ScoringTables.xTokenVp(player.getXTokens(), player.getBreakTrack());
+            int xTokenVp = ScoringTables.xTokenVp(player.getXTokens(), sharedBreakTrack);
             int subtotal = appealVp + conservationVp + partnerZooVp + universityVp + xTokenVp;
 
             List<String> finalScoringCards = getFinalScoringCardNames(endedGame, player);
@@ -108,7 +113,7 @@ public class EndGameCommand implements ArkNovaCommand {
               sb.append(" · X Tokens (")
                   .append(player.getXTokens())
                   .append("×")
-                  .append(player.getBreakTrack())
+                  .append(sharedBreakTrack)
                   .append("): **+")
                   .append(xTokenVp)
                   .append("**");

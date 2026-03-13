@@ -98,6 +98,21 @@ public class ScoreCommand implements ArkNovaCommand {
                     + "\". Use a plain integer (e.g. 25), +N to add, or -N to subtract.");
           }
 
+          // Break track is shared — handle separately without a target player.
+          if ("break".equals(track)) {
+            int oldValue = gameService.getSharedBreakTrack(game.getId());
+            gameService.adjustTrack(game.getId(), targetDiscordId, track, setValue, deltaValue);
+            int newValue = gameService.getSharedBreakTrack(game.getId());
+            EmbedBuilder embed =
+                new EmbedBuilder()
+                    .setColor(CommandHelper.COLOR_SUCCESS)
+                    .setTitle("Track Updated")
+                    .setDescription("Shared **break** track updated.")
+                    .addField("Break", oldValue + " → **" + newValue + "**", true);
+            event.getHook().sendMessageEmbeds(embed.build()).queue();
+            return;
+          }
+
           // Read old value for display
           PlayerState before =
               gameService
@@ -128,7 +143,6 @@ public class ScoreCommand implements ArkNovaCommand {
       case "appeal" -> player.getAppeal();
       case "conservation" -> player.getConservation();
       case "reputation" -> player.getReputation();
-      case "break" -> player.getBreakTrack();
       case "xtokens" -> player.getXTokens();
       default -> 0;
     };

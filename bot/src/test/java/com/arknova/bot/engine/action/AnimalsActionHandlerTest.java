@@ -61,10 +61,6 @@ class AnimalsActionHandlerTest {
   private static final String BOARD_E1_SIZE1 =
       "{\"enclosures\":[{\"id\":\"E1\",\"size\":1,\"row\":0,\"col\":0,\"tags\":[],\"animalCardIds\":[]}]}";
 
-  /** Board with E1 size-3 WATER (empty). */
-  private static final String BOARD_E1_WATER =
-      "{\"enclosures\":[{\"id\":\"E1\",\"size\":3,\"row\":0,\"col\":0,\"tags\":[\"WATER\"],\"animalCardIds\":[]}]}";
-
   /** Board with E1 size-3, full (3/3). */
   private static final String BOARD_E1_FULL =
       "{\"enclosures\":[{\"id\":\"E1\",\"size\":3,\"row\":0,\"col\":0,\"tags\":[],\"animalCardIds\":[\"a\",\"b\",\"c\"]}]}";
@@ -389,23 +385,92 @@ class AnimalsActionHandlerTest {
     }
 
     @Test
-    @DisplayName("fails when terrain requirement not met")
-    void terrainNotMet() {
+    @DisplayName("fails when player lacks required continent icon")
+    void requirementIconNotMet() {
       setAnimalsStrength(2);
+      // Player has no AUSTRALIA icons; kookaburra needs 1
       CardDefinition def =
-          animalDef("seal", "Seal", 5, 1, new String[] {"WATER"}, new String[] {}, 2, 0, null);
+          animalDef(
+              "kookaburra",
+              "Laughing Kookaburra",
+              5,
+              1,
+              new String[] {"AUSTRALIA"},
+              new String[] {"BIRD", "AUSTRALIA"},
+              2,
+              0,
+              null);
       when(playerCardRepo.findByGameIdAndDiscordIdAndLocationOrderBySortOrderAsc(
               gameId, "player1", CardLocation.HAND))
           .thenReturn(List.of(handCard(def)));
 
       ActionResult result =
           handler.execute(
-              req(Map.of("hand_card_ids", List.of("seal"), "hand_enc_ids", List.of("E1"))),
+              req(Map.of("hand_card_ids", List.of("kookaburra"), "hand_enc_ids", List.of("E1"))),
               player,
               sharedBoard);
 
       assertThat(result.success()).isFalse();
-      assertThat(result.errorMessage()).containsIgnoringCase("WATER");
+      assertThat(result.errorMessage()).containsIgnoringCase("AUSTRALIA");
+    }
+
+    @Test
+    @DisplayName("fails when player lacks required icon count (e.g. Lion needs 3 PREDATOR)")
+    void requirementIconCountNotMet() {
+      setAnimalsStrength(2);
+      player.setIcons("{\"PREDATOR\":2}"); // has 2, needs 3
+      CardDefinition def =
+          animalDef(
+              "lion",
+              "Lion",
+              16,
+              4,
+              new String[] {"PREDATOR", "PREDATOR", "PREDATOR"},
+              new String[] {"PREDATOR", "AFRICA"},
+              9,
+              0,
+              null);
+      when(playerCardRepo.findByGameIdAndDiscordIdAndLocationOrderBySortOrderAsc(
+              gameId, "player1", CardLocation.HAND))
+          .thenReturn(List.of(handCard(def)));
+
+      ActionResult result =
+          handler.execute(
+              req(Map.of("hand_card_ids", List.of("lion"), "hand_enc_ids", List.of("E1"))),
+              player,
+              sharedBoard);
+
+      assertThat(result.success()).isFalse();
+      assertThat(result.errorMessage()).contains("3 PREDATOR");
+    }
+
+    @Test
+    @DisplayName("fails when ANIMALS_II required but card is not upgraded")
+    void animalsIIRequirementNotMet() {
+      setAnimalsStrength(2); // not upgraded
+      CardDefinition def =
+          animalDef(
+              "elephant",
+              "African Bush Elephant",
+              16,
+              5,
+              new String[] {"ANIMALS_II"},
+              new String[] {"AFRICA"},
+              8,
+              0,
+              null);
+      when(playerCardRepo.findByGameIdAndDiscordIdAndLocationOrderBySortOrderAsc(
+              gameId, "player1", CardLocation.HAND))
+          .thenReturn(List.of(handCard(def)));
+
+      ActionResult result =
+          handler.execute(
+              req(Map.of("hand_card_ids", List.of("elephant"), "hand_enc_ids", List.of("E1"))),
+              player,
+              sharedBoard);
+
+      assertThat(result.success()).isFalse();
+      assertThat(result.errorMessage()).containsIgnoringCase("upgraded Animals");
     }
 
     @Test
@@ -514,7 +579,7 @@ class AnimalsActionHandlerTest {
       CardDefinition lion =
           animalDef("lion", "Lion", 6, 2, new String[] {}, new String[] {}, 3, 0, null);
       CardDefinition seal =
-          animalDef("seal", "Seal", 4, 1, new String[] {"WATER"}, new String[] {}, 2, 0, null);
+          animalDef("seal", "Seal", 4, 1, new String[] {}, new String[] {}, 2, 0, null);
       when(playerCardRepo.findByGameIdAndDiscordIdAndLocationOrderBySortOrderAsc(
               gameId, "player1", CardLocation.HAND))
           .thenReturn(List.of(handCard(lion), handCard(seal)));
@@ -569,7 +634,7 @@ class AnimalsActionHandlerTest {
       CardDefinition fox =
           animalDef("fox", "Fox", 4, 1, new String[] {}, new String[] {}, 1, 0, null);
       CardDefinition seal =
-          animalDef("seal", "Seal", 5, 1, new String[] {"WATER"}, new String[] {}, 2, 0, null);
+          animalDef("seal", "Seal", 5, 1, new String[] {}, new String[] {}, 2, 0, null);
 
       // Add a third enclosure for the display animal
       String board3 =
@@ -625,20 +690,87 @@ class AnimalsActionHandlerTest {
     }
 
     @Test
-    @DisplayName("terrain requirement satisfied by matching enclosure tag")
-    void terrainMet() {
+    @DisplayName("continent icon requirement satisfied when player has the icon")
+    void requirementIconMet() {
       setAnimalsStrength(2);
-      player.setBoardState(BOARD_E1_WATER);
+      player.setIcons("{\"AUSTRALIA\":1}");
       player.setMoney(10);
       CardDefinition def =
-          animalDef("seal", "Seal", 5, 1, new String[] {"WATER"}, new String[] {}, 2, 0, null);
+          animalDef(
+              "kookaburra",
+              "Laughing Kookaburra",
+              5,
+              1,
+              new String[] {"AUSTRALIA"},
+              new String[] {"BIRD", "AUSTRALIA"},
+              2,
+              0,
+              null);
       when(playerCardRepo.findByGameIdAndDiscordIdAndLocationOrderBySortOrderAsc(
               gameId, "player1", CardLocation.HAND))
           .thenReturn(List.of(handCard(def)));
 
       ActionResult result =
           handler.execute(
-              req(Map.of("hand_card_ids", List.of("seal"), "hand_enc_ids", List.of("E1"))),
+              req(Map.of("hand_card_ids", List.of("kookaburra"), "hand_enc_ids", List.of("E1"))),
+              player,
+              sharedBoard);
+
+      assertThat(result.success()).isTrue();
+    }
+
+    @Test
+    @DisplayName("ANIMALS_II requirement satisfied when card is upgraded")
+    void animalsIIRequirementMet() {
+      setAnimalsStrengthUpgraded(2); // upgraded
+      player.setMoney(20);
+      CardDefinition def =
+          animalDef(
+              "elephant",
+              "African Bush Elephant",
+              16,
+              2,
+              new String[] {"ANIMALS_II"},
+              new String[] {"AFRICA"},
+              8,
+              0,
+              null);
+      when(playerCardRepo.findByGameIdAndDiscordIdAndLocationOrderBySortOrderAsc(
+              gameId, "player1", CardLocation.HAND))
+          .thenReturn(List.of(handCard(def)));
+
+      ActionResult result =
+          handler.execute(
+              req(Map.of("hand_card_ids", List.of("elephant"), "hand_enc_ids", List.of("E1"))),
+              player,
+              sharedBoard);
+
+      assertThat(result.success()).isTrue();
+    }
+
+    @Test
+    @DisplayName("PARTNER_ZOO requirement does not block normal enclosure placement")
+    void partnerZooRequirementDoesNotBlock() {
+      setAnimalsStrength(2);
+      player.setMoney(20);
+      CardDefinition def =
+          animalDef(
+              "leopard",
+              "Leopard",
+              12,
+              2,
+              new String[] {"PARTNER_ZOO"},
+              new String[] {"PREDATOR", "AFRICA"},
+              6,
+              0,
+              null);
+      when(playerCardRepo.findByGameIdAndDiscordIdAndLocationOrderBySortOrderAsc(
+              gameId, "player1", CardLocation.HAND))
+          .thenReturn(List.of(handCard(def)));
+
+      ActionResult result =
+          handler.execute(
+              req(Map.of("hand_card_ids", List.of("leopard"), "hand_enc_ids", List.of("E1"))),
               player,
               sharedBoard);
 
