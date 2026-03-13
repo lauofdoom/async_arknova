@@ -68,7 +68,14 @@ public class ProjectsCommand implements ArkNovaCommand {
           }
           SharedBoardState board = maybeBoard.get();
 
-          JsonNode root = objectMapper.readTree(board.getConservationBoard());
+          JsonNode root;
+          try {
+            root = objectMapper.readTree(board.getConservationBoard());
+          } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+            log.warn("Failed to parse conservation board JSON for game {}", game.getId(), e);
+            CommandHelper.replyError(event, "Failed to read conservation board data.");
+            return;
+          }
           JsonNode projects = root.path("projects");
 
           if (projects.isMissingNode() || projects.isEmpty()) {
