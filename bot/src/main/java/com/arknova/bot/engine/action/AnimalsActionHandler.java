@@ -174,22 +174,31 @@ public class AnimalsActionHandler implements ActionHandler {
       if (pc == null) {
         return ActionResult.failure("Card " + cardId + " is not in the display.");
       }
-      // Reputation check: slot index (0-based sortOrder) must be within rep range
-      int slot = pc.getSortOrder(); // 0 = cheapest slot
-      int requiredRep = slot * 2; // slot 0→0, slot 1→2, slot 2→4, slot 3→6, slot 4→8, slot 5→10
+      // Reputation check: slot index (0-based sortOrder) must be within rep range.
+      // Slots 5-6 (index 4-5) also require the upgraded ANIMALS card.
+      int slotIndex = pc.getSortOrder(); // 0-based
+      int[] minRepPerSlot = {1, 2, 4, 7, 10, 13};
+      if (slotIndex >= 4 && !upgraded) {
+        return ActionResult.failure(
+            pc.getCard().getName()
+                + " is in display slot "
+                + (slotIndex + 1)
+                + " — accessing slots 5 and 6 requires the upgraded ANIMALS card.");
+      }
+      int requiredRep = slotIndex < minRepPerSlot.length ? minRepPerSlot[slotIndex] : 13;
       if (player.getReputation() < requiredRep) {
         return ActionResult.failure(
             "Taking "
                 + pc.getCard().getName()
                 + " from display slot "
-                + (slot + 1)
+                + (slotIndex + 1)
                 + " requires reputation "
                 + requiredRep
                 + " (you have "
                 + player.getReputation()
                 + ").");
       }
-      int cost = pc.getCard().getBaseCost() + slot; // display cards cost base + slot premium
+      int cost = pc.getCard().getBaseCost() + (slotIndex + 1); // base cost + slot number (1-based)
       ActionResult err = validatePlacement(pc.getCard(), displayEncIds.get(i), player, plans, cost);
       if (err != null) return err;
       plans.add(new PlacementPlan(cardId, displayEncIds.get(i), pc.getCard(), cost, true));

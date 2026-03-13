@@ -57,12 +57,10 @@ Async Ark Nova board game Discord bot (Spring Boot 4.0.3 + JDA + PostgreSQL). Pl
 #### 2. ~~Break Track~~ ✅ DONE
 `breakTrack` field added to `PlayerState`; V3 migration applied; accessible via `/arknova score track:break`.
 
-#### 3. Break Pile / SNAP Action
-Currently flagged `requiresManualResolution`. Phase 2 implementation:
-- SharedBoardState needs a `breakPile` (JSON list of card IDs per player)
-- SNAP = take 1 card from your break pile into hand
-- Needs `/arknova snap card_id:<id>` or integrate into CARDS action multi-step flow
-- CARDS break sub-action should increment `breakTrack` automatically
+#### 3. SNAP + Reputation Slot Fix ✅ DONE
+- **SNAP** = take any card from the shared display into hand (bypasses reputation). Available at CARDS strength 5 unupgraded, or strength 3-5 upgraded. Use `/arknova cards action:SNAP snap_card_id:<id>`.
+- **Display reputation thresholds** corrected: slot 1 → rep 1, slot 2 → rep 2, slot 3 → rep 4, slot 4 → rep 7, slot 5 → rep 10 (upgraded CARDS only), slot 6 → rep 13 (upgraded CARDS only).
+- **BREAK** now auto-increments `breakTrack`.
 
 #### 4. X Tokens (field exists, never set automatically)
 `PlayerState.xTokens` is accessible via `/arknova score track:xtokens` but no action handler increments it automatically. Need to wire X token gain to specific card effects / break actions.

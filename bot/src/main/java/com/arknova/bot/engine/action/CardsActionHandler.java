@@ -130,13 +130,17 @@ public class CardsActionHandler implements ActionHandler {
     // ── BREAK ────────────────────────────────────────────────────────────────
     if ("BREAK".equalsIgnoreCase(action)) {
       player.setMoney(player.getMoney() + BREAK_VALUE);
+      player.setBreakTrack(player.getBreakTrack() + 1);
       String summary = request.discordName() + " broke **Cards** → +" + BREAK_VALUE + "💰.";
-      log.info("Game {}: {} CARDS break +{}", gameId, discordId, BREAK_VALUE);
+      log.info("Game {}: {} CARDS break +{} breakTrack={}", gameId, discordId, BREAK_VALUE,
+          player.getBreakTrack());
       return ActionResult.success(
           ActionCard.CARDS, strength, summary, Map.of("money_gained", BREAK_VALUE, "break", true));
     }
 
     // ── SNAP ─────────────────────────────────────────────────────────────────
+    // Minimum reputation required to access each display slot (0-based index).
+    // Slots 4 and 5 (1-based slots 5-6) also require the upgraded CARDS card.
     int[] cfg = upgraded ? CONFIG_UPGRADED[strength] : CONFIG_BASE[strength];
     boolean snapAllowed = cfg[2] == 1;
 
@@ -148,22 +152,30 @@ public class CardsActionHandler implements ActionHandler {
                 + (upgraded ? " (upgraded)" : "")
                 + ".");
       }
-      // Snap = take from break pile. Requires multi-step flow (Phase 2).
-      // For Phase 1: accept the action and flag for manual resolution.
-      String summary =
-          request.discordName() + " snapped a card ⚠️ (manual: take 1 card from the break pile).";
-      log.info("Game {}: {} CARDS snap at strength={}", gameId, discordId, strength);
-      return new ActionResult(
-          true,
-          null,
-          ActionCard.CARDS,
-          strength,
-          summary,
-          Map.of("snap", true),
-          List.of(),
-          false,
-          true,
-          null);
+      // SNAP = take any one card from the display into hand, ignoring reputation.
+      String snapCardId = request.paramStr("snap_card_id");
+      if (snapCardId == null || snapCardId.isBlank()) {
+        return ActionResult.failure(
+            "Specify which display card to snap with `snap_card_id:<card_id>`. "
+                + "Use `/arknova display` to see the current display.");
+      }
+      List<PlayerCard> display = deckService.getDisplay(gameId);
+      boolean inDisplay =
+          display.stream().anyMatch(pc -> pc.getCard().getId().equals(snapCardId));
+      if (!inDisplay) {
+        return ActionResult.failure("Card " + snapCardId + " is not in the display.");
+      }
+      deckService.takeFromDisplay(gameId, discordId, snapCardId);
+      String snappedName =
+          display.stream()
+              .filter(pc -> pc.getCard().getId().equals(snapCardId))
+              .findFirst()
+              .map(pc -> pc.getCard().getName())
+              .orElse(snapCardId);
+      String summary = request.discordName() + " snapped **" + snappedName + "** from the display.";
+      log.info("Game {}: {} CARDS snap card={}", gameId, discordId, snapCardId);
+      return ActionResult.successWithCards(
+          ActionCard.CARDS, strength, summary, Map.of("snap", true), List.of(snapCardId));
     }
 
     // ── DRAW (default) ───────────────────────────────────────────────────────
@@ -190,6 +202,10 @@ public class CardsActionHandler implements ActionHandler {
               + " from display).");
     }
 
+    // Reputation thresholds per display slot (0-based index → min reputation required).
+    // Slot 5 (index 4) and slot 6 (index 5) require the upgraded CARDS card.
+    int[] minRepPerSlot = {1, 2, 4, 7, 10, 13};
+
     // Reputation check for display takes
     List<PlayerCard> display =
         displayCardIds.isEmpty() ? List.of() : deckService.getDisplay(gameId);
@@ -199,14 +215,23 @@ public class CardsActionHandler implements ActionHandler {
       if (pc == null) {
         return ActionResult.failure("Card " + cardId + " is not in the display.");
       }
-      int slot = pc.getSortOrder(); // 0-based slot index
-      if (player.getReputation() < slot) {
+      int slotIndex = pc.getSortOrder(); // 0-based
+      // Slots 5-6 (index 4-5) require the upgraded CARDS card
+      if (slotIndex >= 4 && !upgraded) {
         return ActionResult.failure(
             pc.getCard().getName()
                 + " is in display slot "
-                + (slot + 1)
+                + (slotIndex + 1)
+                + " — accessing slots 5 and 6 requires the upgraded CARDS card.");
+      }
+      int minRep = slotIndex < minRepPerSlot.length ? minRepPerSlot[slotIndex] : 13;
+      if (player.getReputation() < minRep) {
+        return ActionResult.failure(
+            pc.getCard().getName()
+                + " is in display slot "
+                + (slotIndex + 1)
                 + " which requires reputation "
-                + slot
+                + minRep
                 + " (you have "
                 + player.getReputation()
                 + ").");

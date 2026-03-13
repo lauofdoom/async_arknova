@@ -55,7 +55,7 @@ public class CardsCommand implements ArkNovaCommand {
         .addOption(
             OptionType.STRING,
             "action",
-            "DRAW (default) | BREAK (take 2 money) | SNAP (discard hand for new cards)",
+            "DRAW (default) | BREAK (take 2 money) | SNAP (take any display card, ignores reputation)",
             false)
         .addOption(
             OptionType.STRING,
@@ -66,6 +66,11 @@ public class CardsCommand implements ArkNovaCommand {
             OptionType.STRING,
             "display_card_ids",
             "Card IDs to take from display (upgraded only, comma-separated)",
+            false)
+        .addOption(
+            OptionType.STRING,
+            "snap_card_id",
+            "Card ID to snap from the display (action:SNAP only — bypasses reputation)",
             false);
   }
 
@@ -99,6 +104,11 @@ public class CardsCommand implements ArkNovaCommand {
           OptionMapping displayOpt = event.getOption("display_card_ids");
           if (displayOpt != null) {
             params.put("display_card_ids", CommandHelper.splitCsv(displayOpt.getAsString()));
+          }
+
+          OptionMapping snapOpt = event.getOption("snap_card_id");
+          if (snapOpt != null) {
+            params.put("snap_card_id", snapOpt.getAsString().trim());
           }
 
           ActionRequest request =

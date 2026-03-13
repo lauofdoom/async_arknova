@@ -141,20 +141,29 @@ public class SponsorActionHandler implements ActionHandler {
       if (pc == null) {
         return ActionResult.failure("Card " + cardId + " is not in the display.");
       }
-      // Reputation range check: slot index (0-based) must be ≤ player reputation
-      int slot = pc.getSortOrder();
-      if (player.getReputation() < slot) {
+      // Reputation check per slot. Slots 5-6 (index 4-5) also require the upgraded SPONSOR card.
+      int slotIndex = pc.getSortOrder(); // 0-based
+      int[] minRepPerSlot = {1, 2, 4, 7, 10, 13};
+      if (slotIndex >= 4 && !upgraded) {
         return ActionResult.failure(
             pc.getCard().getName()
                 + " is in display slot "
-                + (slot + 1)
+                + (slotIndex + 1)
+                + " — accessing slots 5 and 6 requires the upgraded SPONSOR card.");
+      }
+      int requiredRep = slotIndex < minRepPerSlot.length ? minRepPerSlot[slotIndex] : 13;
+      if (player.getReputation() < requiredRep) {
+        return ActionResult.failure(
+            pc.getCard().getName()
+                + " is in display slot "
+                + (slotIndex + 1)
                 + " which requires reputation "
-                + slot
+                + requiredRep
                 + " (you have "
                 + player.getReputation()
                 + ").");
       }
-      int cost = pc.getCard().getBaseCost() + slot; // base cost + slot premium
+      int cost = pc.getCard().getBaseCost() + (slotIndex + 1); // base cost + slot number (1-based)
       ActionResult err =
           validateSponsor(
               pc.getCard(),
