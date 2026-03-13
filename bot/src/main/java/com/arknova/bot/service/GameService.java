@@ -5,8 +5,13 @@ import com.arknova.bot.model.Game.GameStatus;
 import com.arknova.bot.model.PlayerState;
 import com.arknova.bot.repository.GameRepository;
 import com.arknova.bot.repository.PlayerStateRepository;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +38,7 @@ public class GameService {
 
   private final GameRepository gameRepo;
   private final PlayerStateRepository playerStateRepo;
+  private final ObjectMapper objectMapper;
 
   // ── Game Creation ──────────────────────────────────────────────────────────
 
@@ -241,6 +247,123 @@ public class GameService {
 
   public Optional<PlayerState> getPlayerState(UUID gameId, String discordId) {
     return playerStateRepo.findByGameIdAndDiscordId(gameId, discordId);
+  }
+
+  // ── Adjust ─────────────────────────────────────────────────────────────────
+
+  /**
+   * Adjust a player's resources for admin/correction purposes.
+   *
+   * @param gameId the game
+   * @param targetDiscordId the player to adjust
+   * @param moneyDelta if non-null, add this value to the player's money (may be negative)
+   * @param moneySet if non-null, set the player's money to this value directly
+   * @param partnerZoosToAdd number of partner zoo slots to append (0 or more)
+   * @param universitiesToAdd number of university slots to append (0 or more)
+   * @return the updated PlayerState
+   * @throws IllegalStateException if the player is not found or a constraint is violated
+   */
+  @Transactional
+  public PlayerState adjustPlayer(
+      UUID gameId,
+      String targetDiscordId,
+      Integer moneyDelta,
+      Integer moneySet,
+      Integer partnerZoosToAdd,
+      Integer universitiesToAdd) {
+
+    PlayerState player =
+        playerStateRepo
+            .findByGameIdAndDiscordId(gameId, targetDiscordId)
+            .orElseThrow(
+                () -> new IllegalStateException("Player not found in this game."));
+
+    // Apply money
+    if (moneySet != null) {
+      if (moneySet < 0) {
+        throw new IllegalStateException("Money cannot be set to a negative value.");
+      }
+      player.setMoney(moneySet);
+    } else if (moneyDelta != null) {
+      int newMoney = player.getMoney() + moneyDelta;
+      if (newMoney < 0) {
+        throw new IllegalStateException(
+            "Cannot subtract that much money — player only has " + player.getMoney() + ".");
+      }
+      player.setMoney(newMoney);
+    }
+
+    // Apply conservation slot adjustments
+    if ((partnerZoosToAdd != null && partnerZoosToAdd > 0)
+        || (universitiesToAdd != null && universitiesToAdd > 0)) {
+      try {
+        Map<String, Object> raw =
+            objectMapper.readValue(player.getConservationSlots(), new TypeReference<>() {});
+
+        @SuppressWarnings("unchecked")
+        List<Object> partnerZoos =
+            new ArrayList<>((List<Object>) raw.getOrDefault("partnerZoos", new ArrayList<>()));
+        @SuppressWarnings("unchecked")
+        List<Object> universities =
+            new ArrayList<>((List<Object>) raw.getOrDefault("universities", new ArrayList<>()));
+        @SuppressWarnings("unchecked")
+        List<Object> projects =
+            new ArrayList<>((List<Object>) raw.getOrDefault("projects", new ArrayList<>()));
+
+        if (partnerZoosToAdd != null && partnerZoosToAdd > 0) {
+          long current = partnerZoos.stream().filter(s -> s != null).count();
+          if (current + partnerZoosToAdd > 4) {
+            throw new IllegalStateException(
+                "Cannot add "
+                    + partnerZoosToAdd
+                    + " partner zoo(s) — would exceed the maximum of 4 (currently "
+                    + current
+                    + ").");
+          }
+          for (int i = 0; i < partnerZoosToAdd; i++) {
+            partnerZoos.add("PARTNER_ZOO_" + (current + i + 1));
+          }
+        }
+
+        if (universitiesToAdd != null && universitiesToAdd > 0) {
+          long current = universities.stream().filter(s -> s != null).count();
+          if (current + universitiesToAdd > 2) {
+            throw new IllegalStateException(
+                "Cannot add "
+                    + universitiesToAdd
+                    + " university(ies) — would exceed the maximum of 2 (currently "
+                    + current
+                    + ").");
+          }
+          for (int i = 0; i < universitiesToAdd; i++) {
+            universities.add("UNIVERSITY_" + (current + i + 1));
+          }
+        }
+
+        Map<String, Object> updated = new HashMap<>();
+        updated.put("partnerZoos", partnerZoos);
+        updated.put("universities", universities);
+        updated.put("projects", projects);
+        player.setConservationSlots(objectMapper.writeValueAsString(updated));
+
+      } catch (IllegalStateException e) {
+        throw e;
+      } catch (Exception e) {
+        log.error("Failed to update conservationSlots for {}", targetDiscordId, e);
+        throw new IllegalStateException("Failed to update conservation slots.");
+      }
+    }
+
+    player = playerStateRepo.save(player);
+    log.info(
+        "Game {}: adjusted player {} — moneyDelta={} moneySet={} partnerZoos={} universities={}",
+        gameId,
+        targetDiscordId,
+        moneyDelta,
+        moneySet,
+        partnerZoosToAdd,
+        universitiesToAdd);
+    return player;
   }
 
   // ── Internal ───────────────────────────────────────────────────────────────
