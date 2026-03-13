@@ -398,16 +398,39 @@ public class AnimalsActionHandler implements ActionHandler {
               + ").");
     }
 
+    // Requirements are player-level constraints, NOT enclosure terrain tags.
+    // Repeated entries in the list indicate the icon threshold required (e.g. ["PREDATOR","PREDATOR"]
+    // means the player's zoo must contain ≥2 PREDATOR icons from placed animals/partner zoos).
+    // PARTNER_ZOO is an alternative placement pathway — it is not a blocking requirement.
+    Map<String, Integer> requiredCounts = new java.util.LinkedHashMap<>();
     for (String req : cardDef.getRequirementList()) {
-      if (!req.equals("PARTNER_ZOO") && !enclosure.tags().contains(req)) {
-        return ActionResult.failure(
-            cardDef.getName()
-                + " requires a "
-                + req
-                + " enclosure, "
-                + "but enclosure "
-                + enclosureId
-                + " does not have that terrain tag.");
+      if (!req.equals("PARTNER_ZOO")) {
+        requiredCounts.merge(req, 1, Integer::sum);
+      }
+    }
+    for (Map.Entry<String, Integer> entry : requiredCounts.entrySet()) {
+      String req = entry.getKey();
+      int needed = entry.getValue();
+      if ("ANIMALS_II".equals(req)) {
+        if (!player.getActionCardOrder().isUpgraded(ActionCard.ANIMALS)) {
+          return ActionResult.failure(
+              cardDef.getName() + " requires the upgraded Animals (II) card.");
+        }
+      } else {
+        int have = getIconCount(player, req);
+        if (have < needed) {
+          return ActionResult.failure(
+              cardDef.getName()
+                  + " requires "
+                  + needed
+                  + " "
+                  + req
+                  + " icon"
+                  + (needed > 1 ? "s" : "")
+                  + " in your zoo (you have "
+                  + have
+                  + ").");
+        }
       }
     }
 
@@ -425,6 +448,17 @@ public class AnimalsActionHandler implements ActionHandler {
   }
 
   // ── Board JSON helpers ────────────────────────────────────────────────────────
+
+  private int getIconCount(PlayerState player, String iconType) {
+    try {
+      Map<String, Object> icons =
+          objectMapper.readValue(player.getIcons(), new TypeReference<>() {});
+      return ((Number) icons.getOrDefault(iconType, 0)).intValue();
+    } catch (Exception e) {
+      log.error("Failed to parse icons for player {}", player.getDiscordId(), e);
+      return 0;
+    }
+  }
 
   @SuppressWarnings("unchecked")
   private Enclosure findEnclosure(PlayerState player, String enclosureId) {
