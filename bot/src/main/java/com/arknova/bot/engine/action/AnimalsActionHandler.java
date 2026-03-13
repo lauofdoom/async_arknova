@@ -398,10 +398,12 @@ public class AnimalsActionHandler implements ActionHandler {
               + ").");
     }
 
-    // Requirements are player-level constraints, NOT enclosure terrain tags.
-    // Repeated entries in the list indicate the icon threshold required (e.g. ["PREDATOR","PREDATOR"]
-    // means the player's zoo must contain ≥2 PREDATOR icons from placed animals/partner zoos).
-    // PARTNER_ZOO is an alternative placement pathway — it is not a blocking requirement.
+    // Two kinds of requirements:
+    //   WATER, ROCK  — the target enclosure must have been built with that terrain tag
+    //   Everything else (continent, animal-type icons) — icon count across the player's whole zoo
+    //                   (placed animals + partner zoos + universities etc.)
+    // PARTNER_ZOO is an alternative placement pathway, not a blocking check.
+    // Repeated entries raise the threshold, e.g. ["PREDATOR","PREDATOR"] → need ≥2 PREDATOR icons.
     Map<String, Integer> requiredCounts = new java.util.LinkedHashMap<>();
     for (String req : cardDef.getRequirementList()) {
       if (!req.equals("PARTNER_ZOO")) {
@@ -415,6 +417,22 @@ public class AnimalsActionHandler implements ActionHandler {
         if (!player.getActionCardOrder().isUpgraded(ActionCard.ANIMALS)) {
           return ActionResult.failure(
               cardDef.getName() + " requires the upgraded Animals (II) card.");
+        }
+      } else if ("WATER".equals(req) || "ROCK".equals(req)) {
+        // Terrain requirement: the enclosure must have been built adjacent to enough
+        // water/rock spaces (represented by the terrain tag on the enclosure itself).
+        long enclosureHas = enclosure.tags().stream().filter(req::equals).count();
+        if (enclosureHas < needed) {
+          return ActionResult.failure(
+              cardDef.getName()
+                  + " requires an enclosure with "
+                  + (needed > 1 ? needed + " " : "a ")
+                  + req
+                  + " terrain tag"
+                  + (needed > 1 ? "s" : "")
+                  + " (enclosure "
+                  + enclosureId
+                  + " does not have it).");
         }
       } else {
         int have = getIconCount(player, req);
