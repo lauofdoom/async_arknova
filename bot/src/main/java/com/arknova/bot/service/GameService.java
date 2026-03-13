@@ -149,6 +149,82 @@ public class GameService {
     }
   }
 
+  // ── Turn Advancement ───────────────────────────────────────────────────────
+
+  /**
+   * Ends the current player's turn and advances the game to the next seat.
+   *
+   * @param threadId Discord thread ID for the game
+   * @param discordId Discord ID of the player ending their turn
+   * @return the updated Game after advancing the turn
+   * @throws IllegalStateException if no game found, game is not ACTIVE, or it is not the player's
+   *     turn
+   */
+  @Transactional
+  public Game endTurn(String threadId, String discordId) {
+    Game game = requireGame(threadId);
+
+    if (!game.isActive()) {
+      throw new IllegalStateException("This game is not currently active.");
+    }
+
+    PlayerState player =
+        playerStateRepo
+            .findByGameIdAndDiscordId(game.getId(), discordId)
+            .orElseThrow(() -> new IllegalStateException("You are not a participant in this game."));
+
+    if (player.getSeatIndex() != game.getCurrentSeat()) {
+      throw new IllegalStateException("It is not your turn.");
+    }
+
+    int playerCount = playerStateRepo.countByGameId(game.getId());
+    int nextSeat = (game.getCurrentSeat() + 1) % playerCount;
+    if (nextSeat == 0) {
+      game.setTurnNumber(game.getTurnNumber() + 1);
+    }
+    game.setCurrentSeat(nextSeat);
+    game = gameRepo.save(game);
+
+    log.info(
+        "Game {} turn advanced: seat {} → {} (turn {})",
+        game.getId(),
+        player.getSeatIndex(),
+        nextSeat,
+        game.getTurnNumber());
+    return game;
+  }
+
+  // ── End Game ───────────────────────────────────────────────────────────────
+
+  /**
+   * Ends an active game. Any participant may call this.
+   *
+   * @param threadId Discord thread ID for the game
+   * @param discordId Discord ID of the player ending the game
+   * @return the updated Game (status = ENDED) and all players sorted by seat index
+   * @throws IllegalStateException if no game found, game is not ACTIVE, or caller is not a
+   *     participant
+   */
+  @Transactional
+  public Game endGame(String threadId, String discordId) {
+    Game game = requireGame(threadId);
+
+    if (!game.isActive()) {
+      throw new IllegalStateException("This game is not currently active.");
+    }
+
+    playerStateRepo
+        .findByGameIdAndDiscordId(game.getId(), discordId)
+        .orElseThrow(() -> new IllegalStateException("You are not a participant in this game."));
+
+    game.setStatus(GameStatus.ENDED);
+    game.setEndedAt(Instant.now());
+    game = gameRepo.save(game);
+
+    log.info("Game {} ended by {}", game.getId(), discordId);
+    return game;
+  }
+
   // ── Queries ────────────────────────────────────────────────────────────────
 
   public Optional<Game> findByThreadId(String threadId) {

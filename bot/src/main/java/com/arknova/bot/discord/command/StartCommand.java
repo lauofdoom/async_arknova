@@ -1,5 +1,6 @@
 package com.arknova.bot.discord.command;
 
+import com.arknova.bot.discord.DiscordLogger;
 import com.arknova.bot.model.Game;
 import com.arknova.bot.model.PlayerState;
 import com.arknova.bot.service.DeckService;
@@ -23,6 +24,7 @@ public class StartCommand implements ArkNovaCommand {
 
   private final GameService gameService;
   private final DeckService deckService;
+  private final DiscordLogger discordLogger;
 
   @Override
   public String getSubcommandName() {
@@ -76,6 +78,7 @@ public class StartCommand implements ArkNovaCommand {
               .setFooter("Use /arknova status to see the full board state");
 
           event.getHook().sendMessageEmbeds(embed.build()).queue();
+          discordLogger.logGameStarted(game, players);
         });
   }
 }

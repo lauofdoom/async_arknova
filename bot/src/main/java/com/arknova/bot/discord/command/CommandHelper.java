@@ -1,5 +1,6 @@
 package com.arknova.bot.discord.command;
 
+import com.arknova.bot.discord.DiscordLogger;
 import com.arknova.bot.engine.model.ActionResult;
 import com.arknova.bot.model.CardDefinition;
 import com.arknova.bot.model.Game;
@@ -34,6 +35,7 @@ public class CommandHelper {
   static final Color COLOR_NEUTRAL = new Color(0x95A5A6);
 
   private final GameService gameService;
+  private final DiscordLogger discordLogger;
 
   // ── Game & player lookup ──────────────────────────────────────────────────
 
@@ -139,6 +141,7 @@ public class CommandHelper {
                     "Turn " + game.getTurnNumber() + " · Next: " + next.getDiscordName()));
 
     event.getHook().sendMessageEmbeds(embed.build()).queue();
+    discordLogger.logAction(game, result);
   }
 
   /** Sends a simple ephemeral error message. */

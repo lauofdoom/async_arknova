@@ -1,5 +1,6 @@
 package com.arknova.bot.discord.command;
 
+import com.arknova.bot.discord.DiscordLogger;
 import com.arknova.bot.model.Game;
 import com.arknova.bot.service.GameService;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Component;
 public class CreateCommand implements ArkNovaCommand {
 
   private final GameService gameService;
+  private final DiscordLogger discordLogger;
 
   @Override
   public String getSubcommandName() {
@@ -55,6 +57,7 @@ public class CreateCommand implements ArkNovaCommand {
                   .addField("Start", "Once 2–4 players have joined: `/arknova start`", false);
 
           event.getHook().sendMessageEmbeds(embed.build()).queue();
+          discordLogger.logGameCreated(game, name);
         });
   }
 }

@@ -55,6 +55,7 @@ arknova:
   discord:
     token: ${DISCORD_TOKEN}
     client-id: ${DISCORD_CLIENT_ID}
+    log-channel-id: ${DISCORD_LOG_CHANNEL_ID:}
   storage:
     image-path: ${IMAGE_STORAGE_PATH:/app/images}
     card-image-cache-path: ${IMAGE_STORAGE_PATH:/app/images}/card-cache

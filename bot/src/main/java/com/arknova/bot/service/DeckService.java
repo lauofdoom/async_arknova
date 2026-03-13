@@ -47,6 +47,9 @@ public class DeckService {
   /** Number of face-up slots in the shared card display. */
   public static final int DISPLAY_SIZE = 6;
 
+  /** Number of cards dealt to each player's hand at game start. */
+  public static final int STARTING_HAND_SIZE = 4;
+
   private final PlayerCardRepository playerCardRepo;
   private final CardDefinitionRepository cardDefRepo;
   private final SharedBoardStateRepository sharedBoardRepo;
@@ -55,8 +58,8 @@ public class DeckService {
 
   /**
    * Initialises decks and display for a newly started game. Shuffles all base game cards by type,
-   * deals the starting display (6 face-up cards), and creates PlayerCard rows for each player's
-   * starting hand (empty at game start — players draw on their first CARDS action).
+   * deals the starting display (6 face-up cards), and deals {@value #STARTING_HAND_SIZE} cards into
+   * each player's starting hand.
    *
    * @param game the game to initialise
    * @param playerIds ordered list of player Discord IDs (seat order)
@@ -125,6 +128,12 @@ public class DeckService {
     }
 
     log.info("Game {}: display filled with {} cards", gameId, displayIds.size());
+
+    // Deal starting hand to each player
+    for (String playerId : playerIds) {
+      List<String> dealt = drawFromDeck(gameId, playerId, STARTING_HAND_SIZE);
+      log.info("Game {}: dealt {} starting hand cards to player {}", gameId, dealt.size(), playerId);
+    }
   }
 
   // ── CARDS Action ────────────────────────────────────────────────────────────

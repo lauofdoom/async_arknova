@@ -1,5 +1,6 @@
 package com.arknova.bot.discord.command;
 
+import com.arknova.bot.discord.DiscordLogger;
 import com.arknova.bot.model.PlayerState;
 import com.arknova.bot.service.GameService;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 public class JoinCommand implements ArkNovaCommand {
 
   private final GameService gameService;
+  private final DiscordLogger discordLogger;
 
   @Override
   public String getSubcommandName() {
@@ -47,6 +49,10 @@ public class JoinCommand implements ArkNovaCommand {
                   .addField("Seat", String.valueOf(player.getSeatIndex() + 1), true);
 
           event.getHook().sendMessageEmbeds(embed.build()).queue();
+          gameService
+              .findByThreadId(channelId)
+              .ifPresent(
+                  g -> discordLogger.logPlayerJoined(g, name, player.getSeatIndex() + 1));
         });
   }
 }
