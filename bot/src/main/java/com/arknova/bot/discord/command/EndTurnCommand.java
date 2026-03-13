@@ -10,6 +10,8 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.interactions.commands.OptionMapping;
+import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import org.springframework.stereotype.Component;
 
@@ -36,7 +38,12 @@ public class EndTurnCommand implements ArkNovaCommand {
 
   @Override
   public SubcommandData getSubcommandData() {
-    return new SubcommandData("endturn", "End your turn and pass to the next player");
+    return new SubcommandData("endturn", "End the active player's turn and pass to the next player")
+        .addOption(
+            OptionType.USER,
+            "player",
+            "Player whose turn to end (default: active player; specify to force-advance any player)",
+            false);
   }
 
   @Override
@@ -45,21 +52,45 @@ public class EndTurnCommand implements ArkNovaCommand {
         event,
         () -> {
           String channelId = event.getChannel().getId();
-          String discordId = event.getUser().getId();
 
-          // Snapshot who was current before advancing
           Optional<Game> maybeGame = commandHelper.getActiveGame(event);
           if (maybeGame.isEmpty()) return;
           Game gameBefore = maybeGame.get();
 
-          PlayerState endedPlayer =
-              gameService
-                  .getPlayerState(gameBefore.getId(), discordId)
-                  .orElseThrow(
-                      () -> new IllegalStateException("You are not a participant in this game."));
+          // Resolve which player's turn to end
+          OptionMapping playerOpt = event.getOption("player");
+          String endingDiscordId;
+          boolean forceAdvance;
 
-          // Advance the turn (validates it's the caller's turn)
-          Game updatedGame = gameService.endTurn(channelId, discordId);
+          if (playerOpt != null) {
+            // Explicit player specified
+            endingDiscordId = playerOpt.getAsUser().getId();
+            Optional<PlayerState> maybeTarget =
+                gameService.getPlayerState(gameBefore.getId(), endingDiscordId);
+            if (maybeTarget.isEmpty()) {
+              CommandHelper.replyError(event, playerOpt.getAsUser().getName() + " is not a participant in this game.");
+              return;
+            }
+            forceAdvance = maybeTarget.get().getSeatIndex() != gameBefore.getCurrentSeat();
+          } else {
+            // Default: end the currently active player's turn
+            Optional<PlayerState> maybeActive = gameService.getCurrentPlayer(gameBefore);
+            if (maybeActive.isEmpty()) {
+              CommandHelper.replyError(event, "Could not determine the active player.");
+              return;
+            }
+            endingDiscordId = maybeActive.get().getDiscordId();
+            forceAdvance = false;
+          }
+
+          PlayerState endedPlayer =
+              gameService.getPlayerState(gameBefore.getId(), endingDiscordId)
+                  .orElseThrow(() -> new IllegalStateException("Player not found."));
+
+          // Advance the turn
+          Game updatedGame = forceAdvance
+              ? gameService.forceEndTurn(channelId, endingDiscordId)
+              : gameService.endTurn(channelId, endingDiscordId);
 
           List<PlayerState> allPlayers = gameService.getPlayersInOrder(updatedGame.getId());
           PlayerState nextPlayer =
@@ -69,14 +100,15 @@ public class EndTurnCommand implements ArkNovaCommand {
                   .orElseThrow(
                       () -> new IllegalStateException("Could not determine next player."));
 
+          String description = forceAdvance
+              ? "**" + endedPlayer.getDiscordName() + "**'s turn was force-advanced by <@" + event.getUser().getId() + ">."
+              : "**" + endedPlayer.getDiscordName() + "** has ended their turn.";
+
           EmbedBuilder embed =
               new EmbedBuilder()
-                  .setColor(CommandHelper.COLOR_SUCCESS)
+                  .setColor(forceAdvance ? CommandHelper.COLOR_NEUTRAL : CommandHelper.COLOR_SUCCESS)
                   .setTitle("Turn Ended")
-                  .setDescription(
-                      "**"
-                          + endedPlayer.getDiscordName()
-                          + "** has ended their turn.")
+                  .setDescription(description)
                   .addField("Next Player", nextPlayer.getDiscordName(), true)
                   .addField("Turn", String.valueOf(updatedGame.getTurnNumber()), true)
                   .setFooter("Use /arknova status to see the current board state");

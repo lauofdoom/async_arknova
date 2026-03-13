@@ -63,8 +63,8 @@ public class AnimalsCommand implements ArkNovaCommand {
                   : event.getUser().getName();
 
           Map<String, Object> params = new HashMap<>();
-          params.put("card_id", event.getOption("card_id", o -> o.getAsString()));
-          params.put("enclosure_id", event.getOption("enclosure_id", o -> o.getAsString()));
+          params.put("hand_card_ids", List.of(event.getOption("card_id", o -> o.getAsString())));
+          params.put("hand_enc_ids", List.of(event.getOption("enclosure_id", o -> o.getAsString())));
 
           ActionRequest request =
               new ActionRequest(

@@ -200,6 +200,45 @@ public class GameService {
     return game;
   }
 
+  /**
+   * Force-ends a specific player's turn regardless of whose turn it currently is. Used for
+   * admin/moderator overrides in async play when a player is inactive.
+   *
+   * @param threadId Discord thread ID for the game
+   * @param discordId Discord ID of the player whose turn to force-end
+   * @return the updated Game after advancing past that player's seat
+   */
+  @Transactional
+  public Game forceEndTurn(String threadId, String discordId) {
+    Game game = requireGame(threadId);
+
+    if (!game.isActive()) {
+      throw new IllegalStateException("This game is not currently active.");
+    }
+
+    PlayerState player =
+        playerStateRepo
+            .findByGameIdAndDiscordId(game.getId(), discordId)
+            .orElseThrow(() -> new IllegalStateException(discordId + " is not a participant in this game."));
+
+    int playerCount = playerStateRepo.countByGameId(game.getId());
+    int nextSeat = (player.getSeatIndex() + 1) % playerCount;
+    if (nextSeat == 0) {
+      game.setTurnNumber(game.getTurnNumber() + 1);
+    }
+    game.setCurrentSeat(nextSeat);
+    game = gameRepo.save(game);
+
+    log.info(
+        "Game {} turn force-advanced: seat {} ({}) → {} (turn {})",
+        game.getId(),
+        player.getSeatIndex(),
+        discordId,
+        nextSeat,
+        game.getTurnNumber());
+    return game;
+  }
+
   // ── End Game ───────────────────────────────────────────────────────────────
 
   /**
