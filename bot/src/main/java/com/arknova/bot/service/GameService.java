@@ -1,5 +1,6 @@
 package com.arknova.bot.service;
 
+import com.arknova.bot.engine.WinConditionChecker;
 import com.arknova.bot.model.Game;
 import com.arknova.bot.model.Game.GameStatus;
 import com.arknova.bot.model.PlayerState;
@@ -39,6 +40,7 @@ public class GameService {
   private final GameRepository gameRepo;
   private final PlayerStateRepository playerStateRepo;
   private final ObjectMapper objectMapper;
+  private final WinConditionChecker winChecker;
 
   // ── Game Creation ──────────────────────────────────────────────────────────
 
@@ -183,12 +185,32 @@ public class GameService {
       throw new IllegalStateException("It is not your turn.");
     }
 
+    if (player.getPendingDiscardCount() > 0) {
+      throw new IllegalStateException("You must discard first — use /arknova discard.");
+    }
+
+    // Mark final scoring turn complete before advancing
+    if (game.getStatus() == GameStatus.FINAL_SCORING) {
+      player.setFinalScoringDone(true);
+      playerStateRepo.save(player);
+    }
+
     int playerCount = playerStateRepo.countByGameId(game.getId());
     int nextSeat = (game.getCurrentSeat() + 1) % playerCount;
     if (nextSeat == 0) {
       game.setTurnNumber(game.getTurnNumber() + 1);
     }
     game.setCurrentSeat(nextSeat);
+
+    // Check if final scoring is complete
+    if (game.getStatus() == GameStatus.FINAL_SCORING) {
+      List<PlayerState> allPlayers = playerStateRepo.findByGameIdOrderBySeatIndexAsc(game.getId());
+      if (winChecker.isFinalScoringComplete(allPlayers)) {
+        game.setStatus(GameStatus.ENDED);
+        log.info("Game {} ENDED", game.getId());
+      }
+    }
+
     game = gameRepo.save(game);
 
     log.info(
@@ -221,12 +243,33 @@ public class GameService {
             .findByGameIdAndDiscordId(game.getId(), discordId)
             .orElseThrow(() -> new IllegalStateException(discordId + " is not a participant in this game."));
 
+    if (player.getPendingDiscardCount() > 0) {
+      throw new IllegalStateException(
+          player.getDiscordName() + " must discard first — use /arknova discard.");
+    }
+
+    // Mark final scoring turn complete before advancing
+    if (game.getStatus() == GameStatus.FINAL_SCORING) {
+      player.setFinalScoringDone(true);
+      playerStateRepo.save(player);
+    }
+
     int playerCount = playerStateRepo.countByGameId(game.getId());
     int nextSeat = (player.getSeatIndex() + 1) % playerCount;
     if (nextSeat == 0) {
       game.setTurnNumber(game.getTurnNumber() + 1);
     }
     game.setCurrentSeat(nextSeat);
+
+    // Check if final scoring is complete
+    if (game.getStatus() == GameStatus.FINAL_SCORING) {
+      List<PlayerState> allPlayers = playerStateRepo.findByGameIdOrderBySeatIndexAsc(game.getId());
+      if (winChecker.isFinalScoringComplete(allPlayers)) {
+        game.setStatus(GameStatus.ENDED);
+        log.info("Game {} ENDED", game.getId());
+      }
+    }
+
     game = gameRepo.save(game);
 
     log.info(

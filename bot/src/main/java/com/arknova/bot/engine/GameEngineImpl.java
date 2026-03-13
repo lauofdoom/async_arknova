@@ -36,7 +36,6 @@ import org.springframework.transaction.annotation.Transactional;
  *   <li>Dispatch to the correct {@link ActionHandler}
  *   <li>On success: rotate the used action card to position 1 (strength 1)
  *   <li>Check win condition (tracks crossed)
- *   <li>Advance turn to next player (or trigger final scoring)
  *   <li>Persist all mutated state and append action log entry
  *   <li>Return {@link ActionResult} to the caller
  * </ol>
@@ -145,33 +144,7 @@ public class GameEngineImpl implements GameEngine {
       log.info("Game {}: FINAL SCORING triggered by {}", gameId, discordId);
     }
 
-    // If in final scoring, mark this player's turn as done
-    if (game.getStatus() == GameStatus.FINAL_SCORING) {
-      player.setFinalScoringDone(true);
-    }
-
-    // 8. Advance turn — skip if the player still needs to complete a pending discard
-    if (player.getPendingDiscardCount() > 0) {
-      // Persist state but hold the turn — the discard command will advance it
-      playerStateRepo.save(player);
-      sharedBoardRepo.save(sharedBoard);
-      gameRepo.save(game);
-      appendActionLog(request, result, strengthUsed, turnNumber);
-      return result;
-    }
-
-    advanceTurn(game);
-
-    // Check if final scoring round is complete (all players done)
-    if (game.getStatus() == GameStatus.FINAL_SCORING) {
-      List<PlayerState> allPlayers = playerStateRepo.findByGameIdOrderBySeatIndexAsc(gameId);
-      if (winChecker.isFinalScoringComplete(allPlayers)) {
-        game.setStatus(GameStatus.ENDED);
-        log.info("Game {} ENDED", gameId);
-      }
-    }
-
-    // 9. Persist
+    // 8. Persist — turn advancement is explicit via /arknova endturn
     playerStateRepo.save(player);
     sharedBoardRepo.save(sharedBoard);
     gameRepo.save(game);
@@ -245,19 +218,7 @@ public class GameEngineImpl implements GameEngine {
     // 6. Clear pending discard
     player.setPendingDiscardCount(0);
 
-    // 7. Advance turn
-    advanceTurn(game);
-
-    // Check if final scoring round is complete
-    if (game.getStatus() == GameStatus.FINAL_SCORING) {
-      List<PlayerState> allPlayers = playerStateRepo.findByGameIdOrderBySeatIndexAsc(gameId);
-      if (winChecker.isFinalScoringComplete(allPlayers)) {
-        game.setStatus(GameStatus.ENDED);
-        log.info("Game {} ENDED", gameId);
-      }
-    }
-
-    // 8. Persist
+    // 7. Persist — turn advancement is explicit via /arknova endturn
     playerStateRepo.save(player);
     gameRepo.save(game);
 
@@ -285,15 +246,6 @@ public class GameEngineImpl implements GameEngine {
   }
 
   // ── Internal ──────────────────────────────────────────────────────────────
-
-  private void advanceTurn(Game game) {
-    int playerCount = (int) playerStateRepo.countByGameId(game.getId());
-    if (playerCount == 0) return;
-
-    int nextSeat = (game.getCurrentSeat() + 1) % playerCount;
-    game.setCurrentSeat(nextSeat);
-    game.setTurnNumber(game.getTurnNumber() + 1);
-  }
 
   private void appendActionLog(
       ActionRequest request, ActionResult result, int strengthUsed, int turnNumber) {
