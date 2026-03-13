@@ -2,7 +2,6 @@ package com.arknova.bot.config;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.springframework.context.annotation.Bean;
@@ -15,9 +14,10 @@ public class JacksonConfig {
   @Bean
   @Primary
   public ObjectMapper objectMapper() {
+    // WRITE_DATES_AS_TIMESTAMPS was removed in Jackson 3.x (tools.jackson).
+    // JavaTimeModule already serialises dates as ISO strings by default.
     return JsonMapper.builder()
         .addModule(new JavaTimeModule())
-        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
         .serializationInclusion(JsonInclude.Include.NON_NULL)
         .build();
   }
