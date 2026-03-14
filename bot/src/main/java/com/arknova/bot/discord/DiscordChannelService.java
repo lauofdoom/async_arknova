@@ -106,11 +106,11 @@ public class DiscordChannelService {
         return;
       }
 
-      String shortId = game.getId().toString().substring(0, 8);
+      String gameTag = "ARK-" + game.getGameNumber();
 
-      // Create category
+      // Create category — named ARK-1, ARK-2, etc. for easy identification
       Category category =
-          guild.createCategory("Ark Nova — Game #" + shortId).complete();
+          guild.createCategory(gameTag).complete();
       category
           .upsertPermissionOverride(guild.getPublicRole())
           .deny(DENY_VIEW)
@@ -139,7 +139,7 @@ public class DiscordChannelService {
 
       // Create per-player private channels
       for (PlayerState player : players) {
-        String channelName = sanitizeChannelName(player.getDiscordName()) + "-private";
+        String channelName = sanitizeChannelName(player.getDiscordName()) + "-cards";
         TextChannel privateChannel =
             guild.createTextChannel(channelName, category).complete();
         privateChannel
@@ -153,11 +153,11 @@ public class DiscordChannelService {
             .sendMessageEmbeds(
                 new EmbedBuilder()
                     .setColor(new java.awt.Color(0x3498DB))
-                    .setTitle("Your Private Channel — " + player.getDiscordName())
+                    .setTitle("Your Cards — " + player.getDiscordName())
                     .setDescription(
                         "This channel is only visible to you.\n"
-                            + "Use `/arknova refresh` at any time to update your hand, resources,"
-                            + " and board image here.")
+                            + "Your hand, resources, and board image will be posted here.\n"
+                            + "Use `/arknova refresh` at any time to update them.")
                     .build())
             .complete();
 
@@ -175,8 +175,9 @@ public class DiscordChannelService {
       gameRepo.save(game);
 
       log.info(
-          "Channel setup complete for game {} — category={}, board={}",
+          "Channel setup complete for game {} ({}) — category={}, board={}",
           game.getId(),
+          gameTag,
           category.getId(),
           boardChannel.getId());
 

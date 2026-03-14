@@ -38,6 +38,14 @@ public class Game {
   @Column(name = "board_channel_id", length = 20)
   private String boardChannelId;
 
+  /**
+   * Auto-incrementing sequential game number assigned by the DB (SERIAL). Used to name Discord
+   * channels — e.g. category "ARK-1", "ARK-2". Not set by the application; populated by PostgreSQL
+   * at INSERT and read back whenever the entity is loaded from DB.
+   */
+  @Column(name = "game_number", nullable = false, insertable = false, updatable = false)
+  private int gameNumber;
+
   @Column(name = "status", nullable = false, length = 20)
   @Enumerated(EnumType.STRING)
   private GameStatus status = GameStatus.SETUP;
