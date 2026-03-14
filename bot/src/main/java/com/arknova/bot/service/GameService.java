@@ -372,8 +372,15 @@ public class GameService {
 
   // ── Queries ────────────────────────────────────────────────────────────────
 
-  public Optional<Game> findByThreadId(String threadId) {
-    return gameRepo.findByThreadId(threadId);
+  /**
+   * Finds the game associated with any Discord channel: the original create channel, the shared
+   * {@code #board} channel, or any player's private {@code #name-cards} channel. Tries each in
+   * order so commands work regardless of which game channel they are issued from.
+   */
+  public Optional<Game> findByThreadId(String channelId) {
+    return gameRepo.findByThreadId(channelId)
+        .or(() -> gameRepo.findByBoardChannelId(channelId))
+        .or(() -> gameRepo.findByPlayerPrivateChannelId(channelId));
   }
 
   public List<PlayerState> getPlayersInOrder(UUID gameId) {
@@ -591,9 +598,8 @@ public class GameService {
     return playerStateRepo.save(player);
   }
 
-  private Game requireGame(String threadId) {
-    return gameRepo
-        .findByThreadId(threadId)
-        .orElseThrow(() -> new IllegalStateException("No game found in this thread."));
+  private Game requireGame(String channelId) {
+    return findByThreadId(channelId)
+        .orElseThrow(() -> new IllegalStateException("No game found in this channel."));
   }
 }

@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -15,6 +16,16 @@ public interface GameRepository extends JpaRepository<Game, UUID> {
   Optional<Game> findByThreadId(String threadId);
 
   boolean existsByThreadId(String threadId);
+
+  /** Finds a game by the ID of its shared {@code #board} channel (set during channel setup). */
+  Optional<Game> findByBoardChannelId(String boardChannelId);
+
+  /**
+   * Finds a game by a player's private cards channel ID. Used so commands issued from
+   * {@code #name-cards} channels are resolved to the correct game.
+   */
+  @Query("SELECT p.game FROM PlayerState p WHERE p.privateChannelId = :channelId")
+  Optional<Game> findByPlayerPrivateChannelId(@Param("channelId") String channelId);
 
   List<Game> findByGuildIdAndStatus(String guildId, GameStatus status);
 
