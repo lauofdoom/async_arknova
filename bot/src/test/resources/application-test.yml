@@ -1,0 +1,32 @@
+spring:
+  config:
+    activate:
+      on-profile: test
+
+  # Datasource URL/username/password are overridden at runtime by
+  # AbstractIntegrationTest.@DynamicPropertySource wiring the Testcontainers PostgreSQL container.
+  datasource:
+    url: jdbc:postgresql://localhost:5432/arknova_test
+    username: test
+    password: test
+
+  autoconfigure:
+    exclude:
+      # Custom FlywayConfig bean manages migrations; auto-config excluded in main application.yml too.
+      - org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration
+      # Redis is not wired to any logic yet — disable auto-config to avoid requiring a real Redis.
+      - org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration
+      - org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration
+
+arknova:
+  discord:
+    token: test-token
+    client-id: "000000000000000000"
+    log-channel-id: ""
+  storage:
+    image-path: /tmp/arknova-test-images
+    card-image-cache-path: /tmp/arknova-test-images/card-cache
+  cards:
+    resource-path: classpath:cards/base_game.json
+  security:
+    jwt-secret: test-jwt-secret-minimum-32-chars-long-placeholder
