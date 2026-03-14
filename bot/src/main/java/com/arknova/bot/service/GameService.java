@@ -39,6 +39,10 @@ public class GameService {
   private static final int MAX_PLAYERS = 4;
   private static final int MIN_PLAYERS = 2;
 
+  /** Synthetic Discord ID used for the automa player in every game. */
+  public static final String AUTOMA_DISCORD_ID = "AUTOMA";
+  public static final String AUTOMA_DISCORD_NAME = "Automa 🤖";
+
   private final GameRepository gameRepo;
   private final PlayerStateRepository playerStateRepo;
   private final SharedBoardStateRepository sharedBoardRepo;
@@ -106,6 +110,50 @@ public class GameService {
     return addPlayerToGame(game, discordId, discordName, currentPlayerCount);
   }
 
+  // ── Automa ─────────────────────────────────────────────────────────────────
+
+  /**
+   * Adds a synthetic automa opponent to a game in SETUP. Only one automa per game is allowed.
+   * The automa takes its turn automatically whenever the seat advances to it.
+   *
+   * @param threadId Discord thread ID for the game
+   * @param requestingDiscordId Discord ID of the human player making the request
+   * @return the created automa PlayerState
+   * @throws IllegalStateException if the game has started, is full, or already has an automa
+   */
+  @Transactional
+  public PlayerState addAutoma(String threadId, String requestingDiscordId) {
+    Game game = requireGame(threadId);
+
+    if (!game.isSetup()) {
+      throw new IllegalStateException("Cannot add an automa after the game has started.");
+    }
+
+    if (!playerStateRepo.existsByGameIdAndDiscordId(game.getId(), requestingDiscordId)) {
+      throw new IllegalStateException("Only participants can add an automa.");
+    }
+
+    if (playerStateRepo.existsByGameIdAndDiscordId(game.getId(), AUTOMA_DISCORD_ID)) {
+      throw new IllegalStateException("An automa has already been added to this game.");
+    }
+
+    int currentCount = playerStateRepo.countByGameId(game.getId());
+    if (currentCount >= MAX_PLAYERS) {
+      throw new IllegalStateException("This game is full (" + MAX_PLAYERS + " players maximum).");
+    }
+
+    PlayerState automa = new PlayerState();
+    automa.setGame(game);
+    automa.setDiscordId(AUTOMA_DISCORD_ID);
+    automa.setDiscordName(AUTOMA_DISCORD_NAME);
+    automa.setSeatIndex(currentCount);
+    automa.setAutoma(true);
+    automa = playerStateRepo.save(automa);
+
+    log.info("Automa added to game {} at seat {}", game.getId(), currentCount);
+    return automa;
+  }
+
   // ── Starting ───────────────────────────────────────────────────────────────
 
   /**
@@ -130,6 +178,12 @@ public class GameService {
     if (playerCount < MIN_PLAYERS) {
       throw new IllegalStateException(
           "Need at least " + MIN_PLAYERS + " players to start (currently " + playerCount + ").");
+    }
+
+    List<PlayerState> allPlayers = playerStateRepo.findByGameIdOrderBySeatIndexAsc(game.getId());
+    long humanCount = allPlayers.stream().filter(p -> !p.isAutoma()).count();
+    if (humanCount < 1) {
+      throw new IllegalStateException("At least one human player is required to start.");
     }
 
     game.setStatus(GameStatus.ACTIVE);

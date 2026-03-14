@@ -149,6 +149,13 @@ public class PlayerState {
   @Column(name = "private_channel_id", length = 20)
   private String privateChannelId;
 
+  /**
+   * True for the synthetic automa opponent. Automa turns are executed automatically by
+   * {@link com.arknova.bot.service.AutomaService} when the seat advances to this player.
+   */
+  @Column(name = "is_automa", nullable = false)
+  private boolean automa = false;
+
   /** Set to true once this player has taken their final scoring turn. */
   @Column(name = "final_scoring_done", nullable = false)
   private boolean finalScoringDone = false;
