@@ -61,12 +61,6 @@ public class AssociationActionHandler implements ActionHandler {
 
   private static final Logger log = LoggerFactory.getLogger(AssociationActionHandler.class);
 
-  /** Task value required for the Partner Zoo task (strength must be ≥ this). */
-  private static final int PARTNER_ZOO_VALUE = 3;
-
-  /** Task value required for the University task (strength must be ≥ this). */
-  private static final int UNIVERSITY_VALUE = 4;
-
   /** Number of worker slots per conservation project (Phase 1 simplification). */
   private static final int PROJECT_SLOTS = 2;
 
@@ -129,6 +123,7 @@ public class AssociationActionHandler implements ActionHandler {
     ConservationSlots conservationSlots = readConservationSlots(player);
     int totalValue = 0;
     int pendingWorkers = 0;
+    int pendingMoneyCost = 0;
     int pendingPartnerZoos = 0;
     int pendingUniversities = 0;
     int projectIdCursor = 0;
@@ -138,14 +133,22 @@ public class AssociationActionHandler implements ActionHandler {
       switch (type) {
         case "PARTNER_ZOO" -> {
           int slot = conservationSlots.partnerZooCount() + pendingPartnerZoos;
-          if (slot >= 4) {
-            return ActionResult.failure("You already have the maximum 4 partner zoos.");
+          if (slot >= 3) {
+            return ActionResult.failure("You already have the maximum 3 partner zoos.");
           }
           if (player.getAssocWorkersAvailable() - pendingWorkers < 1) {
             return ActionResult.failure("You have no available association workers.");
           }
-          totalValue += PARTNER_ZOO_VALUE;
+          int taskValue = slot + 1;
+          int cost = slot + 2;
+          if (player.getMoney() - pendingMoneyCost < cost) {
+            return ActionResult.failure(
+                "Partner zoo slot " + (slot + 1) + " costs " + cost
+                    + "\uD83D\uDCB0 (you have " + (player.getMoney() - pendingMoneyCost) + ").");
+          }
+          totalValue += taskValue;
           pendingWorkers++;
+          pendingMoneyCost += cost;
           pendingPartnerZoos++;
         }
         case "UNIVERSITY" -> {
@@ -156,8 +159,16 @@ public class AssociationActionHandler implements ActionHandler {
           if (player.getAssocWorkersAvailable() - pendingWorkers < 1) {
             return ActionResult.failure("You have no available association workers.");
           }
-          totalValue += UNIVERSITY_VALUE;
+          int taskValue = slot + 1;
+          int cost = slot + 2;
+          if (player.getMoney() - pendingMoneyCost < cost) {
+            return ActionResult.failure(
+                "University slot " + (slot + 1) + " costs " + cost
+                    + "\uD83D\uDCB0 (you have " + (player.getMoney() - pendingMoneyCost) + ").");
+          }
+          totalValue += taskValue;
           pendingWorkers++;
+          pendingMoneyCost += cost;
           pendingUniversities++;
         }
         case "CONSERVATION_PROJECT" -> {
@@ -224,22 +235,32 @@ public class AssociationActionHandler implements ActionHandler {
       switch (type) {
         case "PARTNER_ZOO" -> {
           int slot = conservationSlots.partnerZooCount();
+          int cost = slot + 2;
+          player.setMoney(player.getMoney() - cost);
+          totalMoneyCost += cost;
           player.setAssocWorkersAvailable(player.getAssocWorkersAvailable() - 1);
           conservationSlots = conservationSlots.withPartnerZoo("PARTNER_ZOO_" + (slot + 1));
           summary
               .append("\n  • Partner zoo #")
               .append(slot + 1)
-              .append(" claimed — effect: manual resolution.");
+              .append(" claimed (-")
+              .append(cost)
+              .append("\uD83D\uDCB0) — effect: manual resolution.");
           anyManualResolution = true;
         }
         case "UNIVERSITY" -> {
           int slot = conservationSlots.universityCount();
+          int cost = slot + 2;
+          player.setMoney(player.getMoney() - cost);
+          totalMoneyCost += cost;
           player.setAssocWorkersAvailable(player.getAssocWorkersAvailable() - 1);
           conservationSlots = conservationSlots.withUniversity("UNIVERSITY_" + (slot + 1));
           summary
               .append("\n  • University #")
               .append(slot + 1)
-              .append(" claimed — effect: manual resolution.");
+              .append(" claimed (-")
+              .append(cost)
+              .append("\uD83D\uDCB0) — effect: manual resolution.");
           anyManualResolution = true;
         }
         case "CONSERVATION_PROJECT" -> {

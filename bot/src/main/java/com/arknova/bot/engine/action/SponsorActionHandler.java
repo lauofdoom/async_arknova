@@ -166,7 +166,7 @@ public class SponsorActionHandler implements ActionHandler {
                 + player.getReputation()
                 + ").");
       }
-      int cost = pc.getCard().getBaseCost() + (slotIndex + 1); // base cost + slot number (1-based)
+      int cost = pc.getCard().getBaseCost() + slotIndex; // base cost + 0-based slot index
       ActionResult err =
           validateSponsor(
               pc.getCard(),

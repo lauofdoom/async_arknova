@@ -153,30 +153,12 @@ public class CardsActionHandler implements ActionHandler {
                 + (upgraded ? " (upgraded)" : "")
                 + ".");
       }
-      // SNAP = take any one card from the display into hand, ignoring reputation.
-      String snapCardId = request.paramStr("snap_card_id");
-      if (snapCardId == null || snapCardId.isBlank()) {
-        return ActionResult.failure(
-            "Specify which display card to snap with `snap_card_id:<card_id>`. "
-                + "Use `/arknova display` to see the current display.");
-      }
-      List<PlayerCard> display = deckService.getDisplay(gameId);
-      boolean inDisplay =
-          display.stream().anyMatch(pc -> pc.getCard().getId().equals(snapCardId));
-      if (!inDisplay) {
-        return ActionResult.failure("Card " + snapCardId + " is not in the display.");
-      }
-      deckService.takeFromDisplay(gameId, discordId, snapCardId);
-      String snappedName =
-          display.stream()
-              .filter(pc -> pc.getCard().getId().equals(snapCardId))
-              .findFirst()
-              .map(pc -> pc.getCard().getName())
-              .orElse(snapCardId);
-      String summary = request.discordName() + " snapped **" + snappedName + "** from the display.";
-      log.info("Game {}: {} CARDS snap card={}", gameId, discordId, snapCardId);
-      return ActionResult.successWithCards(
-          ActionCard.CARDS, strength, summary, Map.of("snap", true), List.of(snapCardId));
+      // SNAP draws from break pile — not bot-tracked, requires manual resolution
+      String summary = request.discordName() + " used **Cards** SNAP (strength " + strength
+          + ") — take any 1 card from the break pile into your hand, ignoring reputation.";
+      log.info("Game {}: {} CARDS snap strength={}", gameId, discordId, strength);
+      return new ActionResult(true, null, ActionCard.CARDS, strength, summary,
+          Map.of("snap", true), List.of(), false, true, null);
     }
 
     // ── DRAW (default) ───────────────────────────────────────────────────────
@@ -205,7 +187,7 @@ public class CardsActionHandler implements ActionHandler {
 
     // Reputation thresholds per display slot (0-based index → min reputation required).
     // Slot 5 (index 4) and slot 6 (index 5) require the upgraded CARDS card.
-    int[] minRepPerSlot = {1, 2, 4, 7, 10, 13};
+    int[] minRepPerSlot = {0, 1, 2, 4, 7, 10};
 
     // Reputation check for display takes
     List<PlayerCard> display =
