@@ -44,6 +44,11 @@ class DeckServiceIT extends AbstractIntegrationTest {
     gameService.startGame(THREAD_ID, ALICE_ID);
   }
 
+  private List<PlayerCard> displayCards() {
+    return playerCardRepo.findByGameIdAndLocationOrderBySortOrderAsc(
+        game.getId(), CardLocation.DISPLAY);
+  }
+
   // ── initializeDecks ───────────────────────────────────────────────────────
 
   @Nested
@@ -55,10 +60,7 @@ class DeckServiceIT extends AbstractIntegrationTest {
     void fillsDisplayWithSixCards() {
       deckService.initializeDecks(game, List.of(ALICE_ID, BOB_ID));
 
-      List<PlayerCard> display =
-          playerCardRepo.findByGameIdAndLocationOrderBySortOrderAsc(game.getId(), CardLocation.DISPLAY);
-
-      assertThat(display).hasSize(DeckService.DISPLAY_SIZE);
+      assertThat(displayCards()).hasSize(DeckService.DISPLAY_SIZE);
     }
 
     @Test
@@ -78,14 +80,11 @@ class DeckServiceIT extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisplayName("deck shrinks by display + starting hands after initialization")
+    @DisplayName("total dealt cards equals display size + 2 × starting hand size")
     void deckShrinksByDealtCards() {
       deckService.initializeDecks(game, List.of(ALICE_ID, BOB_ID));
 
-      int inDisplay =
-          playerCardRepo
-              .findByGameIdAndLocationOrderBySortOrderAsc(game.getId(), CardLocation.DISPLAY)
-              .size();
+      int inDisplay = displayCards().size();
       int inAliceHand =
           playerCardRepo.countByGameIdAndDiscordIdAndLocation(
               game.getId(), ALICE_ID, CardLocation.HAND);
@@ -93,15 +92,12 @@ class DeckServiceIT extends AbstractIntegrationTest {
           playerCardRepo.countByGameIdAndDiscordIdAndLocation(
               game.getId(), BOB_ID, CardLocation.HAND);
 
-      int totalInPlay = inDisplay + inAliceHand + inBobHand;
-      int deckRemaining = deckService.deckSize(game.getId());
-
-      assertThat(totalInPlay)
+      assertThat(inDisplay + inAliceHand + inBobHand)
           .as("display + hands should equal display size + 2 × starting hand size")
           .isEqualTo(DeckService.DISPLAY_SIZE + DeckService.STARTING_HAND_SIZE * 2);
 
-      assertThat(deckRemaining)
-          .as("deck remainder should be positive — there should be cards left after setup")
+      assertThat(deckService.deckSize(game.getId()))
+          .as("deck should still have cards remaining after setup")
           .isPositive();
     }
 
@@ -110,9 +106,7 @@ class DeckServiceIT extends AbstractIntegrationTest {
     void displaySlotsAreZeroIndexed() {
       deckService.initializeDecks(game, List.of(ALICE_ID, BOB_ID));
 
-      List<PlayerCard> display =
-          playerCardRepo.findByGameIdAndLocationOrderBySortOrderAsc(game.getId(), CardLocation.DISPLAY);
-
+      List<PlayerCard> display = displayCards();
       for (int i = 0; i < display.size(); i++) {
         assertThat(display.get(i).getSortOrder())
             .as("display slot %d should have sortOrder %d", i, i)
@@ -132,19 +126,13 @@ class DeckServiceIT extends AbstractIntegrationTest {
     void movesCardToHand() {
       deckService.initializeDecks(game, List.of(ALICE_ID, BOB_ID));
 
-      List<PlayerCard> display =
-          playerCardRepo.findByGameIdAndLocationOrderBySortOrderAsc(game.getId(), CardLocation.DISPLAY);
-      String takenCardId = display.get(0).getCard().getId();
-
+      String takenCardId = displayCards().get(0).getCard().getId();
       deckService.takeFromDisplay(game.getId(), ALICE_ID, takenCardId);
 
-      // Taken card should now be in Alice's hand
       List<PlayerCard> aliceHand =
           playerCardRepo.findByGameIdAndDiscordIdAndLocationOrderBySortOrderAsc(
               game.getId(), ALICE_ID, CardLocation.HAND);
-      assertThat(aliceHand)
-          .extracting(pc -> pc.getCard().getId())
-          .contains(takenCardId);
+      assertThat(aliceHand).extracting(pc -> pc.getCard().getId()).contains(takenCardId);
     }
 
     @Test
@@ -152,16 +140,10 @@ class DeckServiceIT extends AbstractIntegrationTest {
     void displayRemainsFullAfterTake() {
       deckService.initializeDecks(game, List.of(ALICE_ID, BOB_ID));
 
-      List<PlayerCard> beforeTake =
-          playerCardRepo.findByGameIdAndLocationOrderBySortOrderAsc(game.getId(), CardLocation.DISPLAY);
-      String takenCardId = beforeTake.get(2).getCard().getId();
-
+      String takenCardId = displayCards().get(2).getCard().getId();
       deckService.takeFromDisplay(game.getId(), ALICE_ID, takenCardId);
 
-      List<PlayerCard> afterTake =
-          playerCardRepo.findByGameIdAndLocationOrderBySortOrderAsc(game.getId(), CardLocation.DISPLAY);
-
-      assertThat(afterTake).hasSize(DeckService.DISPLAY_SIZE);
+      assertThat(displayCards()).hasSize(DeckService.DISPLAY_SIZE);
     }
 
     @Test
@@ -169,17 +151,13 @@ class DeckServiceIT extends AbstractIntegrationTest {
     void displayCardsShiftLeft() {
       deckService.initializeDecks(game, List.of(ALICE_ID, BOB_ID));
 
-      List<PlayerCard> before =
-          playerCardRepo.findByGameIdAndLocationOrderBySortOrderAsc(game.getId(), CardLocation.DISPLAY);
-
-      // Take slot 0 — slots 1–5 should shift to 0–4, slot 5 is the new draw
+      List<PlayerCard> before = displayCards();
       String slot1CardId = before.get(1).getCard().getId();
+
+      // Take slot 0 — slot 1 should shift to position 0
       deckService.takeFromDisplay(game.getId(), ALICE_ID, before.get(0).getCard().getId());
 
-      List<PlayerCard> after =
-          playerCardRepo.findByGameIdAndLocationOrderBySortOrderAsc(game.getId(), CardLocation.DISPLAY);
-
-      assertThat(after.get(0).getCard().getId())
+      assertThat(displayCards().get(0).getCard().getId())
           .as("former slot 1 card should shift to slot 0")
           .isEqualTo(slot1CardId);
     }
@@ -216,9 +194,8 @@ class DeckServiceIT extends AbstractIntegrationTest {
 
       int deckBefore = deckService.deckSize(game.getId());
       deckService.drawFromDeck(game.getId(), ALICE_ID, 3);
-      int deckAfter = deckService.deckSize(game.getId());
 
-      assertThat(deckAfter).isEqualTo(deckBefore - 3);
+      assertThat(deckService.deckSize(game.getId())).isEqualTo(deckBefore - 3);
     }
   }
 }
