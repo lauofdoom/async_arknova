@@ -201,7 +201,7 @@ public class AnimalsActionHandler implements ActionHandler {
                 + player.getReputation()
                 + ").");
       }
-      int cost = pc.getCard().getBaseCost() + (slotIndex + 1); // base cost + slot number (1-based)
+      int cost = pc.getCard().getBaseCost() + slotIndex; // base cost + 0-based slot index as premium
       ActionResult err = validatePlacement(pc.getCard(), displayEncIds.get(i), player, plans, cost);
       if (err != null) return err;
       plans.add(new PlacementPlan(cardId, displayEncIds.get(i), pc.getCard(), cost, true));
@@ -373,34 +373,8 @@ public class AnimalsActionHandler implements ActionHandler {
           "Enclosure " + enclosureId + " does not exist on your zoo board.");
     }
 
-    int minSize = cardDef.getMinEnclosureSize() != null ? cardDef.getMinEnclosureSize() : 1;
-    if (enclosure.size() < minSize) {
-      return ActionResult.failure(
-          cardDef.getName()
-              + " requires an enclosure of size ≥ "
-              + minSize
-              + " (enclosure "
-              + enclosureId
-              + " is size "
-              + enclosure.size()
-              + ").");
-    }
-
-    // Capacity: count animals already committed in this action to the same enclosure
-    int pendingInSameEnclosure =
-        (int) pending.stream().filter(p -> p.enclosureId().equals(enclosureId)).count();
-    int occupancy = enclosure.animalCardIds().size() + pendingInSameEnclosure;
-    if (occupancy >= enclosure.size()) {
-      return ActionResult.failure(
-          "Enclosure "
-              + enclosureId
-              + " is full ("
-              + enclosure.animalCardIds().size()
-              + "/"
-              + enclosure.size()
-              + ").");
-    }
-
+    // Check card requirements BEFORE size/capacity — gives more actionable feedback when multiple
+    // conditions fail (e.g. "you need 3 PREDATOR icons" is more useful than "enclosure too small").
     // Two kinds of requirements:
     //   WATER, ROCK  — the target enclosure must have been built with that terrain tag
     //   Everything else (continent, animal-type icons) — icon count across the player's whole zoo
@@ -453,6 +427,35 @@ public class AnimalsActionHandler implements ActionHandler {
                   + ").");
         }
       }
+    }
+
+    // Size check (after requirements so card-specific prerequisites surface first)
+    int minSize = cardDef.getMinEnclosureSize() != null ? cardDef.getMinEnclosureSize() : 1;
+    if (enclosure.size() < minSize) {
+      return ActionResult.failure(
+          cardDef.getName()
+              + " requires an enclosure of size ≥ "
+              + minSize
+              + " (enclosure "
+              + enclosureId
+              + " is size "
+              + enclosure.size()
+              + ").");
+    }
+
+    // Capacity: count animals already committed in this action to the same enclosure
+    int pendingInSameEnclosure =
+        (int) pending.stream().filter(p -> p.enclosureId().equals(enclosureId)).count();
+    int occupancy = enclosure.animalCardIds().size() + pendingInSameEnclosure;
+    if (occupancy >= enclosure.size()) {
+      return ActionResult.failure(
+          "Enclosure "
+              + enclosureId
+              + " is full ("
+              + enclosure.animalCardIds().size()
+              + "/"
+              + enclosure.size()
+              + ").");
     }
 
     if (player.getMoney() < cost) {
