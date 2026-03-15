@@ -249,6 +249,11 @@ public class DeckService {
         playerCardRepo.findByGameIdAndDiscordIdAndLocationOrderBySortOrderAsc(
             gameId, discordId, CardLocation.HAND);
 
+    // Track sort_order so newest discard = highest = "top of pile"
+    int[] nextOrder = {
+      playerCardRepo.maxSortOrderInLocation(gameId, discordId, CardLocation.DISCARD) + 1
+    };
+
     for (String cardId : cardIds) {
       hand.stream()
           .filter(pc -> pc.getCard().getId().equals(cardId))
@@ -256,6 +261,7 @@ public class DeckService {
           .ifPresent(
               pc -> {
                 pc.setLocation(CardLocation.DISCARD);
+                pc.setSortOrder(nextOrder[0]++);
                 playerCardRepo.save(pc);
               });
     }
@@ -324,6 +330,49 @@ public class DeckService {
         playerCardRepo.findByGameIdAndLocationOrderBySortOrderAsc(gameId, CardLocation.DISPLAY);
     cards.forEach(pc -> pc.getCard().getName()); // force-initialize lazy card reference
     return cards;
+  }
+
+  /**
+   * Returns cards in the player's discard pile, top-first (most recently discarded at index 0).
+   *
+   * @param gameId the game
+   * @param discordId the player
+   */
+  @Transactional(readOnly = true)
+  public List<PlayerCard> getDiscard(UUID gameId, String discordId) {
+    List<PlayerCard> cards =
+        playerCardRepo.findByGameIdAndDiscordIdAndLocationOrderBySortOrderDesc(
+            gameId, discordId, CardLocation.DISCARD);
+    cards.forEach(pc -> pc.getCard().getName()); // force-initialize lazy card reference
+    return cards;
+  }
+
+  /**
+   * Move a card from the player's discard pile into their hand. Used by card effects that target
+   * the discard pile (e.g. retrieve a specific card).
+   *
+   * @param gameId the game
+   * @param discordId the player
+   * @param cardId the card ID to retrieve (must currently be in DISCARD)
+   * @throws IllegalArgumentException if the card is not in discard
+   */
+  @Transactional
+  public void takeFromDiscard(UUID gameId, String discordId, String cardId) {
+    List<PlayerCard> discard =
+        playerCardRepo.findByGameIdAndDiscordIdAndLocationOrderBySortOrderDesc(
+            gameId, discordId, CardLocation.DISCARD);
+    PlayerCard target =
+        discard.stream()
+            .filter(pc -> pc.getCard().getId().equals(cardId))
+            .findFirst()
+            .orElseThrow(
+                () -> new IllegalArgumentException("Card " + cardId + " is not in discard"));
+    int handSize =
+        playerCardRepo.countByGameIdAndDiscordIdAndLocation(gameId, discordId, CardLocation.HAND);
+    target.setLocation(CardLocation.HAND);
+    target.setSortOrder(handSize);
+    playerCardRepo.save(target);
+    log.debug("Game {}: player {} took {} from discard", gameId, discordId, cardId);
   }
 
   /** Returns how many cards remain in the combined deck. */

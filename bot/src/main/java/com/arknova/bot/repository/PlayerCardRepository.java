@@ -20,6 +20,17 @@ public interface PlayerCardRepository extends JpaRepository<PlayerCard, Long> {
 
   int countByGameIdAndDiscordIdAndLocation(UUID gameId, String discordId, CardLocation location);
 
+  List<PlayerCard> findByGameIdAndDiscordIdAndLocationOrderBySortOrderDesc(
+      UUID gameId, String discordId, CardLocation location);
+
+  @Query(
+      "SELECT COALESCE(MAX(pc.sortOrder), -1) FROM PlayerCard pc"
+          + " WHERE pc.gameId = :gameId AND pc.discordId = :discordId AND pc.location = :location")
+  int maxSortOrderInLocation(
+      @Param("gameId") UUID gameId,
+      @Param("discordId") String discordId,
+      @Param("location") CardLocation location);
+
   @Modifying
   @Query("UPDATE PlayerCard pc SET pc.location = :newLocation WHERE pc.id = :id")
   void moveCard(@Param("id") Long id, @Param("newLocation") CardLocation newLocation);
