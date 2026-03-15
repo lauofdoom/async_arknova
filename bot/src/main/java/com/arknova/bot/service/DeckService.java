@@ -132,7 +132,8 @@ public class DeckService {
     // Deal starting hand to each player
     for (String playerId : playerIds) {
       List<String> dealt = drawFromDeck(gameId, playerId, STARTING_HAND_SIZE);
-      log.info("Game {}: dealt {} starting hand cards to player {}", gameId, dealt.size(), playerId);
+      log.info(
+          "Game {}: dealt {} starting hand cards to player {}", gameId, dealt.size(), playerId);
     }
   }
 
@@ -373,6 +374,73 @@ public class DeckService {
     target.setSortOrder(handSize);
     playerCardRepo.save(target);
     log.debug("Game {}: player {} took {} from discard", gameId, discordId, cardId);
+  }
+
+  // ── Shuffle ────────────────────────────────────────────────────────────────
+
+  /**
+   * Reshuffles the draw deck in-place (both animal and sponsor queues). Card counts and locations
+   * are unchanged — only draw order is randomised.
+   */
+  @Transactional
+  public void shuffleDeck(UUID gameId) {
+    SharedBoardState shared = requireSharedBoard(gameId);
+    List<String> animals = new ArrayList<>(List.of(shared.getAnimalDeck()));
+    List<String> sponsors = new ArrayList<>(List.of(shared.getSponsorDeck()));
+    Collections.shuffle(animals);
+    Collections.shuffle(sponsors);
+    shared.setAnimalDeck(animals.toArray(String[]::new));
+    shared.setSponsorDeck(sponsors.toArray(String[]::new));
+    sharedBoardRepo.save(shared);
+    log.debug(
+        "Game {}: deck shuffled — {} animals, {} sponsors",
+        gameId,
+        animals.size(),
+        sponsors.size());
+  }
+
+  /**
+   * Randomly reassigns the slot positions of the face-up display cards. The same cards remain
+   * visible; only the left-to-right order changes.
+   */
+  @Transactional
+  public void shuffleDisplay(UUID gameId) {
+    List<PlayerCard> display =
+        playerCardRepo.findByGameIdAndLocationOrderBySortOrderAsc(gameId, CardLocation.DISPLAY);
+    if (display.isEmpty()) return;
+    List<Integer> slots = new ArrayList<>();
+    for (int i = 0; i < display.size(); i++) slots.add(i);
+    Collections.shuffle(slots);
+    for (int i = 0; i < display.size(); i++) {
+      display.get(i).setSortOrder(slots.get(i));
+      playerCardRepo.save(display.get(i));
+    }
+    log.debug("Game {}: display shuffled ({} cards)", gameId, display.size());
+  }
+
+  /**
+   * Randomly reassigns the sort_order values of the calling player's discard pile. Useful when a
+   * card effect requires the discard to be in an unknown order.
+   *
+   * @param gameId the game
+   * @param discordId the player whose discard pile to shuffle
+   */
+  @Transactional
+  public void shuffleDiscard(UUID gameId, String discordId) {
+    List<PlayerCard> pile =
+        playerCardRepo.findByGameIdAndDiscordIdAndLocationOrderBySortOrderDesc(
+            gameId, discordId, CardLocation.DISCARD);
+    if (pile.isEmpty()) return;
+    List<Integer> orders =
+        pile.stream()
+            .map(PlayerCard::getSortOrder)
+            .collect(java.util.stream.Collectors.toCollection(ArrayList::new));
+    Collections.shuffle(orders);
+    for (int i = 0; i < pile.size(); i++) {
+      pile.get(i).setSortOrder(orders.get(i));
+      playerCardRepo.save(pile.get(i));
+    }
+    log.debug("Game {}: player {} discard shuffled ({} cards)", gameId, discordId, pile.size());
   }
 
   /** Returns how many cards remain in the combined deck. */

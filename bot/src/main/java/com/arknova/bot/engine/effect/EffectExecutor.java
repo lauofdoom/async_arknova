@@ -16,7 +16,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 /**
- * Parses and executes machine-readable card effects stored in {@link CardDefinition#getEffectCode()}.
+ * Parses and executes machine-readable card effects stored in {@link
+ * CardDefinition#getEffectCode()}.
  *
  * <p>Only {@code "ON_PLAY"} triggers are processed here (fired when a card enters the tableau).
  * Unknown triggers, types, and resources are logged as warnings and skipped — the engine degrades
@@ -26,17 +27,17 @@ import org.springframework.stereotype.Service;
  *
  * <ul>
  *   <li>{@code "GAIN"} — unconditionally add {@code amount} to the named resource.
- *   <li>{@code "CONDITIONAL_GAIN"} with condition {@code "MIN_ICON"} — apply the gain only when
- *       the player has at least {@code condition.count} icons of type {@code condition.icon}.
+ *   <li>{@code "CONDITIONAL_GAIN"} with condition {@code "MIN_ICON"} — apply the gain only when the
+ *       player has at least {@code condition.count} icons of type {@code condition.icon}.
  *   <li>{@code "GAIN_PER_ICON"} with condition {@code "ICON"} — multiply {@code amount} by the
- *       player's count of {@code condition.icon}. Optional {@code condition.max} caps the count
- *       (0 = no cap).
- *   <li>{@code "GAIN_PER_ICON"} — add {@code amount × iconCount} to the named resource, capped
- *       at {@code max} if {@code max > 0}.
+ *       player's count of {@code condition.icon}. Optional {@code condition.max} caps the count (0
+ *       = no cap).
+ *   <li>{@code "GAIN_PER_ICON"} — add {@code amount × iconCount} to the named resource, capped at
+ *       {@code max} if {@code max > 0}.
  * </ul>
  *
- * <p>Supported resources: {@code MONEY}, {@code APPEAL}, {@code CONSERVATION},
- * {@code REPUTATION}, {@code X_TOKENS}, {@code BREAK_TRACK}.
+ * <p>Supported resources: {@code MONEY}, {@code APPEAL}, {@code CONSERVATION}, {@code REPUTATION},
+ * {@code X_TOKENS}, {@code BREAK_TRACK}.
  */
 @Service
 @RequiredArgsConstructor
@@ -79,7 +80,8 @@ public class EffectExecutor {
 
       switch (effect.type()) {
         case "GAIN" ->
-            applyGain(cardDef.getId(), effect.resource(), effect.amount(), player, sharedBoard, deltas);
+            applyGain(
+                cardDef.getId(), effect.resource(), effect.amount(), player, sharedBoard, deltas);
 
         case "CONDITIONAL_GAIN" -> {
           if (!evaluateCondition(cardDef.getId(), effect.condition(), iconCounts)) {
@@ -87,7 +89,8 @@ public class EffectExecutor {
                 "EffectExecutor: card {} CONDITIONAL_GAIN condition not met — skipping",
                 cardDef.getId());
           } else {
-            applyGain(cardDef.getId(), effect.resource(), effect.amount(), player, sharedBoard, deltas);
+            applyGain(
+                cardDef.getId(), effect.resource(), effect.amount(), player, sharedBoard, deltas);
           }
         }
 
@@ -126,8 +129,8 @@ public class EffectExecutor {
   // ── Parsing ───────────────────────────────────────────────────────────────────
 
   /**
-   * Parses the {@code effect_code} JSONB string into a list of {@link CardEffect} records.
-   * Returns an empty list if parsing fails (and logs a warning).
+   * Parses the {@code effect_code} JSONB string into a list of {@link CardEffect} records. Returns
+   * an empty list if parsing fails (and logs a warning).
    */
   private List<CardEffect> parseEffects(CardDefinition cardDef) {
     String effectCode = cardDef.getEffectCode();
@@ -139,8 +142,7 @@ public class EffectExecutor {
       JsonNode root = objectMapper.readTree(effectCode);
       JsonNode abilitiesNode = root.path("abilities");
       if (!abilitiesNode.isArray()) {
-        log.warn(
-            "EffectExecutor: card {} effect_code missing 'abilities' array", cardDef.getId());
+        log.warn("EffectExecutor: card {} effect_code missing 'abilities' array", cardDef.getId());
         return List.of();
       }
 
@@ -184,9 +186,9 @@ public class EffectExecutor {
   }
 
   /**
-   * Parses the player's {@code icons} JSONB column into a {@code Map<String, Integer>}.
-   * The icons field stores counts per tag type, e.g. {@code {"PREDATOR": 3, "AFRICA": 1}}.
-   * Returns an empty map if parsing fails.
+   * Parses the player's {@code icons} JSONB column into a {@code Map<String, Integer>}. The icons
+   * field stores counts per tag type, e.g. {@code {"PREDATOR": 3, "AFRICA": 1}}. Returns an empty
+   * map if parsing fails.
    */
   private Map<String, Integer> parseIconCounts(PlayerState player) {
     String iconsJson = player.getIcons();
@@ -215,8 +217,8 @@ public class EffectExecutor {
   // ── Condition evaluation ──────────────────────────────────────────────────────
 
   /**
-   * Returns {@code true} if the condition is satisfied by the player's current icon counts.
-   * Logs a warning and returns {@code false} for unrecognised condition types.
+   * Returns {@code true} if the condition is satisfied by the player's current icon counts. Logs a
+   * warning and returns {@code false} for unrecognised condition types.
    */
   private boolean evaluateCondition(
       String cardId, CardEffectCondition condition, Map<String, Integer> iconCounts) {
@@ -242,8 +244,8 @@ public class EffectExecutor {
   // ── Resource application ──────────────────────────────────────────────────────
 
   /**
-   * Adds {@code amount} to the named resource on {@code player} and accumulates the delta.
-   * Logs a warning for unrecognised resource names.
+   * Adds {@code amount} to the named resource on {@code player} and accumulates the delta. Logs a
+   * warning for unrecognised resource names.
    */
   private void applyGain(
       String cardId,
@@ -284,14 +286,14 @@ public class EffectExecutor {
           sharedBoard.setBreakTrack(sharedBoard.getBreakTrack() + amount);
           deltas.merge("break_track", amount, Integer::sum);
         } else {
-          log.warn("EffectExecutor: card {} BREAK_TRACK effect but sharedBoard is null — skipping", cardId);
+          log.warn(
+              "EffectExecutor: card {} BREAK_TRACK effect but sharedBoard is null — skipping",
+              cardId);
         }
       }
       default ->
           log.warn(
-              "EffectExecutor: card {} has unsupported resource '{}' — skipping",
-              cardId,
-              resource);
+              "EffectExecutor: card {} has unsupported resource '{}' — skipping", cardId, resource);
     }
   }
 }

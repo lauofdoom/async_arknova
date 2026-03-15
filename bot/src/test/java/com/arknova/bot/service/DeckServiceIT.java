@@ -39,7 +39,9 @@ class DeckServiceIT extends AbstractIntegrationTest {
   void setUp() {
     // Create and start a 2-player game; StartCommand would normally call initializeDecks,
     // but for these tests we call it explicitly to isolate DeckService behaviour.
+    // setGameChannel simulates the async channel creation so joinGame/startGame can find the game.
     game = gameService.createGame(GUILD_ID, THREAD_ID, ALICE_ID, "Alice");
+    gameService.setGameChannel(game.getId(), THREAD_ID);
     gameService.joinGame(THREAD_ID, BOB_ID, "Bob");
     gameService.startGame(THREAD_ID, ALICE_ID);
   }

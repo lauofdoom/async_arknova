@@ -48,11 +48,7 @@ public class DiscordLogger {
         new EmbedBuilder()
             .setColor(COLOR_INFO)
             .setTitle("🎮 New Game Created")
-            .setDescription(
-                "**"
-                    + creatorName
-                    + "** created a game.\n"
-                    + threadLink(game))
+            .setDescription("**" + creatorName + "** created a game.\n" + threadLink(game))
             .addField("Game", shortId(game), true));
   }
 
@@ -63,12 +59,7 @@ public class DiscordLogger {
             .setColor(COLOR_INFO)
             .setTitle("👤 Player Joined")
             .setDescription(
-                "**"
-                    + playerName
-                    + "** joined as seat "
-                    + seatNumber
-                    + ".\n"
-                    + threadLink(game))
+                "**" + playerName + "** joined as seat " + seatNumber + ".\n" + threadLink(game))
             .addField("Game", shortId(game), true));
   }
 
@@ -99,10 +90,7 @@ public class DiscordLogger {
             .setColor(COLOR_NEUTRAL)
             .setTitle("⏭️ Turn Ended")
             .setDescription(
-                "**"
-                    + ended.getDiscordName()
-                    + "** ended their turn.\n"
-                    + threadLink(game))
+                "**" + ended.getDiscordName() + "** ended their turn.\n" + threadLink(game))
             .addField("Next Up", next.getDiscordName(), true)
             .setFooter("Turn " + game.getTurnNumber()));
   }

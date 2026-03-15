@@ -4,8 +4,8 @@ package com.arknova.bot.engine;
  * Constants for Ark Nova scoring rules.
  *
  * <p>The appeal and conservation tracks ARE the VP tracks — positions on those tracks represent
- * victory points directly. This class holds the maximum values for each track, bonus VP per
- * partner zoo / university, and X token scoring constants.
+ * victory points directly. This class holds the maximum values for each track, bonus VP per partner
+ * zoo / university, and X token scoring constants.
  *
  * <h2>Final VP breakdown</h2>
  *

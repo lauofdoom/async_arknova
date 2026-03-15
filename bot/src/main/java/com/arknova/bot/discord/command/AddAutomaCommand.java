@@ -14,11 +14,11 @@ import org.springframework.stereotype.Component;
 /**
  * /arknova addautoma — adds a single-player automa opponent to the game lobby.
  *
- * <p>The automa fills one player seat and takes its turns automatically whenever the seat
- * advances to it. Useful for solo testing and single-player practice games.
+ * <p>The automa fills one player seat and takes its turns automatically whenever the seat advances
+ * to it. Useful for solo testing and single-player practice games.
  *
- * <p>Can only be called while the game is in SETUP (before /arknova start). Only one automa
- * per game is permitted.
+ * <p>Can only be called while the game is in SETUP (before /arknova start). Only one automa per
+ * game is permitted.
  */
 @Component
 @RequiredArgsConstructor
@@ -51,9 +51,7 @@ public class AddAutomaCommand implements ArkNovaCommand {
 
           Optional<Game> maybeGame = gameService.findByThreadId(channelId);
           int totalPlayers =
-              maybeGame
-                  .map(g -> gameService.getPlayersInOrder(g.getId()).size())
-                  .orElse(0);
+              maybeGame.map(g -> gameService.getPlayersInOrder(g.getId()).size()).orElse(0);
 
           EmbedBuilder embed =
               new EmbedBuilder()
@@ -80,7 +78,8 @@ public class AddAutomaCommand implements ArkNovaCommand {
 
           event.getHook().sendMessageEmbeds(embed.build()).queue();
 
-          maybeGame.ifPresent(g -> discordLogger.logPlayerJoined(g, "Automa 🤖", automa.getSeatIndex() + 1));
+          maybeGame.ifPresent(
+              g -> discordLogger.logPlayerJoined(g, "Automa 🤖", automa.getSeatIndex() + 1));
         });
   }
 }

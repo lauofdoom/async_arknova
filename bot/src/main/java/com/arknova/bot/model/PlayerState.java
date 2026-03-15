@@ -150,8 +150,8 @@ public class PlayerState {
   private String privateChannelId;
 
   /**
-   * True for the synthetic automa opponent. Automa turns are executed automatically by
-   * {@link com.arknova.bot.service.AutomaService} when the seat advances to this player.
+   * True for the synthetic automa opponent. Automa turns are executed automatically by {@link
+   * com.arknova.bot.service.AutomaService} when the seat advances to this player.
    */
   @Column(name = "is_automa", nullable = false)
   private boolean automa = false;

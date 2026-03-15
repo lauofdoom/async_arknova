@@ -201,7 +201,8 @@ public class AnimalsActionHandler implements ActionHandler {
                 + player.getReputation()
                 + ").");
       }
-      int cost = pc.getCard().getBaseCost() + slotIndex; // base cost + 0-based slot index as premium
+      int cost =
+          pc.getCard().getBaseCost() + slotIndex; // base cost + 0-based slot index as premium
       ActionResult err = validatePlacement(pc.getCard(), displayEncIds.get(i), player, plans, cost);
       if (err != null) return err;
       plans.add(new PlacementPlan(cardId, displayEncIds.get(i), pc.getCard(), cost, true));

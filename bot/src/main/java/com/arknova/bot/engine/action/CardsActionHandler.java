@@ -131,9 +131,18 @@ public class CardsActionHandler implements ActionHandler {
     if ("BREAK".equalsIgnoreCase(action)) {
       player.setMoney(player.getMoney() + BREAK_VALUE);
       sharedBoard.setBreakTrack(sharedBoard.getBreakTrack() + 1);
-      String summary = request.discordName() + " broke **Cards** → +" + BREAK_VALUE
-          + "💰. Break track now at " + sharedBoard.getBreakTrack() + ".";
-      log.info("Game {}: {} CARDS break +{} sharedBreakTrack={}", gameId, discordId, BREAK_VALUE,
+      String summary =
+          request.discordName()
+              + " broke **Cards** → +"
+              + BREAK_VALUE
+              + "💰. Break track now at "
+              + sharedBoard.getBreakTrack()
+              + ".";
+      log.info(
+          "Game {}: {} CARDS break +{} sharedBreakTrack={}",
+          gameId,
+          discordId,
+          BREAK_VALUE,
           sharedBoard.getBreakTrack());
       return ActionResult.success(
           ActionCard.CARDS, strength, summary, Map.of("money_gained", BREAK_VALUE, "break", true));
@@ -154,11 +163,23 @@ public class CardsActionHandler implements ActionHandler {
                 + ".");
       }
       // SNAP draws from break pile — not bot-tracked, requires manual resolution
-      String summary = request.discordName() + " used **Cards** SNAP (strength " + strength
-          + ") — take any 1 card from the break pile into your hand, ignoring reputation.";
+      String summary =
+          request.discordName()
+              + " used **Cards** SNAP (strength "
+              + strength
+              + ") — take any 1 card from the break pile into your hand, ignoring reputation.";
       log.info("Game {}: {} CARDS snap strength={}", gameId, discordId, strength);
-      return new ActionResult(true, null, ActionCard.CARDS, strength, summary,
-          Map.of("snap", true), List.of(), false, true, null);
+      return new ActionResult(
+          true,
+          null,
+          ActionCard.CARDS,
+          strength,
+          summary,
+          Map.of("snap", true),
+          List.of(),
+          false,
+          true,
+          null);
     }
 
     // ── DRAW (default) ───────────────────────────────────────────────────────

@@ -70,8 +70,7 @@ public class AutomaService {
             .findByGameIdAndSeatIndex(game.getId(), game.getCurrentSeat())
             .orElseThrow(
                 () ->
-                    new IllegalStateException(
-                        "No automa found at seat " + game.getCurrentSeat()));
+                    new IllegalStateException("No automa found at seat " + game.getCurrentSeat()));
 
     if (!automa.isAutoma()) {
       throw new IllegalStateException("Player at current seat is not an automa.");
@@ -102,7 +101,10 @@ public class AutomaService {
             .setColor(AUTOMA_COLOR)
             .setTitle("🤖 Automa Turn")
             .setDescription(actionDescription)
-            .addField("Action Card", chosen.emoji() + " " + chosen.displayName() + " (strength " + strength + ")", true)
+            .addField(
+                "Action Card",
+                chosen.emoji() + " " + chosen.displayName() + " (strength " + strength + ")",
+                true)
             .addField("New Strip", cardOrder.toDiscordString(), false)
             .setFooter("Automa plays automatically — your turn is next");
     channelService.postToBoardChannel(game, embed);

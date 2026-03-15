@@ -19,11 +19,11 @@ package com.arknova.bot.engine.effect;
  * <ul>
  *   <li>{@code trigger} — when the effect fires; currently only {@code "ON_PLAY"} is executed.
  *   <li>{@code type} — {@code "GAIN"}, {@code "CONDITIONAL_GAIN"}, or {@code "GAIN_PER_ICON"}.
- *   <li>{@code resource} — one of {@code MONEY}, {@code APPEAL}, {@code CONSERVATION},
- *       {@code REPUTATION}, {@code X_TOKENS}.
+ *   <li>{@code resource} — one of {@code MONEY}, {@code APPEAL}, {@code CONSERVATION}, {@code
+ *       REPUTATION}, {@code X_TOKENS}.
  *   <li>{@code amount} — units per icon (for {@code GAIN_PER_ICON}) or flat amount (for others).
- *   <li>{@code icon} — icon type key for {@code GAIN_PER_ICON} (e.g. {@code "PREDATOR"}); null
- *       for other types.
+ *   <li>{@code icon} — icon type key for {@code GAIN_PER_ICON} (e.g. {@code "PREDATOR"}); null for
+ *       other types.
  *   <li>{@code max} — maximum total gain for {@code GAIN_PER_ICON}; 0 means no cap.
  *   <li>{@code condition} — only present for {@code "CONDITIONAL_GAIN"}; may be {@code null}.
  * </ul>

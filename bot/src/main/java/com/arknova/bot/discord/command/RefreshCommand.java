@@ -33,8 +33,7 @@ public class RefreshCommand implements ArkNovaCommand {
   @Override
   public SubcommandData getSubcommandData() {
     return new SubcommandData(
-        "refresh",
-        "Refresh your private channel with current hand, resources, and board");
+        "refresh", "Refresh your private channel with current hand, resources, and board");
   }
 
   @Override

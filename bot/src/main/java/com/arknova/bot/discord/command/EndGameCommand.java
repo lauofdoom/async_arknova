@@ -80,8 +80,11 @@ public class EndGameCommand implements ArkNovaCommand {
 
           Game endedGame = gameService.endGame(channelId, discordId);
           List<PlayerState> players = gameService.getPlayersInOrder(endedGame.getId());
-          int sharedBreakTrack = sharedBoardRepo.findByGameId(endedGame.getId())
-              .map(SharedBoardState::getBreakTrack).orElse(0);
+          int sharedBreakTrack =
+              sharedBoardRepo
+                  .findByGameId(endedGame.getId())
+                  .map(SharedBoardState::getBreakTrack)
+                  .orElse(0);
 
           EmbedBuilder embed =
               new EmbedBuilder()
@@ -107,8 +110,10 @@ public class EndGameCommand implements ArkNovaCommand {
             StringBuilder sb = new StringBuilder();
             sb.append("Appeal: **").append(appealVp).append("**");
             sb.append(" · Conservation: **").append(conservationVp).append("**");
-            if (partnerZooVp > 0) sb.append(" · Partner Zoos: **+").append(partnerZooVp).append("**");
-            if (universityVp > 0) sb.append(" · Universities: **+").append(universityVp).append("**");
+            if (partnerZooVp > 0)
+              sb.append(" · Partner Zoos: **+").append(partnerZooVp).append("**");
+            if (universityVp > 0)
+              sb.append(" · Universities: **+").append(universityVp).append("**");
             if (xTokenVp > 0)
               sb.append(" · X Tokens (")
                   .append(player.getXTokens())

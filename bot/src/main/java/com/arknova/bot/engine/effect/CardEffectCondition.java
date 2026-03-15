@@ -6,10 +6,10 @@ package com.arknova.bot.engine.effect;
  * <p>Supported types:
  *
  * <ul>
- *   <li>{@code "MIN_ICON"} — passes when the player has at least {@code count} icons of type
- *       {@code icon}. Used with {@code "CONDITIONAL_GAIN"}.
- *   <li>{@code "ICON"} — specifies which icon to count for a {@code "GAIN_PER_ICON"} effect.
- *       {@code max} optionally caps the multiplier (0 = no cap).
+ *   <li>{@code "MIN_ICON"} — passes when the player has at least {@code count} icons of type {@code
+ *       icon}. Used with {@code "CONDITIONAL_GAIN"}.
+ *   <li>{@code "ICON"} — specifies which icon to count for a {@code "GAIN_PER_ICON"} effect. {@code
+ *       max} optionally caps the multiplier (0 = no cap).
  * </ul>
  *
  * <p>Example JSON:

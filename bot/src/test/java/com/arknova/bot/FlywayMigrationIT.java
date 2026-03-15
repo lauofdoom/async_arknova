@@ -25,9 +25,7 @@ class FlywayMigrationIT extends AbstractIntegrationTest {
   void allMigrationsApplied() {
     MigrationInfo[] applied = flyway.info().applied();
 
-    assertThat(applied)
-        .as("expected 7 applied migrations (V1–V7)")
-        .hasSize(7);
+    assertThat(applied).as("expected 7 applied migrations (V1–V7)").hasSize(7);
 
     for (MigrationInfo migration : applied) {
       assertThat(migration.getState())
@@ -51,8 +49,6 @@ class FlywayMigrationIT extends AbstractIntegrationTest {
   void noPendingMigrations() {
     MigrationInfo[] pending = flyway.info().pending();
 
-    assertThat(pending)
-        .as("all migrations should be applied — none should be pending")
-        .isEmpty();
+    assertThat(pending).as("all migrations should be applied — none should be pending").isEmpty();
   }
 }

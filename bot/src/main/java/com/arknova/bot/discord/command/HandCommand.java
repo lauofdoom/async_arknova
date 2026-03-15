@@ -8,7 +8,6 @@ import com.arknova.bot.service.DeckService;
 import com.arknova.bot.service.GameService;
 import java.util.List;
 import java.util.Optional;
-import lombok.RequiredArgsConstructor;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
@@ -86,12 +85,9 @@ public class HandCommand implements ArkNovaCommand {
           maybePlayer.ifPresent(
               player -> {
                 if (player.getPrivateChannelId() != null) {
-                  TextChannel privateChannel =
-                      jda.getTextChannelById(player.getPrivateChannelId());
+                  TextChannel privateChannel = jda.getTextChannelById(player.getPrivateChannelId());
                   if (privateChannel != null) {
-                    privateChannel
-                        .sendMessageEmbeds(embed.build())
-                        .queue(null, err -> {});
+                    privateChannel.sendMessageEmbeds(embed.build()).queue(null, err -> {});
                   }
                 }
               });

@@ -26,9 +26,19 @@ public class Game {
   @Column(name = "guild_id", nullable = false, length = 20)
   private String guildId;
 
-  /** The Discord thread created for this game. One game = one thread. */
-  @Column(name = "thread_id", nullable = false, unique = true, length = 20)
+  /**
+   * The dedicated game channel ID for this game (the ARK-N #board channel). Null until channel
+   * setup completes. Not unique across all games — a partial unique index in the DB enforces
+   * uniqueness among active (non-ended) games only.
+   */
+  @Column(name = "thread_id", length = 20)
   private String threadId;
+
+  /**
+   * The lobby/general channel where this game was originally created via {@code /arknova create}.
+   */
+  @Column(name = "origin_channel_id", length = 20)
+  private String originChannelId;
 
   /** Discord category created for this game on start. Null if channel setup not yet run. */
   @Column(name = "category_id", length = 20)

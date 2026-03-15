@@ -131,10 +131,12 @@ public class CommandHelper {
     if (result.requiresManualResolution()) {
       String abilityBody = "This card's ability requires manual resolution.";
       if (result.manualResolutionCardId() != null) {
-        abilityBody = cardDefRepo.findById(result.manualResolutionCardId())
-            .map(CardDefinition::getAbilityText)
-            .filter(t -> t != null && !t.isBlank())
-            .orElse(abilityBody);
+        abilityBody =
+            cardDefRepo
+                .findById(result.manualResolutionCardId())
+                .map(CardDefinition::getAbilityText)
+                .filter(t -> t != null && !t.isBlank())
+                .orElse(abilityBody);
       }
       embed.addField("⚠️ Manual", abilityBody, false);
     }

@@ -35,7 +35,9 @@ public interface PlayerCardRepository extends JpaRepository<PlayerCard, Long> {
   @Query("UPDATE PlayerCard pc SET pc.location = :newLocation WHERE pc.id = :id")
   void moveCard(@Param("id") Long id, @Param("newLocation") CardLocation newLocation);
 
-  /** Returns card IDs for all cards in the given location, avoiding lazy-loading the card entity. */
+  /**
+   * Returns card IDs for all cards in the given location, avoiding lazy-loading the card entity.
+   */
   @Query(
       "SELECT pc.card.id FROM PlayerCard pc"
           + " WHERE pc.gameId = :gameId AND pc.discordId = :discordId AND pc.location = :location")

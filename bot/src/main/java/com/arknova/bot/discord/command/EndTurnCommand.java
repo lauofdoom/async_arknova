@@ -70,7 +70,8 @@ public class EndTurnCommand implements ArkNovaCommand {
             Optional<PlayerState> maybeTarget =
                 gameService.getPlayerState(gameBefore.getId(), endingDiscordId);
             if (maybeTarget.isEmpty()) {
-              CommandHelper.replyError(event, playerOpt.getAsUser().getName() + " is not a participant in this game.");
+              CommandHelper.replyError(
+                  event, playerOpt.getAsUser().getName() + " is not a participant in this game.");
               return;
             }
             forceAdvance = maybeTarget.get().getSeatIndex() != gameBefore.getCurrentSeat();
@@ -86,24 +87,26 @@ public class EndTurnCommand implements ArkNovaCommand {
           }
 
           PlayerState endedPlayer =
-              gameService.getPlayerState(gameBefore.getId(), endingDiscordId)
+              gameService
+                  .getPlayerState(gameBefore.getId(), endingDiscordId)
                   .orElseThrow(() -> new IllegalStateException("Player not found."));
 
           // Advance the turn
-          Game updatedGame = forceAdvance
-              ? gameService.forceEndTurn(channelId, endingDiscordId)
-              : gameService.endTurn(channelId, endingDiscordId);
+          Game updatedGame =
+              forceAdvance
+                  ? gameService.forceEndTurn(channelId, endingDiscordId)
+                  : gameService.endTurn(channelId, endingDiscordId);
 
           // Auto-execute any automa turns that follow (runs on a separate thread so the
           // Discord response is sent first; automa posts its own summary to #board channel)
           final Game gameAfterHuman = updatedGame;
           final PlayerState endedRef = endedPlayer;
           new Thread(
-              () -> {
-                channelService.postBoardUpdate(gameAfterHuman, endedRef);
-                runAutomaTurns(gameAfterHuman);
-              },
-              "endturn-" + updatedGame.getId())
+                  () -> {
+                    channelService.postBoardUpdate(gameAfterHuman, endedRef);
+                    runAutomaTurns(gameAfterHuman);
+                  },
+                  "endturn-" + updatedGame.getId())
               .start();
 
           // Re-fetch players after potential automa advancement to show the correct next human
@@ -114,23 +117,29 @@ public class EndTurnCommand implements ArkNovaCommand {
                   .findFirst()
                   .orElseThrow(() -> new IllegalStateException("Could not determine next player."));
 
-          String description = forceAdvance
-              ? "**" + endedPlayer.getDiscordName() + "**'s turn was force-advanced by <@"
-                  + event.getUser().getId() + ">."
-              : "**" + endedPlayer.getDiscordName() + "** has ended their turn.";
+          String description =
+              forceAdvance
+                  ? "**"
+                      + endedPlayer.getDiscordName()
+                      + "**'s turn was force-advanced by <@"
+                      + event.getUser().getId()
+                      + ">."
+                  : "**" + endedPlayer.getDiscordName() + "** has ended their turn.";
 
           // If the next seat is the automa, tell the human it's being handled
           boolean automaNext = nextPlayer.isAutoma();
           EmbedBuilder embed =
               new EmbedBuilder()
-                  .setColor(forceAdvance ? CommandHelper.COLOR_NEUTRAL : CommandHelper.COLOR_SUCCESS)
+                  .setColor(
+                      forceAdvance ? CommandHelper.COLOR_NEUTRAL : CommandHelper.COLOR_SUCCESS)
                   .setTitle("Turn Ended")
                   .setDescription(description)
                   .addField("Next Player", nextPlayer.getDiscordName(), true)
                   .addField("Turn", String.valueOf(updatedGame.getTurnNumber()), true)
-                  .setFooter(automaNext
-                      ? "Automa is taking its turn automatically…"
-                      : "Use /arknova status to see the current board state");
+                  .setFooter(
+                      automaNext
+                          ? "Automa is taking its turn automatically…"
+                          : "Use /arknova status to see the current board state");
 
           event.getHook().sendMessageEmbeds(embed.build()).queue();
           discordLogger.logTurnEnded(updatedGame, endedPlayer, nextPlayer);

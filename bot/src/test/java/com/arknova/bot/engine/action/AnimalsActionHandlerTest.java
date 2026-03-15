@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 
 import com.arknova.bot.engine.ActionCard;
 import com.arknova.bot.engine.ActionCardOrder;
+import com.arknova.bot.engine.effect.EffectExecutor;
 import com.arknova.bot.engine.model.ActionRequest;
 import com.arknova.bot.engine.model.ActionResult;
 import com.arknova.bot.model.CardDefinition;
@@ -13,7 +14,6 @@ import com.arknova.bot.model.PlayerCard;
 import com.arknova.bot.model.PlayerCard.CardLocation;
 import com.arknova.bot.model.PlayerState;
 import com.arknova.bot.model.SharedBoardState;
-import com.arknova.bot.engine.effect.EffectExecutor;
 import com.arknova.bot.repository.CardDefinitionRepository;
 import com.arknova.bot.repository.PlayerCardRepository;
 import com.arknova.bot.service.DeckService;
@@ -68,7 +68,8 @@ class AnimalsActionHandlerTest {
   @BeforeEach
   void setUp() {
     handler =
-        new AnimalsActionHandler(deckService, playerCardRepo, cardDefRepo, new ObjectMapper(), effectExecutor);
+        new AnimalsActionHandler(
+            deckService, playerCardRepo, cardDefRepo, new ObjectMapper(), effectExecutor);
 
     gameId = UUID.randomUUID();
     player = new PlayerState();

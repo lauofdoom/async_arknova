@@ -41,6 +41,7 @@ public class GameService {
 
   /** Synthetic Discord ID used for the automa player in every game. */
   public static final String AUTOMA_DISCORD_ID = "AUTOMA";
+
   public static final String AUTOMA_DISCORD_NAME = "Automa 🤖";
 
   private final GameRepository gameRepo;
@@ -52,35 +53,56 @@ public class GameService {
   // ── Game Creation ──────────────────────────────────────────────────────────
 
   /**
-   * Creates a new game associated with a Discord thread. The creating player is automatically added
-   * as the first player (seat 0).
+   * Creates a new game from a lobby/origin channel. The creating player is automatically added as
+   * the first player (seat 0). {@code threadId} is left null until {@link #setGameChannel(UUID,
+   * String)} is called after the dedicated Discord channel is created.
    *
    * @param guildId Discord guild ID
-   * @param threadId Discord thread ID created for this game
+   * @param originChannelId Discord channel ID where /arknova create was run
    * @param creatorDiscordId Discord ID of the player who ran /arknova create
    * @param creatorName Display name of the creator
    * @return the newly created Game
-   * @throws IllegalStateException if a game already exists for this thread
+   * @throws IllegalStateException if a SETUP game already exists from this origin channel
    */
   @Transactional
   public Game createGame(
-      String guildId, String threadId, String creatorDiscordId, String creatorName) {
+      String guildId, String originChannelId, String creatorDiscordId, String creatorName) {
 
-    if (gameRepo.existsByThreadId(threadId)) {
-      throw new IllegalStateException("A game already exists in this thread.");
+    if (gameRepo.existsSetupByOriginChannelId(originChannelId)) {
+      throw new IllegalStateException("A game is already being set up from this channel.");
     }
 
     Game game = new Game();
     game.setGuildId(guildId);
-    game.setThreadId(threadId);
+    game.setOriginChannelId(originChannelId);
     game.setStatus(GameStatus.SETUP);
     game = gameRepo.save(game);
 
     // Add the creator as player 0
     addPlayerToGame(game, creatorDiscordId, creatorName, 0);
 
-    log.info("Game {} created in thread {} by {}", game.getId(), threadId, creatorName);
+    log.info(
+        "Game {} created from origin channel {} by {}", game.getId(), originChannelId, creatorName);
     return game;
+  }
+
+  /**
+   * Sets the dedicated Discord game channel for a game after channel creation. Updates both {@code
+   * threadId} (used to look up the game) and {@code boardChannelId}.
+   *
+   * @param gameId the game to update
+   * @param boardChannelId the newly created Discord #board channel ID
+   */
+  @Transactional
+  public void setGameChannel(UUID gameId, String boardChannelId) {
+    Game game =
+        gameRepo
+            .findById(gameId)
+            .orElseThrow(() -> new IllegalStateException("Game " + gameId + " not found"));
+    game.setThreadId(boardChannelId);
+    game.setBoardChannelId(boardChannelId);
+    gameRepo.save(game);
+    log.info("Game {} board channel set to {}", gameId, boardChannelId);
   }
 
   // ── Joining ────────────────────────────────────────────────────────────────
@@ -113,8 +135,8 @@ public class GameService {
   // ── Automa ─────────────────────────────────────────────────────────────────
 
   /**
-   * Adds a synthetic automa opponent to a game in SETUP. Only one automa per game is allowed.
-   * The automa takes its turn automatically whenever the seat advances to it.
+   * Adds a synthetic automa opponent to a game in SETUP. Only one automa per game is allowed. The
+   * automa takes its turn automatically whenever the seat advances to it.
    *
    * @param threadId Discord thread ID for the game
    * @param requestingDiscordId Discord ID of the human player making the request
@@ -236,7 +258,8 @@ public class GameService {
     PlayerState player =
         playerStateRepo
             .findByGameIdAndDiscordId(game.getId(), discordId)
-            .orElseThrow(() -> new IllegalStateException("You are not a participant in this game."));
+            .orElseThrow(
+                () -> new IllegalStateException("You are not a participant in this game."));
 
     if (player.getSeatIndex() != game.getCurrentSeat()) {
       throw new IllegalStateException("It is not your turn.");
@@ -298,7 +321,8 @@ public class GameService {
     PlayerState player =
         playerStateRepo
             .findByGameIdAndDiscordId(game.getId(), discordId)
-            .orElseThrow(() -> new IllegalStateException(discordId + " is not a participant in this game."));
+            .orElseThrow(
+                () -> new IllegalStateException(discordId + " is not a participant in this game."));
 
     if (player.getPendingDiscardCount() > 0) {
       throw new IllegalStateException(
@@ -378,7 +402,8 @@ public class GameService {
    * order so commands work regardless of which game channel they are issued from.
    */
   public Optional<Game> findByThreadId(String channelId) {
-    return gameRepo.findByThreadId(channelId)
+    return gameRepo
+        .findActiveByThreadId(channelId)
         .or(() -> gameRepo.findByBoardChannelId(channelId))
         .or(() -> gameRepo.findByPlayerPrivateChannelId(channelId));
   }
@@ -516,8 +541,8 @@ public class GameService {
   /**
    * Set or delta-adjust any named track for a player. Used by the {@code /arknova score} command.
    *
-   * <p>Supported track names: {@code appeal}, {@code conservation}, {@code reputation},
-   * {@code break}, {@code xtokens}.
+   * <p>Supported track names: {@code appeal}, {@code conservation}, {@code reputation}, {@code
+   * break}, {@code xtokens}.
    *
    * @param gameId the game
    * @param targetDiscordId the player to adjust
@@ -564,8 +589,11 @@ public class GameService {
         int cur = player.getXTokens();
         player.setXTokens(setValue != null ? setValue : Math.max(0, cur + deltaValue));
       }
-      default -> throw new IllegalStateException(
-          "Unknown track \"" + track + "\". Use: appeal, conservation, reputation, break, xtokens");
+      default ->
+          throw new IllegalStateException(
+              "Unknown track \""
+                  + track
+                  + "\". Use: appeal, conservation, reputation, break, xtokens");
     }
 
     player = playerStateRepo.save(player);
@@ -581,9 +609,7 @@ public class GameService {
 
   /** Returns the current shared break track position for a game. */
   public int getSharedBreakTrack(UUID gameId) {
-    return sharedBoardRepo.findByGameId(gameId)
-        .map(SharedBoardState::getBreakTrack)
-        .orElse(0);
+    return sharedBoardRepo.findByGameId(gameId).map(SharedBoardState::getBreakTrack).orElse(0);
   }
 
   // ── Internal ───────────────────────────────────────────────────────────────

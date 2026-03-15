@@ -38,17 +38,15 @@ public class ScoreCommand implements ArkNovaCommand {
 
   @Override
   public SubcommandData getSubcommandData() {
-    return new SubcommandData("score", "Set or adjust a player's track (appeal, conservation, etc.)")
+    return new SubcommandData(
+            "score", "Set or adjust a player's track (appeal, conservation, etc.)")
         .addOption(
             OptionType.STRING,
             "track",
             "Track to adjust: appeal, conservation, reputation, break, xtokens",
             true)
         .addOption(
-            OptionType.STRING,
-            "value",
-            "Set value (e.g. 25), add (+5), or subtract (-3)",
-            true)
+            OptionType.STRING, "value", "Set value (e.g. 25), add (+5), or subtract (-3)", true)
         .addOption(OptionType.USER, "player", "Player to adjust (default: you)", false);
   }
 

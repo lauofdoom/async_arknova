@@ -143,8 +143,13 @@ public class AssociationActionHandler implements ActionHandler {
           int cost = slot + 2;
           if (player.getMoney() - pendingMoneyCost < cost) {
             return ActionResult.failure(
-                "Partner zoo slot " + (slot + 1) + " costs " + cost
-                    + "\uD83D\uDCB0 (you have " + (player.getMoney() - pendingMoneyCost) + ").");
+                "Partner zoo slot "
+                    + (slot + 1)
+                    + " costs "
+                    + cost
+                    + "\uD83D\uDCB0 (you have "
+                    + (player.getMoney() - pendingMoneyCost)
+                    + ").");
           }
           totalValue += taskValue;
           pendingWorkers++;
@@ -163,8 +168,13 @@ public class AssociationActionHandler implements ActionHandler {
           int cost = slot + 2;
           if (player.getMoney() - pendingMoneyCost < cost) {
             return ActionResult.failure(
-                "University slot " + (slot + 1) + " costs " + cost
-                    + "\uD83D\uDCB0 (you have " + (player.getMoney() - pendingMoneyCost) + ").");
+                "University slot "
+                    + (slot + 1)
+                    + " costs "
+                    + cost
+                    + "\uD83D\uDCB0 (you have "
+                    + (player.getMoney() - pendingMoneyCost)
+                    + ").");
           }
           totalValue += taskValue;
           pendingWorkers++;

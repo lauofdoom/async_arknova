@@ -41,12 +41,13 @@ public class DrawCommand implements ArkNovaCommand {
 
   @Override
   public SubcommandData getSubcommandData() {
-    return new SubcommandData("draw", "Draw a card from the deck or take one from the display")
-        .addOption(OptionType.STRING, "source", "Where to draw from: DECK or DISPLAY", true)
+    return new SubcommandData("draw", "Draw a card from the deck, display, or discard pile")
+        .addOption(
+            OptionType.STRING, "source", "Where to draw from: DECK, DISPLAY, or DISCARD", true)
         .addOption(
             OptionType.STRING,
             "card_id",
-            "Card ID to take from display (use /arknova display to see IDs)",
+            "Card ID to take from display or discard (use /arknova display to see IDs)",
             false);
   }
 
@@ -86,7 +87,9 @@ public class DrawCommand implements ArkNovaCommand {
                 cardDefinitionRepository
                     .findById(drawnId)
                     .orElseThrow(
-                        () -> new IllegalStateException("Unknown card ID drawn from deck: " + drawnId));
+                        () ->
+                            new IllegalStateException(
+                                "Unknown card ID drawn from deck: " + drawnId));
 
             event
                 .getHook()
@@ -123,10 +126,39 @@ public class DrawCommand implements ArkNovaCommand {
                 .setEphemeral(true)
                 .queue();
 
+          } else if ("DISCARD".equals(source)) {
+            if (cardIdOpt == null) {
+              event
+                  .getHook()
+                  .sendMessage("❌ Please provide a card_id when taking from the discard pile.")
+                  .setEphemeral(true)
+                  .queue();
+              return;
+            }
+
+            String cardId = cardIdOpt.getAsString().trim();
+            try {
+              deckService.takeFromDiscard(game.getId(), discordId, cardId);
+            } catch (IllegalArgumentException e) {
+              event.getHook().sendMessage("❌ " + e.getMessage()).setEphemeral(true).queue();
+              return;
+            }
+
+            CardDefinition card =
+                cardDefinitionRepository
+                    .findById(cardId)
+                    .orElseThrow(() -> new IllegalStateException("Unknown card ID: " + cardId));
+
+            event
+                .getHook()
+                .sendMessageEmbeds(buildCardEmbed(card, "Card Taken from Discard").build())
+                .setEphemeral(true)
+                .queue();
+
           } else {
             event
                 .getHook()
-                .sendMessage("❌ Invalid source \"" + source + "\". Use DECK or DISPLAY.")
+                .sendMessage("❌ Invalid source \"" + source + "\". Use DECK, DISPLAY, or DISCARD.")
                 .setEphemeral(true)
                 .queue();
           }

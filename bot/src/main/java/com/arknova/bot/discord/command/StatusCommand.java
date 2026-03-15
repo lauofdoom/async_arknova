@@ -111,14 +111,16 @@ public class StatusCommand implements ArkNovaCommand {
           players.stream()
               .filter(p -> p.getDiscordId().equals(callerId))
               .findFirst()
-              .ifPresent(caller -> {
-                if (caller.getPrivateChannelId() != null) {
-                  TextChannel privateChannel = jda.getTextChannelById(caller.getPrivateChannelId());
-                  if (privateChannel != null) {
-                    privateChannel.sendMessageEmbeds(embed.build()).queue(null, err -> {});
-                  }
-                }
-              });
+              .ifPresent(
+                  caller -> {
+                    if (caller.getPrivateChannelId() != null) {
+                      TextChannel privateChannel =
+                          jda.getTextChannelById(caller.getPrivateChannelId());
+                      if (privateChannel != null) {
+                        privateChannel.sendMessageEmbeds(embed.build()).queue(null, err -> {});
+                      }
+                    }
+                  });
         });
   }
 

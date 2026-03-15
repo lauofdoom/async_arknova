@@ -41,25 +41,10 @@ public class AdjustCommand implements ArkNovaCommand {
   public SubcommandData getSubcommandData() {
     return new SubcommandData("adjust", "Manually adjust a player's resources")
         .addOption(
-            OptionType.STRING,
-            "money",
-            "Set money (e.g. 25), add (+10), or remove (-5)",
-            false)
-        .addOption(
-            OptionType.INTEGER,
-            "partner_zoos",
-            "Number of partner zoos to add",
-            false)
-        .addOption(
-            OptionType.INTEGER,
-            "universities",
-            "Number of universities to add",
-            false)
-        .addOption(
-            OptionType.USER,
-            "player",
-            "Player to adjust (default: you)",
-            false);
+            OptionType.STRING, "money", "Set money (e.g. 25), add (+10), or remove (-5)", false)
+        .addOption(OptionType.INTEGER, "partner_zoos", "Number of partner zoos to add", false)
+        .addOption(OptionType.INTEGER, "universities", "Number of universities to add", false)
+        .addOption(OptionType.USER, "player", "Player to adjust (default: you)", false);
   }
 
   @Override

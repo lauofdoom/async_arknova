@@ -16,8 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Integration tests for {@link GameService} — exercises the full create → join → start → turn
- * cycle against a real PostgreSQL database.
+ * Integration tests for {@link GameService} — exercises the full create → join → start → turn cycle
+ * against a real PostgreSQL database.
  */
 @DisplayName("GameService")
 @Transactional
@@ -33,6 +33,11 @@ class GameServiceIT extends AbstractIntegrationTest {
 
   // ── createGame ────────────────────────────────────────────────────────────
 
+  /** Simulates the async channel setup that CreateCommand triggers after createGame. */
+  private void setupGameChannel(Game game) {
+    gameService.setGameChannel(game.getId(), THREAD_ID);
+  }
+
   @Nested
   @DisplayName("createGame")
   class CreateGame {
@@ -44,7 +49,7 @@ class GameServiceIT extends AbstractIntegrationTest {
 
       assertThat(game.getId()).isNotNull();
       assertThat(game.getStatus()).isEqualTo(GameStatus.SETUP);
-      assertThat(game.getThreadId()).isEqualTo(THREAD_ID);
+      assertThat(game.getOriginChannelId()).isEqualTo(THREAD_ID);
 
       List<PlayerState> players = gameService.getPlayersInOrder(game.getId());
       assertThat(players).hasSize(1);
@@ -53,13 +58,13 @@ class GameServiceIT extends AbstractIntegrationTest {
     }
 
     @Test
-    @DisplayName("rejects duplicate game in the same thread")
+    @DisplayName("rejects duplicate game in the same origin channel")
     void rejectsDuplicateGameInSameThread() {
       gameService.createGame(GUILD_ID, THREAD_ID, ALICE_ID, "Alice");
 
       assertThatThrownBy(() -> gameService.createGame(GUILD_ID, THREAD_ID, BOB_ID, "Bob"))
           .isInstanceOf(IllegalStateException.class)
-          .hasMessageContaining("already exists");
+          .hasMessageContaining("already");
     }
   }
 
@@ -72,7 +77,7 @@ class GameServiceIT extends AbstractIntegrationTest {
     @Test
     @DisplayName("adds second player at seat 1")
     void addsSecondPlayer() {
-      gameService.createGame(GUILD_ID, THREAD_ID, ALICE_ID, "Alice");
+      setupGameChannel(gameService.createGame(GUILD_ID, THREAD_ID, ALICE_ID, "Alice"));
 
       PlayerState bob = gameService.joinGame(THREAD_ID, BOB_ID, "Bob");
 
@@ -83,7 +88,7 @@ class GameServiceIT extends AbstractIntegrationTest {
     @Test
     @DisplayName("rejects duplicate join by same player")
     void rejectsDuplicateJoin() {
-      gameService.createGame(GUILD_ID, THREAD_ID, ALICE_ID, "Alice");
+      setupGameChannel(gameService.createGame(GUILD_ID, THREAD_ID, ALICE_ID, "Alice"));
 
       assertThatThrownBy(() -> gameService.joinGame(THREAD_ID, ALICE_ID, "Alice"))
           .isInstanceOf(IllegalStateException.class)
@@ -93,7 +98,7 @@ class GameServiceIT extends AbstractIntegrationTest {
     @Test
     @DisplayName("rejects join once game has started")
     void rejectsJoinAfterStart() {
-      gameService.createGame(GUILD_ID, THREAD_ID, ALICE_ID, "Alice");
+      setupGameChannel(gameService.createGame(GUILD_ID, THREAD_ID, ALICE_ID, "Alice"));
       gameService.joinGame(THREAD_ID, BOB_ID, "Bob");
       gameService.startGame(THREAD_ID, ALICE_ID);
 
@@ -112,7 +117,7 @@ class GameServiceIT extends AbstractIntegrationTest {
     @Test
     @DisplayName("transitions game to ACTIVE and initialises player money")
     void startsGameAndInitialisesResources() {
-      gameService.createGame(GUILD_ID, THREAD_ID, ALICE_ID, "Alice");
+      setupGameChannel(gameService.createGame(GUILD_ID, THREAD_ID, ALICE_ID, "Alice"));
       gameService.joinGame(THREAD_ID, BOB_ID, "Bob");
 
       Game started = gameService.startGame(THREAD_ID, ALICE_ID);
@@ -131,7 +136,7 @@ class GameServiceIT extends AbstractIntegrationTest {
     @Test
     @DisplayName("rejects start with fewer than 2 players")
     void rejectsStartWithOnePlayer() {
-      gameService.createGame(GUILD_ID, THREAD_ID, ALICE_ID, "Alice");
+      setupGameChannel(gameService.createGame(GUILD_ID, THREAD_ID, ALICE_ID, "Alice"));
 
       assertThatThrownBy(() -> gameService.startGame(THREAD_ID, ALICE_ID))
           .isInstanceOf(IllegalStateException.class)
@@ -141,7 +146,7 @@ class GameServiceIT extends AbstractIntegrationTest {
     @Test
     @DisplayName("rejects start by non-participant")
     void rejectsStartByNonParticipant() {
-      gameService.createGame(GUILD_ID, THREAD_ID, ALICE_ID, "Alice");
+      setupGameChannel(gameService.createGame(GUILD_ID, THREAD_ID, ALICE_ID, "Alice"));
       gameService.joinGame(THREAD_ID, BOB_ID, "Bob");
 
       assertThatThrownBy(() -> gameService.startGame(THREAD_ID, "outsider-999"))
@@ -159,7 +164,7 @@ class GameServiceIT extends AbstractIntegrationTest {
     @Test
     @DisplayName("advances seat in round-robin order")
     void advancesSeatRoundRobin() {
-      gameService.createGame(GUILD_ID, THREAD_ID, ALICE_ID, "Alice");
+      setupGameChannel(gameService.createGame(GUILD_ID, THREAD_ID, ALICE_ID, "Alice"));
       gameService.joinGame(THREAD_ID, BOB_ID, "Bob");
       Game game = gameService.startGame(THREAD_ID, ALICE_ID);
 
@@ -179,7 +184,7 @@ class GameServiceIT extends AbstractIntegrationTest {
     @Test
     @DisplayName("rejects end turn when it is not the player's turn")
     void rejectsOutOfTurnEndTurn() {
-      gameService.createGame(GUILD_ID, THREAD_ID, ALICE_ID, "Alice");
+      setupGameChannel(gameService.createGame(GUILD_ID, THREAD_ID, ALICE_ID, "Alice"));
       gameService.joinGame(THREAD_ID, BOB_ID, "Bob");
       gameService.startGame(THREAD_ID, ALICE_ID);
 
@@ -192,7 +197,7 @@ class GameServiceIT extends AbstractIntegrationTest {
     @Test
     @DisplayName("rejects end turn on a non-active game")
     void rejectsEndTurnOnSetupGame() {
-      gameService.createGame(GUILD_ID, THREAD_ID, ALICE_ID, "Alice");
+      setupGameChannel(gameService.createGame(GUILD_ID, THREAD_ID, ALICE_ID, "Alice"));
       gameService.joinGame(THREAD_ID, BOB_ID, "Bob");
       // game is still in SETUP
 
@@ -212,6 +217,7 @@ class GameServiceIT extends AbstractIntegrationTest {
     @DisplayName("delta-adjusts money correctly")
     void deltaAdjustsMoney() {
       Game game = gameService.createGame(GUILD_ID, THREAD_ID, ALICE_ID, "Alice");
+      setupGameChannel(game);
       gameService.joinGame(THREAD_ID, BOB_ID, "Bob");
       gameService.startGame(THREAD_ID, ALICE_ID);
 
@@ -223,6 +229,7 @@ class GameServiceIT extends AbstractIntegrationTest {
     @DisplayName("set-adjusts money correctly")
     void setAdjustsMoney() {
       Game game = gameService.createGame(GUILD_ID, THREAD_ID, ALICE_ID, "Alice");
+      setupGameChannel(game);
       gameService.joinGame(THREAD_ID, BOB_ID, "Bob");
       gameService.startGame(THREAD_ID, ALICE_ID);
 
@@ -234,11 +241,11 @@ class GameServiceIT extends AbstractIntegrationTest {
     @DisplayName("rejects negative money set")
     void rejectsNegativeMoneySet() {
       Game game = gameService.createGame(GUILD_ID, THREAD_ID, ALICE_ID, "Alice");
+      setupGameChannel(game);
       gameService.joinGame(THREAD_ID, BOB_ID, "Bob");
       gameService.startGame(THREAD_ID, ALICE_ID);
 
-      assertThatThrownBy(
-              () -> gameService.adjustPlayer(game.getId(), ALICE_ID, null, -5, 0, 0))
+      assertThatThrownBy(() -> gameService.adjustPlayer(game.getId(), ALICE_ID, null, -5, 0, 0))
           .isInstanceOf(IllegalStateException.class)
           .hasMessageContaining("negative");
     }
@@ -254,6 +261,7 @@ class GameServiceIT extends AbstractIntegrationTest {
     @DisplayName("increments appeal correctly")
     void incrementsAppeal() {
       Game game = gameService.createGame(GUILD_ID, THREAD_ID, ALICE_ID, "Alice");
+      setupGameChannel(game);
       gameService.joinGame(THREAD_ID, BOB_ID, "Bob");
       gameService.startGame(THREAD_ID, ALICE_ID);
 
@@ -265,6 +273,7 @@ class GameServiceIT extends AbstractIntegrationTest {
     @DisplayName("rejects unknown track name")
     void rejectsUnknownTrack() {
       Game game = gameService.createGame(GUILD_ID, THREAD_ID, ALICE_ID, "Alice");
+      setupGameChannel(game);
       gameService.joinGame(THREAD_ID, BOB_ID, "Bob");
       gameService.startGame(THREAD_ID, ALICE_ID);
 

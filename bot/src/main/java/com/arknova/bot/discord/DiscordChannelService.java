@@ -9,14 +9,15 @@ import com.arknova.bot.repository.GameRepository;
 import com.arknova.bot.repository.PlayerStateRepository;
 import com.arknova.bot.repository.SharedBoardStateRepository;
 import com.arknova.bot.service.DeckService;
+import com.arknova.bot.service.GameService;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.util.EnumSet;
 import java.util.List;
 import javax.imageio.ImageIO;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.channel.concrete.Category;
@@ -34,8 +35,8 @@ import org.springframework.transaction.annotation.Transactional;
  * <p>On start, creates a category with a public {@code #board} channel and a private channel per
  * player. Channel IDs are persisted back to the Game and PlayerState entities.
  *
- * <p>JDA is injected {@code @Lazy} to break the circular bean dependency:
- * JDA → SlashCommandListener → ... → DiscordChannelService → JDA.
+ * <p>JDA is injected {@code @Lazy} to break the circular bean dependency: JDA →
+ * SlashCommandListener → ... → DiscordChannelService → JDA.
  *
  * <p>All channel creation calls use {@code .complete()} because we need the channel IDs
  * synchronously before persisting them. This is acceptable here since it's a one-time setup during
@@ -62,6 +63,7 @@ public class DiscordChannelService {
   private final SharedBoardStateRepository sharedBoardRepo;
   private final ZooBoardRenderer zooBoardRenderer;
   private final DeckService deckService;
+  private final GameService gameService;
 
   public DiscordChannelService(
       @Lazy JDA jda,
@@ -69,13 +71,15 @@ public class DiscordChannelService {
       PlayerStateRepository playerStateRepo,
       SharedBoardStateRepository sharedBoardRepo,
       ZooBoardRenderer zooBoardRenderer,
-      DeckService deckService) {
+      DeckService deckService,
+      @Lazy GameService gameService) {
     this.jda = jda;
     this.gameRepo = gameRepo;
     this.playerStateRepo = playerStateRepo;
     this.sharedBoardRepo = sharedBoardRepo;
     this.zooBoardRenderer = zooBoardRenderer;
     this.deckService = deckService;
+    this.gameService = gameService;
   }
 
   // ── Channel Setup ─────────────────────────────────────────────────────────
@@ -102,27 +106,22 @@ public class DiscordChannelService {
     try {
       Guild guild = jda.getGuildById(game.getGuildId());
       if (guild == null) {
-        log.warn("Guild {} not found — skipping channel setup for game {}", game.getGuildId(), game.getId());
+        log.warn(
+            "Guild {} not found — skipping channel setup for game {}",
+            game.getGuildId(),
+            game.getId());
         return;
       }
 
       String gameTag = "ARK-" + game.getGameNumber();
 
       // Create category — named ARK-1, ARK-2, etc. for easy identification
-      Category category =
-          guild.createCategory(gameTag).complete();
-      category
-          .upsertPermissionOverride(guild.getPublicRole())
-          .deny(DENY_VIEW)
-          .complete();
+      Category category = guild.createCategory(gameTag).complete();
+      category.upsertPermissionOverride(guild.getPublicRole()).deny(DENY_VIEW).complete();
 
       // Create #board channel — all players can read and write
-      TextChannel boardChannel =
-          guild.createTextChannel("board", category).complete();
-      boardChannel
-          .upsertPermissionOverride(guild.getPublicRole())
-          .deny(DENY_VIEW)
-          .complete();
+      TextChannel boardChannel = guild.createTextChannel("board", category).complete();
+      boardChannel.upsertPermissionOverride(guild.getPublicRole()).deny(DENY_VIEW).complete();
       for (PlayerState p : players) {
         grantPlayerAccess(boardChannel, guild, p.getDiscordId());
       }
@@ -140,12 +139,8 @@ public class DiscordChannelService {
       // Create per-player private channels
       for (PlayerState player : players) {
         String channelName = sanitizeChannelName(player.getDiscordName()) + "-cards";
-        TextChannel privateChannel =
-            guild.createTextChannel(channelName, category).complete();
-        privateChannel
-            .upsertPermissionOverride(guild.getPublicRole())
-            .deny(DENY_VIEW)
-            .complete();
+        TextChannel privateChannel = guild.createTextChannel(channelName, category).complete();
+        privateChannel.upsertPermissionOverride(guild.getPublicRole()).deny(DENY_VIEW).complete();
         grantPlayerAccess(privateChannel, guild, player.getDiscordId());
 
         // Welcome message
@@ -190,6 +185,127 @@ public class DiscordChannelService {
     }
   }
 
+  // ── New Game Channel Setup (at create/join time) ──────────────────────────
+
+  /**
+   * Creates the category, #board channel, and creator's #name-cards channel immediately when a game
+   * is created (before /arknova start). After the board channel is created, updates the game's
+   * {@code threadId} and {@code boardChannelId} via {@link GameService#setGameChannel}.
+   *
+   * @param game the newly created game
+   * @param creator the creator's PlayerState
+   */
+  @Transactional
+  public void setupNewGame(Game game, PlayerState creator) {
+    try {
+      Guild guild = jda.getGuildById(game.getGuildId());
+      if (guild == null) {
+        log.warn(
+            "Guild {} not found — skipping channel setup for game {}",
+            game.getGuildId(),
+            game.getId());
+        return;
+      }
+
+      String gameTag = "ARK-" + game.getGameNumber();
+
+      // Create category
+      Category category = guild.createCategory(gameTag).complete();
+      category.upsertPermissionOverride(guild.getPublicRole()).deny(DENY_VIEW).complete();
+
+      // Create #board channel
+      TextChannel boardChannel = guild.createTextChannel("board", category).complete();
+      boardChannel.upsertPermissionOverride(guild.getPublicRole()).deny(DENY_VIEW).complete();
+      grantPlayerAccess(boardChannel, guild, creator.getDiscordId());
+      boardChannel
+          .sendMessageEmbeds(
+              new EmbedBuilder()
+                  .setColor(new java.awt.Color(0x2ECC71))
+                  .setTitle("Ark Nova — " + gameTag)
+                  .setDescription(
+                      "Game created! Waiting for players to join.\n"
+                          + "Use `/arknova join` to join and `/arknova start` when ready.")
+                  .build())
+          .complete();
+
+      // Persist channel IDs and set threadId to the board channel
+      game.setCategoryId(category.getId());
+      gameRepo.save(game);
+      gameService.setGameChannel(game.getId(), boardChannel.getId());
+
+      // Create creator's private cards channel
+      createPlayerChannelInCategory(guild, category, game, creator);
+
+      log.info(
+          "New game {} ({}) set up — category={}, board={}",
+          game.getId(),
+          gameTag,
+          category.getId(),
+          boardChannel.getId());
+
+    } catch (Exception e) {
+      log.warn("setupNewGame failed for game {}: {}", game.getId(), e.getMessage(), e);
+    }
+  }
+
+  /**
+   * Creates a private {@code #name-cards} channel for a player who has just joined. Uses the
+   * category already created by {@link #setupNewGame}. Skips gracefully if the category is missing.
+   *
+   * @param game the game the player joined
+   * @param player the joining player's PlayerState
+   */
+  @Transactional
+  public void createPlayerChannel(Game game, PlayerState player) {
+    if (game.getCategoryId() == null) {
+      log.debug("No category for game {} — skipping player channel creation", game.getId());
+      return;
+    }
+    try {
+      Guild guild = jda.getGuildById(game.getGuildId());
+      if (guild == null) return;
+      Category category = guild.getCategoryById(game.getCategoryId());
+      if (category == null) {
+        log.warn("Category {} not found for game {}", game.getCategoryId(), game.getId());
+        return;
+      }
+      createPlayerChannelInCategory(guild, category, game, player);
+    } catch (Exception e) {
+      log.warn(
+          "createPlayerChannel failed for player {} in game {}: {}",
+          player.getDiscordId(),
+          game.getId(),
+          e.getMessage(),
+          e);
+    }
+  }
+
+  /** Creates and configures a single player's private channel within an existing category. */
+  private void createPlayerChannelInCategory(
+      Guild guild, Category category, Game game, PlayerState player) {
+    String channelName = sanitizeChannelName(player.getDiscordName()) + "-cards";
+    TextChannel privateChannel = guild.createTextChannel(channelName, category).complete();
+    privateChannel.upsertPermissionOverride(guild.getPublicRole()).deny(DENY_VIEW).complete();
+    grantPlayerAccess(privateChannel, guild, player.getDiscordId());
+    privateChannel
+        .sendMessageEmbeds(
+            new EmbedBuilder()
+                .setColor(new java.awt.Color(0x3498DB))
+                .setTitle("Your Cards — " + player.getDiscordName())
+                .setDescription(
+                    "This channel is only visible to you.\n"
+                        + "Your hand and board will be posted here once the game starts.")
+                .build())
+        .complete();
+    player.setPrivateChannelId(privateChannel.getId());
+    playerStateRepo.save(player);
+    log.info(
+        "Created cards channel {} for player {} in game {}",
+        privateChannel.getId(),
+        player.getDiscordId(),
+        game.getId());
+  }
+
   // ── Channel Archive ───────────────────────────────────────────────────────
 
   /**
@@ -222,8 +338,7 @@ public class DiscordChannelService {
       // Remove overrides from private channels
       for (PlayerState player : players) {
         if (player.getPrivateChannelId() == null) continue;
-        TextChannel privateChannel =
-            guild.getTextChannelById(player.getPrivateChannelId());
+        TextChannel privateChannel = guild.getTextChannelById(player.getPrivateChannelId());
         if (privateChannel != null) {
           privateChannel.upsertPermissionOverride(guild.getPublicRole()).reset().complete();
         }
@@ -246,7 +361,10 @@ public class DiscordChannelService {
    */
   public void refreshPrivateChannel(Game game, PlayerState player) {
     if (player.getPrivateChannelId() == null) {
-      log.debug("No private channel configured for player {} in game {}", player.getDiscordId(), game.getId());
+      log.debug(
+          "No private channel configured for player {} in game {}",
+          player.getDiscordId(),
+          game.getId());
       return;
     }
     try {
@@ -255,13 +373,16 @@ public class DiscordChannelService {
 
       TextChannel channel = guild.getTextChannelById(player.getPrivateChannelId());
       if (channel == null) {
-        log.warn("Private channel {} not found for player {}", player.getPrivateChannelId(), player.getDiscordId());
+        log.warn(
+            "Private channel {} not found for player {}",
+            player.getPrivateChannelId(),
+            player.getDiscordId());
         return;
       }
 
       // Resources embed
-      int sharedBreakTrack = sharedBoardRepo.findByGameId(game.getId())
-          .map(SharedBoardState::getBreakTrack).orElse(0);
+      int sharedBreakTrack =
+          sharedBoardRepo.findByGameId(game.getId()).map(SharedBoardState::getBreakTrack).orElse(0);
       channel.sendMessageEmbeds(buildResourcesEmbed(player, sharedBreakTrack).build()).queue();
 
       // Hand embed
@@ -317,7 +438,8 @@ public class DiscordChannelService {
       if (pngBytes == null) return;
 
       boardChannel
-          .sendMessage(player.getDiscordName() + "'s zoo board (after turn " + game.getTurnNumber() + "):")
+          .sendMessage(
+              player.getDiscordName() + "'s zoo board (after turn " + game.getTurnNumber() + "):")
           .addFiles(FileUpload.fromData(pngBytes, "board_" + player.getDiscordId() + ".png"))
           .queue();
 
@@ -344,7 +466,9 @@ public class DiscordChannelService {
       if (guild == null) return;
       TextChannel boardChannel = guild.getTextChannelById(game.getBoardChannelId());
       if (boardChannel == null) return;
-      boardChannel.sendMessageEmbeds(embed.build()).queue(null, err -> log.warn("Board channel post failed", err));
+      boardChannel
+          .sendMessageEmbeds(embed.build())
+          .queue(null, err -> log.warn("Board channel post failed", err));
     } catch (Exception e) {
       log.warn("Failed to post to board channel for game {}: {}", game.getId(), e.getMessage(), e);
     }
@@ -359,7 +483,11 @@ public class DiscordChannelService {
         channel.upsertPermissionOverride(member).grant(PLAYER_CHANNEL_ALLOW).complete();
       }
     } catch (Exception e) {
-      log.warn("Could not grant access to channel {} for user {}: {}", channel.getId(), discordId, e.getMessage());
+      log.warn(
+          "Could not grant access to channel {} for user {}: {}",
+          channel.getId(),
+          discordId,
+          e.getMessage());
     }
   }
 
@@ -373,7 +501,8 @@ public class DiscordChannelService {
         .addField("Reputation", String.valueOf(player.getReputation()), true)
         .addField("Break Track (shared)", String.valueOf(sharedBreakTrack), true)
         .addField("X Tokens", String.valueOf(player.getXTokens()), true)
-        .addField("Workers", player.getAssocWorkersAvailable() + "/" + player.getAssocWorkers(), true);
+        .addField(
+            "Workers", player.getAssocWorkersAvailable() + "/" + player.getAssocWorkers(), true);
   }
 
   private static String sanitizeChannelName(String name) {
@@ -393,5 +522,4 @@ public class DiscordChannelService {
       return null;
     }
   }
-
 }
